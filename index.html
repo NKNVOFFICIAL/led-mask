@@ -1056,7 +1056,23 @@ async function saveStandalone(filename, data) {
   setTimeout(() => URL.revokeObjectURL(url), 60000);
   status("Сохранено: " + filename, true); return true;
 }
+async function saveAndroid(filename, data) {
+  const br = window.AndroidBridge;
+  const bytes = data instanceof Blob ? new Uint8Array(await data.arrayBuffer()) : typeof data === "string" ? enc.encode(data) : new Uint8Array(data);
+  const id = br.begin(filename); if (!id) { status("Не удалось начать сохранение", true); return false; }
+  const CH = 3 * 256 * 1024;
+  for (let i = 0; i < bytes.length; i += CH) {
+    const part = bytes.subarray(i, i + CH); let bin = "";
+    for (let j = 0; j < part.length; j += 32768) bin += String.fromCharCode.apply(null, part.subarray(j, j + 32768));
+    if (!br.append(id, btoa(bin))) { status("Ошибка записи файла", true); return false; }
+    if (bytes.length > CH * 4) { busy(`Сохранение… ${Math.round(Math.min(1, (i + CH) / bytes.length) * 100)}%`); await tick(); }
+  }
+  busy("");
+  const r = String(br.finish(id, filename));
+  const ok = r.startsWith("ok:"); status(r.slice(r.indexOf(":") + 1), true); return ok;
+}
 async function save(filename, data) {
+  if (window.AndroidBridge) return saveAndroid(filename, data);
   if (STANDALONE) return saveStandalone(filename, data);
   if (!downloads) { status("Сохранение файлов недоступно в этом окне", true); return false; }
   try { await downloads.save({ filename, data }); status("Готово: " + filename, true); return true; }
