@@ -395,7 +395,7 @@ function drawMask(ctx, st, s, guides) {
   ctx.fillStyle = "#000";
   for (const k of black) { const p = parseKey(k); if (p && p[0] >= 0 && p[1] >= 0 && p[0] < cols && p[1] < rows) ctx.fillRect(...cell(p[0], p[1])); }
   // швы между кабинетами: 2 px (по 1 px каждому кабинету), серые
-  ctx.fillStyle = "rgb(128,128,128)";
+  ctx.fillStyle = "rgb(64,64,64)";
   const bw = Math.max(1, Math.round(2 * s));
   for (let c = 1; c < cols; c++) ctx.fillRect(fx(c * cw) - Math.floor(bw / 2), 0, bw, Hp);
   for (let r = 1; r < rows; r++) ctx.fillRect(0, fy(r * ch) - Math.floor(bw / 2), Wp, bw);
