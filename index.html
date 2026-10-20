@@ -108,6 +108,7 @@ button.x:hover { background: var(--export-hi); }
 .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .seg { display: inline-flex; background: var(--panel); border: 1px solid var(--line); border-radius: 9px; padding: 3px; gap: 2px; }
 .seg button { background: transparent; border: 0; border-radius: 7px; padding: 7px 11px; cursor: pointer; font-size: 13px; color: var(--muted); touch-action: manipulation; }
+.seg.corner button { font-size: 17px; line-height: 1; padding: 6px 10px; }
 .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
 .zoom { display: inline-flex; align-items: center; gap: 4px; margin-left: auto; }
 .zoom .num { font-size: 12px; color: var(--muted); min-width: 46px; text-align: center; }
@@ -177,6 +178,14 @@ button.x:hover { background: var(--export-hi); }
         <button class="b" id="btnClearSel">Снять выделение</button>
       </div>
       <div class="ctl"><input type="color" id="paintColor" aria-label="Цвет покраски"><button class="b" id="btnPaint">Покрасить выделенные</button></div>
+      <div class="row"><span class="lbl">Угловые модули</span><div class="ctl">
+        <div class="seg corner" role="group" aria-label="Какая половина светится">
+          <button data-corner="0" aria-pressed="true" title="Светится нижняя левая половина">◣</button>
+          <button data-corner="1" aria-pressed="false" title="Светится верхняя левая половина">◤</button>
+          <button data-corner="2" aria-pressed="false" title="Светится верхняя правая половина">◥</button>
+          <button data-corner="3" aria-pressed="false" title="Светится нижняя правая половина">◢</button>
+        </div></div></div>
+      <div class="btns"><button class="b" id="btnCorner">Сделать угловыми</button><button class="b" id="btnCornerDel">Убрать угловые</button></div>
     </div></details>
 
     <details class="sec"><summary>КОНТУР УЧАСТКА</summary><div class="sec-body">
@@ -223,7 +232,7 @@ button.x:hover { background: var(--export-hi); }
 
   <main class="stage">
     <div class="toolbar">
-      <div class="seg" role="group" aria-label="Инструмент">
+      <div class="seg tools" role="group" aria-label="Инструмент">
         <button data-tool="select" aria-pressed="true">Выбор</button>
         <button data-tool="range" aria-pressed="false">Диапазон</button>
         <button data-tool="black" aria-pressed="false">Гашение</button>
@@ -284,6 +293,9 @@ const ROTS = ["0°", "-90°", "90°", "180°"], ROT_DEG = [0, -90, 90, 180];
 const NUM_FORMATS = ["1,1", "1-1", "1 / 1", "C1-R1", "1"];
 const NUM_ORIGINS = ["Слева-снизу", "Слева-сверху", "Справа-снизу", "Справа-сверху"];
 const NUM_POS = ["По центру", "Слева снизу", "Слева сверху", "Справа снизу", "Справа сверху"];
+/* Угловой модуль: кабинет разрезан по диагонали, светится одна половина, другая чёрная.
+   Значение — угол прямого угла светящегося треугольника: 0 ◣ низ-лево, 1 ◤ верх-лево, 2 ◥ верх-право, 3 ◢ низ-право. */
+const CORNER_GLYPH = ["◣", "◤", "◥", "◢"], CORNER_NUMPOS = [1, 2, 4, 3];
 const FONT = '"Gill Sans", "Gill Sans MT", GillSans, Calibri, "Segoe UI", system-ui, sans-serif';
 
 const col = (r, g, b, a = 1) => ({ r, g, b, a });
@@ -299,7 +311,7 @@ function defaultScreen(name = "screen 1") {
     pixelColor: fromRGB(t[5]), numberColor: { ...DEF_NUM_COLOR },
     inscriptionIndex: 0, rotationIndex: 0, numberFormatIndex: 0, numberOriginIndex: 0,
     blackCabinets: [], cabinetColors: {}, extraLabels: [], titleOffsetX: 0, titleOffsetY: 0,
-    persistentContours: [], showPersistentContour: true,
+    persistentContours: [], showPersistentContour: true, cornerCabinets: {},
   };
 }
 
@@ -394,6 +406,18 @@ function drawMask(ctx, st, s, guides) {
   const black = new Set(st.blackCabinets || []);
   ctx.fillStyle = "#000";
   for (const k of black) { const p = parseKey(k); if (p && p[0] >= 0 && p[1] >= 0 && p[0] < cols && p[1] < rows) ctx.fillRect(...cell(p[0], p[1])); }
+  // угловые модули: чёрная половина + диагональный шов RGB 64,64,64 шириной 2 px
+  const corners = cornerList(st, black);
+  for (const [c, r, o] of corners) {
+    const [x, y, w, h] = cell(c, r), X = [x, x, x + w, x + w], Y = [y + h, y, y, y + h]; // углы: низ-лево, верх-лево, верх-право, низ-право
+    const a = (o + 1) % 4, b = (o + 2) % 4, d = (o + 3) % 4;
+    ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+    ctx.beginPath(); ctx.moveTo(X[a], Y[a]); ctx.lineTo(X[b], Y[b]); ctx.lineTo(X[d], Y[d]); ctx.closePath();
+    ctx.fillStyle = "#000"; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(X[a], Y[a]); ctx.lineTo(X[d], Y[d]);
+    ctx.strokeStyle = "rgb(64,64,64)"; ctx.lineWidth = Math.max(1, 2 * s); ctx.stroke();
+    ctx.restore();
+  }
   // швы между кабинетами: 2 px (по 1 px каждому кабинету), серые
   ctx.fillStyle = "rgb(64,64,64)";
   const bw = Math.max(1, Math.round(2 * s));
@@ -424,14 +448,22 @@ function drawMask(ctx, st, s, guides) {
   const nsize = Math.max(6, numberFont(st) * s);
   ctx.font = `${nsize}px ${FONT}`; ctx.fillStyle = css(st.numberColor || DEF_NUM_COLOR); ctx.textBaseline = "alphabetic";
   const pos = clampI(st.numberPositionIndex, NUM_POS.length), cW = cw * s, cH = ch * s, pad = Math.min(8 * s, Math.min(cW, cH) * 0.12);
-  const nm = measure("0", nsize);
+  const nm = measure("0", nsize), cornerAt = new Map(corners.map(([c, r, o]) => [key(c, r), o]));
   for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
     if (black.has(key(c, r))) continue;
     const label = cabLabel(st, c, r), tw = ctx.measureText(label).width;
     const left = c * cw * s, top = (H - (r + 1) * ch) * s;
     let x = left + (cW - tw) / 2, y = top + (cH - nm.h) / 2;
-    if (pos === 1 || pos === 2) x = left + pad; else if (pos === 3 || pos === 4) x = left + cW - tw - pad;
-    if (pos === 1 || pos === 3) y = top + cH - nm.h - pad; else if (pos === 2 || pos === 4) y = top + pad;
+    const o = cornerAt.get(key(c, r));
+    let p = pos;
+    if (o !== undefined && pos !== CORNER_NUMPOS[o]) {
+      // номер в центре тяжести светящегося треугольника
+      p = -1;
+      const gx = (o >= 2) ? left + cW * 2 / 3 : left + cW / 3, gy = (o === 1 || o === 2) ? top + cH / 3 : top + cH * 2 / 3;
+      x = gx - tw / 2; y = gy - nm.h / 2;
+    }
+    if (p === 1 || p === 2) x = left + pad; else if (p === 3 || p === 4) x = left + cW - tw - pad;
+    if (p === 1 || p === 3) y = top + cH - nm.h - pad; else if (p === 2 || p === 4) y = top + pad;
     ctx.fillText(label, x, y + nm.asc);
   }
   // основной текст и дополнительные надписи
@@ -456,10 +488,20 @@ function drawBlock(ctx, lines, gap, cx, cy, deg) {
   ctx.restore();
 }
 
+function cornerList(st, black) {
+  const out = [];
+  for (const [k, v] of Object.entries(st.cornerCabinets || {})) {
+    const p = parseKey(k), o = +v;
+    if (!p || black.has(k) || !(o >= 0 && o <= 3) || p[0] < 0 || p[1] < 0 || p[0] >= st.cabCols || p[1] >= st.cabRows) continue;
+    out.push([p[0], p[1], o | 0]);
+  }
+  return out;
+}
+
 /* ======================= СОСТОЯНИЕ ======================= */
 let project = { name: "Проект", screens: [defaultScreen()], cur: 0, guides: { circle: true, diag: true } };
 const S = () => project.screens[project.cur];
-const ui = { selected: new Set(), anchor: null, textMode: -1, selLabel: -1, zoom: 1, panX: 0, panY: 0, tool: "select", mod: false, hover: null, paint: { ...DEF_PAINT } };
+const ui = { corner: 0, selected: new Set(), anchor: null, textMode: -1, selLabel: -1, zoom: 1, panX: 0, panY: 0, tool: "select", mod: false, hover: null, paint: { ...DEF_PAINT } };
 let downloads = null;
 
 function normalizeScreen(d) {
@@ -484,6 +526,8 @@ function normalizeScreen(d) {
   st.titleOffsetX = +d.titleOffsetX || 0; st.titleOffsetY = +d.titleOffsetY || 0;
   st.persistentContours = (Array.isArray(d.persistentContours) ? d.persistentContours : []).map(c => ({ col: pint(c.col, 0), row: pint(c.row, 0), cols: pint(c.cols, 0), rows: pint(c.rows, 0) })).filter(c => c.cols > 0 && c.rows > 0);
   st.showPersistentContour = d.showPersistentContour == null ? true : !!d.showPersistentContour;
+  st.cornerCabinets = {};
+  if (d.cornerCabinets && typeof d.cornerCabinets === "object") for (const [k, v] of Object.entries(d.cornerCabinets)) { const o = pint(v, -1); if (parseKey(k) && o >= 0 && o <= 3) st.cornerCabinets[k] = o; }
   return st;
 }
 
@@ -523,8 +567,8 @@ function updateInfo(forcePhys) {
   $("numRGB").textContent = "RGB " + to255(st.numberColor).join(",");
   $("infoRes").textContent = `Разрешение: ${W}×${H} px`;
   $("infoPhys").textContent = `${known ? "Физический размер" : "Размер (условно 50 см)"}: ${compactM(pw)}х${compactM(ph)} м`;
-  const total = st.cabCols * st.cabRows, nb = st.blackCabinets.length;
-  $("infoCab").textContent = `Кабинеты: ${total} • Чёрные: ${nb} • Выделено: ${ui.selected.size}`;
+  const total = st.cabCols * st.cabRows, nb = st.blackCabinets.length, nc = cornerList(st, new Set(st.blackCabinets)).length;
+  $("infoCab").textContent = `Кабинеты: ${total} • Чёрные: ${nb}${nc ? ` • Угловые: ${nc}` : ""} • Выделено: ${ui.selected.size}`;
   $("zLabel").textContent = Math.round(ui.zoom * 100) + "%";
 }
 function changed(opts = {}) { updateInfo(opts.forcePhys); requestDraw(); scheduleAutosave(); if (opts.list) { $("screens").options[project.cur].textContent = `${project.cur + 1}. ${S().name || "screen"}`; } }
@@ -706,7 +750,7 @@ function applyBlack(k, target) {
 }
 function hoverStatus(cell) {
   const st = S(), [c, r] = cell;
-  status(`Кабинет ${cabLabel(st, c, r)} • ${st.cabWpx}×${st.cabHpx} px • X:${c * st.cabWpx} Y:${r * st.cabHpx} • ${st.blackCabinets.includes(key(c, r)) ? "ЧЁРНЫЙ" : "АКТИВЕН"}`);
+  status(`Кабинет ${cabLabel(st, c, r)} • ${st.cabWpx}×${st.cabHpx} px • X:${c * st.cabWpx} Y:${r * st.cabHpx} • ${st.blackCabinets.includes(key(c, r)) ? "ЧЁРНЫЙ" : (st.cornerCabinets || {})[key(c, r)] != null ? "УГЛОВОЙ " + CORNER_GLYPH[st.cornerCabinets[key(c, r)]] : "АКТИВЕН"}`);
 }
 window.addEventListener("keydown", e => {
   if (e.key === "Escape" && $("modal").hidden && ui.selected.size) { clearSelection(); }
@@ -774,6 +818,26 @@ $("btnPaint").onclick = () => {
   changed(); status(`Покрашено кабинетов: ${ui.selected.size}`, true);
 };
 
+document.querySelectorAll(".seg.corner button").forEach(b => b.onclick = () => {
+  ui.corner = +b.dataset.corner;
+  document.querySelectorAll(".seg.corner button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+});
+$("btnCorner").onclick = () => {
+  const st = S();
+  if (!ui.selected.size) { status("Сначала выделите кабинеты: инструмент «Выбор» или «Диапазон»", true); return; }
+  st.cornerCabinets = st.cornerCabinets || {};
+  const black = new Set(st.blackCabinets);
+  for (const k of ui.selected) { st.cornerCabinets[k] = ui.corner; black.delete(k); }
+  st.blackCabinets = [...black];
+  changed(); status(`Угловых модулей ${CORNER_GLYPH[ui.corner]}: ${ui.selected.size}`, true);
+};
+$("btnCornerDel").onclick = () => {
+  const st = S(), cc = st.cornerCabinets || {};
+  const keys = ui.selected.size ? [...ui.selected] : Object.keys(cc);
+  let n = 0; for (const k of keys) if (k in cc) { delete cc[k]; n++; }
+  changed(); status(ui.selected.size ? `Обычными стали кабинетов: ${n}` : `Все угловые модули экрана убраны: ${n}`, true);
+};
+
 $("btnContour").onclick = () => {
   const st = S(), cells = [...ui.selected].map(parseKey).filter(p => p && p[0] < st.cabCols && p[1] < st.cabRows);
   if (!cells.length) { status("Сначала выделите участок кабинетов", true); return; }
@@ -813,7 +877,7 @@ $("exRot").addEventListener("change", e => { const it = S().extraLabels[ui.selLa
 $("screens").addEventListener("change", e => { project.cur = +e.target.value; ui.selected.clear(); ui.anchor = null; ui.textMode = -1; syncUI(); changed({ forcePhys: true }); });
 $("btnAddScreen").onclick = () => {
   const base = JSON.parse(JSON.stringify(S()));
-  Object.assign(base, { name: `screen ${project.screens.length + 1}`, blackCabinets: [], cabinetColors: {}, persistentContours: [], showPersistentContour: true, extraLabels: [] });
+  Object.assign(base, { name: `screen ${project.screens.length + 1}`, blackCabinets: [], cabinetColors: {}, persistentContours: [], showPersistentContour: true, extraLabels: [], cornerCabinets: {} });
   project.screens.push(base); project.cur = project.screens.length - 1; ui.selected.clear(); ui.textMode = -1; syncUI(); changed();
 };
 $("btnDelScreen").onclick = async () => {
@@ -827,9 +891,9 @@ $("btnReset").onclick = async () => {
   Object.assign(ui, { selected: new Set(), anchor: null, textMode: -1, selLabel: -1, zoom: 1, panX: 0, panY: 0, paint: { ...DEF_PAINT } });
   syncUI(); changed();
 };
-document.querySelectorAll(".seg button").forEach(b => b.onclick = () => {
+document.querySelectorAll(".seg.tools button").forEach(b => b.onclick = () => {
   ui.tool = b.dataset.tool;
-  document.querySelectorAll(".seg button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  document.querySelectorAll(".seg.tools button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
 });
 $("zMinus").onclick = () => setZoom(ui.zoom - 0.1);
 $("zPlus").onclick = () => setZoom(ui.zoom + 0.1);
