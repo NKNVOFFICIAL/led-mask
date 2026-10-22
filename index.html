@@ -111,6 +111,9 @@ button.x:hover { background: var(--export-hi); }
 .seg.corner button { font-size: 17px; line-height: 1; padding: 6px 10px; }
 .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
 .zoom { display: inline-flex; align-items: center; gap: 4px; margin-left: auto; }
+.undo { display: inline-flex; align-items: center; gap: 4px; }
+.undo .b { font-size: 17px; line-height: 1; }
+.undo .b:disabled { opacity: .35; cursor: default; }
 .zoom .num { font-size: 12px; color: var(--muted); min-width: 46px; text-align: center; }
 .canvas-wrap { position: relative; flex: 1; min-height: 200px; background: var(--stage); border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
 #pv { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; display: block; }
@@ -238,6 +241,7 @@ button.x:hover { background: var(--export-hi); }
         <button data-tool="black" aria-pressed="false">Гашение</button>
         <button data-tool="pan" aria-pressed="false">Рука</button>
       </div>
+      <div class="undo"><button class="b sq" id="btnUndo" title="Отменить (Ctrl/⌘+Z)" aria-label="Отменить шаг" disabled>↶</button><button class="b sq" id="btnRedo" title="Вернуть (Ctrl/⌘+Shift+Z, Ctrl+Y)" aria-label="Вернуть шаг" disabled>↷</button></div>
       <div class="zoom"><button class="b sq" id="zMinus" aria-label="Уменьшить">−</button><span class="num" id="zLabel">100%</span><button class="b sq" id="zPlus" aria-label="Увеличить">+</button><button class="b" id="zAuto">Авто</button></div>
     </div>
     <div class="canvas-wrap" id="wrap"><canvas id="pv"></canvas><div class="toast" id="toast" hidden></div></div>
@@ -899,9 +903,53 @@ $("zMinus").onclick = () => setZoom(ui.zoom - 0.1);
 $("zPlus").onclick = () => setZoom(ui.zoom + 0.1);
 $("zAuto").onclick = () => { ui.zoom = 1; ui.panX = ui.panY = 0; updateInfo(); requestDraw(); };
 
+/* ======================= ОТМЕНА / ПОВТОР =======================
+   История — снимки проекта (все экраны). Шаг записывается, когда изменения затихли
+   на 0,35 с и палец/мышь отпущены, поэтому перетаскивание — один шаг. */
+const hist = { stack: [], i: -1, timer: 0 };
+const histSnap = () => JSON.stringify({ name: project.name, guides: project.guides, screens: project.screens });
+function histCommit() {
+  clearTimeout(hist.timer); hist.timer = 0;
+  const s = histSnap();
+  if (hist.i >= 0 && hist.stack[hist.i].s === s) return;
+  hist.stack.splice(hist.i + 1);
+  hist.stack.push({ s, cur: project.cur });
+  if (hist.stack.length > 100) hist.stack.shift();
+  hist.i = hist.stack.length - 1;
+  updateUndoButtons();
+}
+function scheduleHistory() {
+  clearTimeout(hist.timer);
+  hist.timer = setTimeout(() => { if (pointers.size) scheduleHistory(); else histCommit(); }, 350);
+}
+function updateUndoButtons() { $("btnUndo").disabled = hist.i <= 0; $("btnRedo").disabled = hist.i >= hist.stack.length - 1; }
+function histGo(d) {
+  if (hist.timer) histCommit();
+  const j = hist.i + d;
+  if (j < 0 || j >= hist.stack.length) { status(d < 0 ? "Отменять больше нечего" : "Возвращать больше нечего"); return; }
+  const cur = (d < 0 ? hist.stack[hist.i] : hist.stack[j]).cur; // показываем экран, где было изменение
+  const o = JSON.parse(hist.stack[j].s);
+  project = { name: o.name, guides: o.guides, screens: o.screens, cur: Math.max(0, Math.min(o.screens.length - 1, cur)) };
+  hist.i = j;
+  ui.textMode = -1; ui.selLabel = -1;
+  syncUI(); changed({ forcePhys: true }); updateUndoButtons();
+  status(d < 0 ? `Отменено · осталось шагов назад: ${hist.i}` : `Возвращено · шагов вперёд: ${hist.stack.length - 1 - hist.i}`);
+}
+$("btnUndo").onclick = () => histGo(-1);
+$("btnRedo").onclick = () => histGo(1);
+window.addEventListener("keydown", e => {
+  if (!(e.ctrlKey || e.metaKey) || e.altKey || !$("modal").hidden) return;
+  const t = e.target, tag = t && t.tagName;
+  if (tag === "INPUT" && !["checkbox", "color", "range", "button"].includes(t.type) || tag === "TEXTAREA") return; // в поле ввода — родная отмена текста
+  const k = e.key.toLowerCase(), code = e.code;
+  if ((k === "z" || k === "я" || code === "KeyZ") && !e.shiftKey) { e.preventDefault(); histGo(-1); }
+  else if (((k === "z" || k === "я" || code === "KeyZ") && e.shiftKey) || k === "y" || k === "н" || code === "KeyY") { e.preventDefault(); histGo(1); }
+});
+
 /* ======================= АВТОСОХРАНЕНИЕ (только в этом браузере) ======================= */
 let autosaveTimer = 0;
 function scheduleAutosave() {
+  scheduleHistory();
   clearTimeout(autosaveTimer);
   autosaveTimer = setTimeout(() => { try { localStorage.setItem("ledmask.project", JSON.stringify(projectData())); } catch (e) { } }, 500);
 }
@@ -1287,7 +1335,7 @@ fillSelect($("inscSize"), INSC); fillSelect($("exSize"), INSC);
 fillSelect($("rot"), ROTS); fillSelect($("exRot"), ROTS);
 fillSelect($("numFmt"), NUM_FORMATS); fillSelect($("numOrigin"), NUM_ORIGINS); fillSelect($("numPos"), NUM_POS);
 try { const saved = localStorage.getItem("ledmask.project"); if (saved) loadData(JSON.parse(saved)); } catch (e) { }
-syncUI(); requestDraw();
+syncUI(); requestDraw(); histCommit();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { autoCache.clear(); requestDraw(); });
 if (typeof CompressionStream === "undefined") { $("exportNote").textContent = "Этот браузер слишком старый для экспорта: нужен Safari 16.4+ или свежий Chrome."; }
 if (STANDALONE) document.documentElement.classList.add("standalone");
