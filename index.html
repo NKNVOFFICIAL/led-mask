@@ -174,11 +174,11 @@ html:not(.field) .fsec, html:not(.field) .ftools { display: none !important; }
     </div></details>
 
     <details class="sec fsec" open><summary>ОБЩЕЕ ПОЛЕ</summary><div class="sec-body">
-      <p class="hint">Отметьте экраны, которые стоят на общем поле, и двигайте их на холсте. С магнитом края притягиваются друг к другу. Alt — без магнита, стрелки — на 1 px (Shift — на 10 px), двойной клик — открыть экран.</p>
+      <p class="hint">Отметьте экраны, которые стоят на общем поле, и двигайте их на холсте. С магнитом края притягиваются друг к другу. Alt — без магнита, стрелки — на 1 px (Shift — на 10 px), двойной клик — открыть экран. Надпись поля тоже двигается мышью или пальцем.</p>
       <div class="flist" id="fList"></div>
       <div class="btns"><button class="b" id="fAll">Все на поле</button><button class="b" id="fRow">В ряд</button><button class="b" id="fCol">В столбик</button><button class="b" id="fClear">Убрать все</button></div>
       <div class="row"><span class="lbl">Магнит</span><div class="ctl"><label class="chk"><input type="checkbox" id="fMagnet" checked> притягивать края</label></div></div>
-      <div class="row"><span class="lbl">Надпись</span><div class="ctl"><label class="chk"><input type="checkbox" id="fTitle" checked> «Общее поле» и разрешение</label></div></div>
+      <div class="row"><span class="lbl">Надпись</span><div class="ctl"><label class="chk"><input type="checkbox" id="fTitle" checked> «Общее поле» и разрешение</label><button class="b" id="fTitleCenter">В центр</button></div></div>
       <div class="row" id="fSelRow"><span class="lbl" id="fSelName">Выбран экран</span><div class="ctl"><span class="unit">X</span><input type="number" id="fX" class="w-sm" inputmode="numeric"><span class="unit">Y</span><input type="number" id="fY" class="w-sm" inputmode="numeric"><span class="unit">px</span></div></div>
       <div class="info" id="fInfo"></div>
       <div class="btns"><button class="x" id="fPNG">Сохранить PNG поля</button></div>
@@ -530,7 +530,7 @@ function cornerList(st, black) {
 }
 
 /* ======================= СОСТОЯНИЕ ======================= */
-let project = { name: "Проект", screens: [defaultScreen()], cur: 0, guides: { circle: true, diag: true } };
+let project = { name: "Проект", screens: [defaultScreen()], cur: 0, guides: { circle: true, diag: true }, fieldTitle: { on: true, x: 0, y: 0 } };
 const S = () => project.screens[project.cur];
 const ui = { corner: 0, selected: new Set(), anchor: null, textMode: -1, selLabel: -1, zoom: 1, panX: 0, panY: 0, tool: "select", mod: false, hover: null, paint: { ...DEF_PAINT } };
 let downloads = null;
@@ -922,7 +922,7 @@ $("btnDelScreen").onclick = async () => {
 };
 $("btnReset").onclick = async () => {
   const ok = await ask("Сбросить всё?", "Все экраны и настройки вернутся к значениям по умолчанию.", "", "Сбросить", false); if (!ok) return;
-  project = { name: "Проект", screens: [defaultScreen()], cur: 0, guides: { circle: true, diag: true } };
+  project = { name: "Проект", screens: [defaultScreen()], cur: 0, guides: { circle: true, diag: true }, fieldTitle: { on: true, x: 0, y: 0 } };
   Object.assign(ui, { selected: new Set(), anchor: null, textMode: -1, selLabel: -1, zoom: 1, panX: 0, panY: 0, paint: { ...DEF_PAINT } });
   syncUI(); changed();
 };
@@ -938,7 +938,7 @@ $("zAuto").onclick = () => { ui.zoom = 1; ui.panX = ui.panY = 0; updateInfo(); r
    История — снимки проекта (все экраны). Шаг записывается, когда изменения затихли
    на 0,35 с и палец/мышь отпущены, поэтому перетаскивание — один шаг. */
 const hist = { stack: [], i: -1, timer: 0 };
-const histSnap = () => JSON.stringify({ name: project.name, guides: project.guides, screens: project.screens });
+const histSnap = () => JSON.stringify({ name: project.name, guides: project.guides, screens: project.screens, fieldTitle: project.fieldTitle });
 function histCommit() {
   clearTimeout(hist.timer); hist.timer = 0;
   const s = histSnap();
@@ -960,7 +960,7 @@ function histGo(d) {
   if (j < 0 || j >= hist.stack.length) { status(d < 0 ? "Отменять больше нечего" : "Возвращать больше нечего"); return; }
   const cur = (d < 0 ? hist.stack[hist.i] : hist.stack[j]).cur; // показываем экран, где было изменение
   const o = JSON.parse(hist.stack[j].s);
-  project = { name: o.name, guides: o.guides, screens: o.screens, cur: Math.max(0, Math.min(o.screens.length - 1, cur)) };
+  project = { name: o.name, guides: o.guides, screens: o.screens, fieldTitle: o.fieldTitle || { on: true, x: 0, y: 0 }, cur: Math.max(0, Math.min(o.screens.length - 1, cur)) };
   hist.i = j;
   ui.textMode = -1; ui.selLabel = -1;
   syncUI(); changed({ forcePhys: true }); updateUndoButtons();
@@ -984,11 +984,13 @@ function scheduleAutosave() {
   clearTimeout(autosaveTimer);
   autosaveTimer = setTimeout(() => { try { localStorage.setItem("ledmask.project", JSON.stringify(projectData())); } catch (e) { } }, 500);
 }
-function projectData() { return { version: "4.0", projectName: project.name, activeScreen: project.cur, guides: project.guides, screens: project.screens }; }
+function projectData() { return { version: "4.0", projectName: project.name, activeScreen: project.cur, guides: project.guides, fieldTitle: project.fieldTitle, screens: project.screens }; }
 function loadData(d) {
   const raw = Array.isArray(d.screens) ? d.screens : [d];
   const screens = raw.filter(x => x && typeof x === "object").map(normalizeScreen);
   project = { name: typeof d.projectName === "string" ? d.projectName : project.name, screens: screens.length ? screens : [defaultScreen()], cur: 0, guides: { circle: true, diag: true, ...(d.guides || {}) } };
+  const ft = d.fieldTitle && typeof d.fieldTitle === "object" ? d.fieldTitle : {};
+  project.fieldTitle = { on: ft.on == null ? true : !!ft.on, x: Math.round(+ft.x || 0), y: Math.round(+ft.y || 0) };
   project.cur = clampI(d.activeScreen, project.screens.length);
   ui.selected.clear(); ui.anchor = null; ui.textMode = -1;
 }
@@ -1366,7 +1368,14 @@ $("fileProj").addEventListener("change", async e => {
 /* ======================= ОБЩЕЕ ПОЛЕ (ТЕСТ) =======================
    Экраны проекта ставятся на одно поле в пикселях (Y вниз), магнит притягивает края.
    Позиция экрана хранится в нём самом: screen.field = {x, y}; нет поля — экран не на поле. */
-ui.page = "mask"; ui.magnet = true; ui.fieldTitle = true;
+ui.page = "mask"; ui.magnet = true;
+const FTL = () => project.fieldTitle || (project.fieldTitle = { on: true, x: 0, y: 0 });
+// центр надписи поля в координатах поля и её рамка на холсте
+function fieldTitleCenter(b) { return [b.x + b.w / 2 + FTL().x, b.y + b.h / 2 + FTL().y]; }
+function fieldTitleFrame(rs, b) {
+  const lines = fieldTitleLines(rs, b, FV.s), bs = blockSize(lines, TITLE_GAP * FV.s), [cx, cy] = fieldTitleCenter(b);
+  return { cx: FX(cx), cy: FY(cy), w: bs.w, h: bs.h };
+}
 // надпись общего поля — как у маски: разрешение, «Общее поле», размер в метрах
 function fieldTitleLines(rs, b, s) {
   const size = autoSize(b.w, b.h, "Общее поле"), ph = fieldPhys(rs, b);
@@ -1444,7 +1453,14 @@ function drawField() {
   c.imageSmoothingEnabled = true; c.imageSmoothingQuality = "high";
   for (const r of order) c.drawImage(thumb(r), FX(r.x), FY(r.y), r.w * FV.s, r.h * FV.s);
   for (const o of overlaps(rs)) { c.fillStyle = "rgba(255,40,40,.45)"; c.fillRect(FX(o.x), FY(o.y), o.w * FV.s, o.h * FV.s); }
-  if (ui.fieldTitle) { c.fillStyle = "#fff"; c.textBaseline = "alphabetic"; drawBlock(c, fieldTitleLines(rs, b, FV.s), TITLE_GAP * FV.s, FX(b.x + b.w / 2), FY(b.y + b.h / 2), 0); }
+  if (FTL().on) {
+    const [tx, ty] = fieldTitleCenter(b);
+    c.fillStyle = "#fff"; c.textBaseline = "alphabetic"; drawBlock(c, fieldTitleLines(rs, b, FV.s), TITLE_GAP * FV.s, FX(tx), FY(ty), 0);
+    if (fld.titleHover || (fld.drag && fld.drag.kind === "title")) {
+      const f = fieldTitleFrame(rs, b); c.strokeStyle = "#ffdb0d"; c.lineWidth = 1.5; c.setLineDash([4, 3]);
+      c.strokeRect(f.cx - f.w / 2 - 6, f.cy - f.h / 2 - 4, f.w + 12, f.h + 8); c.setLineDash([]);
+    }
+  }
   // подписи экранов
   c.font = `600 12px ${FONT}`; c.textBaseline = "top";
   for (const r of order) {
@@ -1509,6 +1525,13 @@ pv.addEventListener("pointerdown", e => {
     return;
   }
   if (fld.pointers.size > 2) return;
+  const rs0 = fieldRects(), b0 = fieldBBox(rs0);
+  if (b0 && FTL().on) {
+    const f = fieldTitleFrame(rs0, b0);
+    if (Math.abs(p[0] - f.cx) <= f.w / 2 + 8 && Math.abs(p[1] - f.cy) <= f.h / 2 + 6) {
+      fld.drag = { kind: "title", sx: p[0], sy: p[1], x0: FTL().x, y0: FTL().y, bw: b0.w, bh: b0.h }; requestDraw(); return;
+    }
+  }
   const hit = fieldHit(p);
   if (hit) { fld.sel = hit.i; fld.drag = { kind: "move", i: hit.i, sx: p[0], sy: p[1], x0: hit.x, y0: hit.y, w: hit.w, h: hit.h }; refreshFieldPanel(); }
   else fld.drag = { kind: "pan", sx: p[0], sy: p[1], ox: FV.ox, oy: FV.oy, moved: false };
@@ -1524,7 +1547,25 @@ pv.addEventListener("pointermove", e => {
     const ns = fld.pinch.s * d / fld.pinch.d, wx = (fld.pinch.mx - fld.pinch.ox) / fld.pinch.s, wy = (fld.pinch.my - fld.pinch.oy) / fld.pinch.s;
     FV.s = ns; FV.ox = mx - wx * ns; FV.oy = my - wy * ns; requestDraw(); return;
   }
-  const g = fld.drag; if (!g) { pv.style.cursor = fieldHit(p) ? "move" : "grab"; return; }
+  const g = fld.drag;
+  if (!g) {
+    const rs0 = fieldRects(), b0 = fieldBBox(rs0); let th = false;
+    if (b0 && FTL().on) { const f = fieldTitleFrame(rs0, b0); th = Math.abs(p[0] - f.cx) <= f.w / 2 + 8 && Math.abs(p[1] - f.cy) <= f.h / 2 + 6; }
+    if (th !== !!fld.titleHover) { fld.titleHover = th; requestDraw(); }
+    pv.style.cursor = th || fieldHit(p) ? "move" : "grab"; return;
+  }
+  if (g.kind === "title") {
+    let nx = Math.round(g.x0 + (p[0] - g.sx) / FV.s), ny = Math.round(g.y0 + (p[1] - g.sy) / FV.s);
+    const T = Math.max(1, 12 / FV.s);
+    fld.gx = fld.gy = null;
+    if (ui.magnet && !e.altKey) { // притягивается к центру поля
+      const b = fieldBBox(fieldRects());
+      if (Math.abs(nx) < T) { nx = 0; fld.gx = b.x + b.w / 2; }
+      if (Math.abs(ny) < T) { ny = 0; fld.gy = b.y + b.h / 2; }
+    }
+    if (FTL().x !== nx || FTL().y !== ny) { FTL().x = nx; FTL().y = ny; fieldChanged(false); } else requestDraw();
+    return;
+  }
   if (g.kind === "pan") {
     if (Math.abs(p[0] - g.sx) + Math.abs(p[1] - g.sy) > 3) g.moved = true;
     FV.ox = g.ox + p[0] - g.sx; FV.oy = g.oy + p[1] - g.sy; requestDraw(); return;
@@ -1547,7 +1588,7 @@ function fieldUp(e) {
 }
 pv.addEventListener("pointerup", fieldUp, true);
 pv.addEventListener("pointercancel", fieldUp, true);
-pv.addEventListener("pointerleave", e => { if (ui.page === "field") e.stopImmediatePropagation(); }, true);
+pv.addEventListener("pointerleave", e => { if (ui.page === "field") { e.stopImmediatePropagation(); if (fld.titleHover) { fld.titleHover = false; requestDraw(); } } }, true);
 pv.addEventListener("wheel", e => {
   if (ui.page !== "field") return;
   e.stopImmediatePropagation(); e.preventDefault();
@@ -1591,7 +1632,7 @@ function refreshFieldPanel() {
     row.onclick = () => { if (st.field) { fld.sel = i; refreshFieldPanel(); requestDraw(); } };
     list.appendChild(row);
   });
-  $("fMagnet").checked = ui.magnet;
+  $("fMagnet").checked = ui.magnet; $("fTitle").checked = FTL().on;
   updateFieldInfo();
 }
 function updateFieldInfo() {
@@ -1627,7 +1668,8 @@ $("fRow").onclick = () => arrange(true);
 $("fCol").onclick = () => arrange(false);
 $("fClear").onclick = () => { project.screens.forEach(st => delete st.field); fld.sel = -1; fieldChanged(true); };
 $("fMagnet").onchange = e => { ui.magnet = e.target.checked; };
-$("fTitle").onchange = e => { ui.fieldTitle = e.target.checked; requestDraw(); };
+$("fTitle").onchange = e => { FTL().on = e.target.checked; fieldChanged(false); };
+$("fTitleCenter").onclick = () => { FTL().x = 0; FTL().y = 0; fieldChanged(false); status("Надпись поля — по центру"); };
 for (const [id, k] of [["fX", "x"], ["fY", "y"]]) $(id).addEventListener("input", () => {
   const st = project.screens[fld.sel]; if (!st || !st.field) return;
   const v = parseInt($(id).value, 10); if (isNaN(v)) return;
@@ -1644,7 +1686,7 @@ $("fPNG").onclick = async () => {
     const r = await renderBands(b.w, b.h, ctx => {
       ctx.fillStyle = "#000"; ctx.fillRect(0, 0, b.w, b.h);
       for (const q of rs) { ctx.save(); ctx.translate(q.x - b.x, q.y - b.y); ctx.beginPath(); ctx.rect(0, 0, q.w, q.h); ctx.clip(); drawMask(ctx, q.st, 1, project.guides); ctx.restore(); }
-      if (ui.fieldTitle) { ctx.fillStyle = "#fff"; ctx.textBaseline = "alphabetic"; drawBlock(ctx, fieldTitleLines(rs, b, 1), TITLE_GAP, b.w / 2, b.h / 2, 0); }
+      if (FTL().on) { const [tx, ty] = fieldTitleCenter(b); ctx.fillStyle = "#fff"; ctx.textBaseline = "alphabetic"; drawBlock(ctx, fieldTitleLines(rs, b, 1), TITLE_GAP, tx - b.x, ty - b.y, 0); }
     }, async p => { busy(`Рендер поля ${b.w}×${b.h}… ${Math.round(p * 100)}%`); await tick(); });
     busy(""); await save(`${b.w}x${b.h}_${safeName(project.name, "Проект")}_общее_поле.png`, new Blob([r.png], { type: "image/png" }));
   } catch (e) { busy(""); status("Ошибка рендера: " + e.message, true); }
