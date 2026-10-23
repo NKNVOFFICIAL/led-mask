@@ -178,6 +178,7 @@ html:not(.field) .fsec, html:not(.field) .ftools { display: none !important; }
       <div class="flist" id="fList"></div>
       <div class="btns"><button class="b" id="fAll">Все на поле</button><button class="b" id="fRow">В ряд</button><button class="b" id="fCol">В столбик</button><button class="b" id="fClear">Убрать все</button></div>
       <div class="row"><span class="lbl">Магнит</span><div class="ctl"><label class="chk"><input type="checkbox" id="fMagnet" checked> притягивать края</label></div></div>
+      <div class="row"><span class="lbl">Надпись</span><div class="ctl"><label class="chk"><input type="checkbox" id="fTitle" checked> «Общее поле» и разрешение</label></div></div>
       <div class="row" id="fSelRow"><span class="lbl" id="fSelName">Выбран экран</span><div class="ctl"><span class="unit">X</span><input type="number" id="fX" class="w-sm" inputmode="numeric"><span class="unit">Y</span><input type="number" id="fY" class="w-sm" inputmode="numeric"><span class="unit">px</span></div></div>
       <div class="info" id="fInfo"></div>
       <div class="btns"><button class="x" id="fPNG">Сохранить PNG поля</button></div>
@@ -1365,7 +1366,15 @@ $("fileProj").addEventListener("change", async e => {
 /* ======================= ОБЩЕЕ ПОЛЕ (ТЕСТ) =======================
    Экраны проекта ставятся на одно поле в пикселях (Y вниз), магнит притягивает края.
    Позиция экрана хранится в нём самом: screen.field = {x, y}; нет поля — экран не на поле. */
-ui.page = "mask"; ui.magnet = true;
+ui.page = "mask"; ui.magnet = true; ui.fieldTitle = true;
+// надпись общего поля — как у маски: разрешение, «Общее поле», размер в метрах
+function fieldTitleLines(rs, b, s) {
+  const size = autoSize(b.w, b.h, "Общее поле"), ph = fieldPhys(rs, b);
+  const s1 = Math.max(10, size) * s, s2 = Math.max(8, size * 0.55) * s, s3 = Math.max(4, Math.max(8, size * 0.55) * 0.5) * s;
+  const lines = [[`${b.w}×${b.h}`, s1], ["Общее поле", s2]];
+  if (ph) lines.push([`${compactM(ph.w)}х${compactM(ph.h)} м`, s3]);
+  return lines;
+}
 const FV = { s: 0.2, ox: 0, oy: 0, fitted: false };
 const fld = { sel: -1, drag: null, pointers: new Map(), pinch: null, gx: null, gy: null };
 const thumbs = new Map();
@@ -1435,6 +1444,7 @@ function drawField() {
   c.imageSmoothingEnabled = true; c.imageSmoothingQuality = "high";
   for (const r of order) c.drawImage(thumb(r), FX(r.x), FY(r.y), r.w * FV.s, r.h * FV.s);
   for (const o of overlaps(rs)) { c.fillStyle = "rgba(255,40,40,.45)"; c.fillRect(FX(o.x), FY(o.y), o.w * FV.s, o.h * FV.s); }
+  if (ui.fieldTitle) { c.fillStyle = "#fff"; c.textBaseline = "alphabetic"; drawBlock(c, fieldTitleLines(rs, b, FV.s), TITLE_GAP * FV.s, FX(b.x + b.w / 2), FY(b.y + b.h / 2), 0); }
   // подписи экранов
   c.font = `600 12px ${FONT}`; c.textBaseline = "top";
   for (const r of order) {
@@ -1617,6 +1627,7 @@ $("fRow").onclick = () => arrange(true);
 $("fCol").onclick = () => arrange(false);
 $("fClear").onclick = () => { project.screens.forEach(st => delete st.field); fld.sel = -1; fieldChanged(true); };
 $("fMagnet").onchange = e => { ui.magnet = e.target.checked; };
+$("fTitle").onchange = e => { ui.fieldTitle = e.target.checked; requestDraw(); };
 for (const [id, k] of [["fX", "x"], ["fY", "y"]]) $(id).addEventListener("input", () => {
   const st = project.screens[fld.sel]; if (!st || !st.field) return;
   const v = parseInt($(id).value, 10); if (isNaN(v)) return;
@@ -1633,6 +1644,7 @@ $("fPNG").onclick = async () => {
     const r = await renderBands(b.w, b.h, ctx => {
       ctx.fillStyle = "#000"; ctx.fillRect(0, 0, b.w, b.h);
       for (const q of rs) { ctx.save(); ctx.translate(q.x - b.x, q.y - b.y); ctx.beginPath(); ctx.rect(0, 0, q.w, q.h); ctx.clip(); drawMask(ctx, q.st, 1, project.guides); ctx.restore(); }
+      if (ui.fieldTitle) { ctx.fillStyle = "#fff"; ctx.textBaseline = "alphabetic"; drawBlock(ctx, fieldTitleLines(rs, b, 1), TITLE_GAP, b.w / 2, b.h / 2, 0); }
     }, async p => { busy(`Рендер поля ${b.w}×${b.h}… ${Math.round(p * 100)}%`); await tick(); });
     busy(""); await save(`${b.w}x${b.h}_${safeName(project.name, "Проект")}_общее_поле.png`, new Blob([r.png], { type: "image/png" }));
   } catch (e) { busy(""); status("Ошибка рендера: " + e.message, true); }
