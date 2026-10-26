@@ -1,13 +1,13 @@
 {
- "version": "2.0.11",
- "notes": "Mac: исправлено мерцание и прыжки левой панели при кликах.",
+ "version": "2.0.12",
+ "notes": "Обновлена справка «Как пользоваться»: проекция, фигурные модули, свой текст в ТЗ. Mac: исправлены прыжки левой панели.",
  "mac": {
   "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Mac.zip",
-  "sha256": "bf8260ab6f30acb3588dc10767b9ab4dcf9d5165a77cf997223e285a65dbdff8"
+  "sha256": "668b1a27e74596d43ba998839f0cfd1fbb75a15570d9ab812886c96fc36156b3"
  },
  "windows": {
   "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Windows.exe",
-  "sha256": "84b6ec720f83a1160cdf1ae9d88d711525132d5254187da7a90579732b447f65"
+  "sha256": "33ff470aff25b3eec6ff526360f61af1d026431af64e492a827619612ff10a50"
  },
  "android": {
   "url": "https://github.com/NKNVOFFICIAL/led-mask/releases/download/android-latest/LED-Mask-Android.apk"
