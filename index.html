@@ -137,7 +137,7 @@ html:not([data-page="mask"]) .mstrip { display: none; }
 .mthumb .cap { font-size: 11px; line-height: 1.25; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 198px; text-align: left; }
 .mthumb .cap b { color: var(--fg); font-weight: 600; }
 .mthumb.add { justify-content: center; align-items: center; min-width: 70px; font-size: 22px; color: var(--muted); }
-.brand-copy { margin: 3px 0 0; font-size: 10.5px; color: var(--muted); letter-spacing: .02em; }
+.ver .copy { color: var(--fg); opacity: .7; margin-bottom: 2px; }
 html[data-page="about"] .panel > details.sec:not(.asec):not(.psec) { display: none; }
 html:not([data-page="about"]) .asec { display: none !important; }
 .about { position: absolute; inset: 0; display: none; overflow: auto; background: var(--stage); }
@@ -212,7 +212,6 @@ html[data-page="about"] #pv { visibility: hidden; }
     <div>
       <div class="brand"><img id="appicon" alt=""><h1>LED Pixel Mask Generator</h1></div>
       <p class="brand-sub">LED DISPLAY WORKSPACE • ПРОЕКТИРОВАНИЕ МАСОК</p>
-      <p class="brand-copy">© 2026 Khokhryakov Viatcheslav, Nikonov Konstantin</p>
     </div>
 
     <details class="sec psec" open><summary>ПРОЕКТ</summary><div class="sec-body">
@@ -344,7 +343,7 @@ html[data-page="about"] #pv { visibility: hidden; }
       <div class="btns"><button class="x" id="btnTZgo">Формирование ТЗ →</button></div>
       <p class="hint" id="exportNote">PNG — в точном разрешении экрана, без потерь. ТЗ — ZIP с папкой: PPTX по шаблону, такой же PDF и PNG каждой маски.</p>
     </div></details>
-    <div class="ver">Версия 12.43.27 · Web · ТЕСТ: общее поле</div>
+    <div class="ver"><div class="copy">© 2026 Khokhryakov Viatcheslav, Nikonov Konstantin</div>Версия 12.43.27 · Web · ТЕСТ: общее поле</div>
   </aside>
 
   <main class="stage">
