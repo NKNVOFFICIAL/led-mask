@@ -481,6 +481,12 @@ textarea.tzt.req {
   height: 26px;
   padding: 1px;
 }
+html[data-kind=proj] .led-only {
+  display: none !important;
+}
+html:not([data-kind=proj]) .proj-only {
+  display: none !important;
+}
 .tgroup {
   font-size: 11px;
   font-weight: 700;
@@ -1253,16 +1259,40 @@ html[data-page=about] #pv {
 
     <details class="sec" open><summary>ЭКРАН И КАБИНЕТЫ</summary><div class="sec-body">
       <div class="ctl"><select id="screens" class="grow"></select><button class="b" id="btnAddScreen">+ Экран</button><button class="b sq" id="btnDelScreen" aria-label="Удалить экран">−</button></div>
-      <div class="row"><label for="cabType">Тип кабинета</label><div class="ctl"><select id="cabType" class="grow"></select></div></div>
-      <div class="row"><label for="wpx">Пикселей по горизонтали</label><div class="ctl"><input type="number" id="wpx" min="1" inputmode="numeric"><span class="unit">px</span></div></div>
-      <div class="row"><label for="hpx">Пикселей по вертикали</label><div class="ctl"><input type="number" id="hpx" min="1" inputmode="numeric"><span class="unit">px</span></div></div>
-      <div class="row"><label for="cols">Кабинетов по гориз. / ширина</label><div class="ctl"><input type="number" id="cols" min="1" class="w-sm" inputmode="numeric"><span class="unit">каб.</span><input type="text" id="physW" class="num" style="width:72px;text-align:right" inputmode="decimal" aria-label="Ширина, м"><span class="unit">м</span></div></div>
-      <div class="row"><label for="rows">Кабинетов по верт. / высота</label><div class="ctl"><input type="number" id="rows" min="1" class="w-sm" inputmode="numeric"><span class="unit">каб.</span><input type="text" id="physH" class="num" style="width:72px;text-align:right" inputmode="decimal" aria-label="Высота, м"><span class="unit">м</span></div></div>
-      <div class="row"><label for="pixColor">Цвет маски</label><div class="ctl"><input type="color" id="pixColor"><span class="unit num" id="pixRGB"></span></div></div>
-      <div class="row"><label for="numColor">Цвет нумерации</label><div class="ctl"><input type="color" id="numColor"><span class="unit num" id="numRGB"></span></div></div>
+      <div class="seg kind" role="group" aria-label="Вид экрана" style="align-self:flex-start">
+        <button data-kind="led" aria-pressed="true">LED-экран</button><button data-kind="proj" aria-pressed="false">Проекция</button>
+      </div>
+      <div class="row led-only"><label for="cabType">Тип кабинета</label><div class="ctl"><select id="cabType" class="grow"></select></div></div>
+      <div class="row led-only"><label for="wpx">Пикселей по горизонтали</label><div class="ctl"><input type="number" id="wpx" min="1" inputmode="numeric"><span class="unit">px</span></div></div>
+      <div class="row led-only"><label for="hpx">Пикселей по вертикали</label><div class="ctl"><input type="number" id="hpx" min="1" inputmode="numeric"><span class="unit">px</span></div></div>
+      <div class="row led-only"><label for="cols">Кабинетов по гориз. / ширина</label><div class="ctl"><input type="number" id="cols" min="1" class="w-sm" inputmode="numeric"><span class="unit">каб.</span><input type="text" id="physW" class="num" style="width:72px;text-align:right" inputmode="decimal" aria-label="Ширина, м"><span class="unit">м</span></div></div>
+      <div class="row led-only"><label for="rows">Кабинетов по верт. / высота</label><div class="ctl"><input type="number" id="rows" min="1" class="w-sm" inputmode="numeric"><span class="unit">каб.</span><input type="text" id="physH" class="num" style="width:72px;text-align:right" inputmode="decimal" aria-label="Высота, м"><span class="unit">м</span></div></div>
+      <div class="row led-only"><label for="pixColor">Цвет маски</label><div class="ctl"><input type="color" id="pixColor"><span class="unit num" id="pixRGB"></span></div></div>
+      <div class="row led-only"><label for="numColor">Цвет нумерации</label><div class="ctl"><input type="color" id="numColor"><span class="unit num" id="numRGB"></span></div></div>
     </div></details>
 
-    <details class="sec" open><summary>ВЫДЕЛЕНИЕ И ЦВЕТ КАБИНЕТОВ</summary><div class="sec-body">
+    <details class="sec proj-only" open><summary>ПРОЕКЦИЯ</summary><div class="sec-body">
+      <p class="hint">Тест-паттерн для проекторов: сетка, рамки и номера проекторов, зоны перекрытия, круги. Общее разрешение считается само.</p>
+      <div class="row"><label for="pjPreset">Проектор</label><div class="ctl"><select id="pjPreset" class="grow"></select></div></div>
+      <div class="row"><label for="pjW">Разрешение проектора</label><div class="ctl"><input type="number" id="pjW" min="16" inputmode="numeric"><span class="unit">×</span><input type="number" id="pjH" min="16" inputmode="numeric"></div></div>
+      <div class="row"><label for="pjNx">Проекторов гориз. × верт.</label><div class="ctl"><input type="number" id="pjNx" min="1" max="32" class="w-sm" inputmode="numeric"><span class="unit">×</span><input type="number" id="pjNy" min="1" max="32" class="w-sm" inputmode="numeric"></div></div>
+      <div class="row"><label for="pjOx">Перекрытие гориз. / верт.</label><div class="ctl"><input type="number" id="pjOx" min="0" max="50" step="0.5" class="w-sm" inputmode="decimal"><span class="unit">%</span><input type="number" id="pjOy" min="0" max="50" step="0.5" class="w-sm" inputmode="decimal"><span class="unit">%</span></div></div>
+      <div class="row"><label for="pjGrid">Шаг сетки</label><div class="ctl"><input type="number" id="pjGrid" min="8" inputmode="numeric"><span class="unit">px</span></div></div>
+      <div class="row"><label for="pjWm">Ширина изображения</label><div class="ctl"><input type="number" id="pjWm" min="0" step="0.01" inputmode="decimal"><span class="unit">м (0 — не задана)</span></div></div>
+      <div class="row"><label for="pjBg">Фон / линии</label><div class="ctl"><input type="color" id="pjBg"><input type="color" id="pjLine"></div></div>
+      <div class="ctl" style="row-gap:6px">
+        <label class="chk"><input type="checkbox" id="pjZones"> Зоны перекрытия</label>
+        <label class="chk"><input type="checkbox" id="pjFrames"> Рамки и номера проекторов</label>
+        <label class="chk"><input type="checkbox" id="pjCircles"> Круги</label>
+        <label class="chk"><input type="checkbox" id="pjCells"> Подписи клеток (A1, B1…)</label>
+        <label class="chk"><input type="checkbox" id="pjHatch"> Штриховка</label>
+        <label class="chk"><input type="checkbox" id="pjBar"> Цветовая полоса</label>
+        <label class="chk"><input type="checkbox" id="pjInvert"> Инверсия (белый фон)</label>
+      </div>
+      <p class="hint num" id="pjInfo"></p>
+    </div></details>
+
+    <details class="sec led-only" open><summary>ВЫДЕЛЕНИЕ И ЦВЕТ КАБИНЕТОВ</summary><div class="sec-body">
       <p class="hint">Инструмент над холстом: «Выбор» — касание добавляет или убирает кабинет, «Диапазон» — протяните пальцем, «Гашение» — чёрный кабинет. С мышью: Ctrl/⌘ — добавить, Shift — диапазон, Alt — чёрный, Esc — снять выделение.</p>
       <div class="btns">
         <button class="b" id="btnAllBlack">Выключить все</button>
@@ -1290,7 +1320,7 @@ html[data-page=about] #pv {
       <div class="btns"><button class="b" id="btnShaped">Сделать фигурными</button><button class="b" id="btnShapedDel">Убрать фигурные</button></div>
     </div></details>
 
-    <details class="sec"><summary>КОНТУР УЧАСТКА</summary><div class="sec-body">
+    <details class="sec led-only"><summary>КОНТУР УЧАСТКА</summary><div class="sec-body">
       <p class="hint">Выделите кабинеты, затем создайте постоянный контур. Белая рамка 2 px, яркость 100%, попадает в PNG и ТЗ.</p>
       <div class="btns">
         <button class="b" id="btnContour">Создать контур</button>
@@ -1316,9 +1346,9 @@ html[data-page=about] #pv {
     </div></details>
 
     <details class="sec" open><summary>НУМЕРАЦИЯ И ПРЕДПРОСМОТР</summary><div class="sec-body">
-      <div class="row"><label for="numFmt">Формат нумерации</label><div class="ctl"><select id="numFmt"></select></div></div>
-      <div class="row"><label for="numOrigin">Начало нумерации</label><div class="ctl"><select id="numOrigin"></select></div></div>
-      <div class="row"><label for="numPos">Расположение номера</label><div class="ctl"><select id="numPos"></select></div></div>
+      <div class="row led-only"><label for="numFmt">Формат нумерации</label><div class="ctl"><select id="numFmt"></select></div></div>
+      <div class="row led-only"><label for="numOrigin">Начало нумерации</label><div class="ctl"><select id="numOrigin"></select></div></div>
+      <div class="row led-only"><label for="numPos">Расположение номера</label><div class="ctl"><select id="numPos"></select></div></div>
       <div class="row"><span class="lbl">Направляющие</span><div class="ctl"><label class="chk"><input type="checkbox" id="gCircle"> Круг</label><label class="chk"><input type="checkbox" id="gDiag"> Линии через центр</label></div></div>
       <div class="info"><span id="infoRes"></span><span id="infoPhys"></span><span id="infoCab"></span></div>
       <div class="status" id="status" aria-live="polite"></div>
@@ -1933,7 +1963,9 @@ function defaultScreen(name = "screen 1") {
     cornerCabinets: {},
     shapedCols: {},
     shapedRows: {},
-    uid: newUid()
+    uid: newUid(),
+    kind: "led",
+    proj: defProj()
   };
 }
 const clampI = (v, n) => Math.max(0, Math.min(n - 1, parseInt(v, 10) || 0));
@@ -1955,9 +1987,221 @@ function grid(st) {
   return { xs, ys };
 }
 const dims = (st) => {
+  if (st.kind === "proj") {
+    const g2 = projGeom(st);
+    return [g2.W, g2.H];
+  }
   const g = grid(st);
   return [g.xs[g.xs.length - 1], g.ys[g.ys.length - 1]];
 };
+const PJ_PRESETS = [["Full HD 1920×1080", 1920, 1080], ["WUXGA 1920×1200", 1920, 1200], ["4K UHD 3840×2160", 3840, 2160], ["WQXGA 2560×1600", 2560, 1600], ["HD 1280×720", 1280, 720], ["WXGA 1280×800", 1280, 800], ["XGA 1024×768", 1024, 768], ["SXGA+ 1400×1050", 1400, 1050]];
+const PJ_COLORS = ["#FF3B30", "#34C759", "#0A84FF", "#FFCC00", "#FF2D92", "#32D7E6", "#FF9500", "#AF52DE"];
+const defProj = () => ({ pw: 1920, ph: 1080, nx: 2, ny: 1, ox: 15, oy: 15, grid: 120, wm: 0, bg: "#101010", line: "#FFFFFF", zones: true, frames: true, circles: true, cells: true, hatch: false, bar: true, invert: false });
+function projGeom(st) {
+  const P = st.proj || defProj(), pw = Math.max(16, P.pw | 0), ph = Math.max(16, P.ph | 0), nx = Math.max(1, P.nx | 0), ny = Math.max(1, P.ny | 0);
+  const ovx = nx > 1 ? Math.round(pw * Math.max(0, Math.min(50, +P.ox || 0)) / 100) : 0, ovy = ny > 1 ? Math.round(ph * Math.max(0, Math.min(50, +P.oy || 0)) / 100) : 0;
+  const W = nx * pw - (nx - 1) * ovx, H = ny * ph - (ny - 1) * ovy, rects = [];
+  for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) rects.push({ n: j * nx + i + 1, x: i * (pw - ovx), y: j * (ph - ovy), w: pw, h: ph });
+  return { P, pw, ph, nx, ny, ovx, ovy, W, H, rects };
+}
+function drawProj(ctx, st, s, guides) {
+  const g = projGeom(st), P = g.P, W = g.W, H = g.H, Wp = Math.max(1, Math.round(W * s)), Hp = Math.max(1, Math.round(H * s));
+  const bg = P.invert ? "#FFFFFF" : P.bg || "#101010", fg = P.invert ? "#000000" : P.line || "#FFFFFF";
+  const X = (v) => v * s, lw = (px) => Math.max(1, px * s);
+  ctx.save();
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, Wp, Hp);
+  if (P.hatch) {
+    ctx.save();
+    ctx.globalAlpha = 0.12;
+    ctx.strokeStyle = fg;
+    ctx.lineWidth = lw(1);
+    ctx.beginPath();
+    const step = Math.max(6, 24 * s);
+    for (let d = -Hp; d < Wp; d += step) {
+      ctx.moveTo(d, Hp);
+      ctx.lineTo(d + Hp, 0);
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+  if (P.zones && (g.ovx || g.ovy)) {
+    ctx.save();
+    ctx.fillStyle = "#FFD60A";
+    ctx.globalAlpha = 0.17;
+    for (let i = 1; i < g.nx; i++) ctx.fillRect(X(i * (g.pw - g.ovx)), 0, X(g.ovx), Hp);
+    for (let j = 1; j < g.ny; j++) ctx.fillRect(0, X(j * (g.ph - g.ovy)), Wp, X(g.ovy));
+    ctx.restore();
+  }
+  const gs = Math.max(8, P.grid | 0), cx = W / 2, cy = H / 2;
+  ctx.save();
+  ctx.strokeStyle = fg;
+  ctx.globalAlpha = 0.55;
+  ctx.lineWidth = lw(1);
+  ctx.beginPath();
+  const xsG = [], ysG = [];
+  for (let x = cx % gs; x <= W; x += gs) xsG.push(x);
+  for (let y = cy % gs; y <= H; y += gs) ysG.push(y);
+  for (const x of xsG) {
+    ctx.moveTo(Math.round(X(x)) + 0.5, 0);
+    ctx.lineTo(Math.round(X(x)) + 0.5, Hp);
+  }
+  for (const y of ysG) {
+    ctx.moveTo(0, Math.round(X(y)) + 0.5);
+    ctx.lineTo(Wp, Math.round(X(y)) + 0.5);
+  }
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+  ctx.lineWidth = lw(3);
+  ctx.beginPath();
+  ctx.moveTo(X(cx), 0);
+  ctx.lineTo(X(cx), Hp);
+  ctx.moveTo(0, X(cy));
+  ctx.lineTo(Wp, X(cy));
+  ctx.stroke();
+  ctx.restore();
+  if (P.cells) {
+    const edges = [0, ...xsG.filter((x) => x > 0 && x < W), W], rowsE = [0, ...ysG.filter((y) => y > 0 && y < H), H];
+    const fs = Math.max(5, Math.min(gs * 0.16, 28) * s);
+    if (fs >= 5) {
+      ctx.save();
+      ctx.fillStyle = fg;
+      ctx.globalAlpha = 0.6;
+      ctx.font = "".concat(fs, "px ").concat(FONT);
+      ctx.textBaseline = "top";
+      const col2 = (i) => {
+        let t = "";
+        i++;
+        while (i > 0) {
+          const m = (i - 1) % 26;
+          t = String.fromCharCode(65 + m) + t;
+          i = Math.floor((i - 1) / 26);
+        }
+        return t;
+      };
+      for (let r = 0; r < rowsE.length - 1; r++) for (let c = 0; c < edges.length - 1; c++) {
+        if ((edges[c + 1] - edges[c]) * s < fs * 2.2 || (rowsE[r + 1] - rowsE[r]) * s < fs * 1.4) continue;
+        ctx.fillText(col2(c) + (r + 1), X(edges[c]) + fs * 0.3, X(rowsE[r]) + fs * 0.25);
+      }
+      ctx.restore();
+    }
+  }
+  if (P.circles) {
+    ctx.save();
+    ctx.lineWidth = lw(3);
+    for (const r of g.rects) {
+      ctx.strokeStyle = g.rects.length > 1 ? PJ_COLORS[(r.n - 1) % PJ_COLORS.length] : fg;
+      ctx.beginPath();
+      ctx.arc(X(r.x + r.w / 2), X(r.y + r.h / 2), X(Math.min(r.w, r.h) / 2 - 2), 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    if (g.rects.length > 1) {
+      ctx.strokeStyle = fg;
+      ctx.beginPath();
+      ctx.arc(X(cx), X(cy), X(Math.min(W, H) / 2 - 2), 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    const rr = Math.min(W, H) / 10;
+    ctx.strokeStyle = fg;
+    ctx.lineWidth = lw(2);
+    for (const [x, y] of [[rr, rr], [W - rr, rr], [rr, H - rr], [W - rr, H - rr]]) {
+      ctx.beginPath();
+      ctx.arc(X(x), X(y), X(rr * 0.8), 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+  if (P.frames) {
+    const fs = Math.max(6, Math.min(g.pw, g.ph) * 0.035 * s);
+    ctx.save();
+    ctx.lineWidth = lw(4);
+    ctx.textBaseline = "top";
+    for (const r of g.rects) {
+      const c = PJ_COLORS[(r.n - 1) % PJ_COLORS.length], inset = lw(2);
+      ctx.strokeStyle = c;
+      ctx.strokeRect(X(r.x) + inset, X(r.y) + inset, X(r.w) - inset * 2, X(r.h) - inset * 2);
+      const lx = X(r.x) + Math.max(fs * 0.6, X(Math.min(gs, r.w / 6)) * 0.35), ly = X(r.y) + Math.max(fs * 0.5, X(Math.min(gs, r.h / 6)) * 0.45);
+      ctx.font = "bold ".concat(fs, "px ").concat(FONT);
+      const t1 = "P".concat(r.n), w1 = ctx.measureText(t1).width;
+      ctx.font = "".concat(fs * 0.55, "px ").concat(FONT);
+      const t2 = "".concat(r.w, "×").concat(r.h, " · X ").concat(r.x, " · Y ").concat(r.y), w2 = ctx.measureText(t2).width;
+      ctx.fillStyle = P.invert ? "rgba(255,255,255,0.88)" : "rgba(0,0,0,0.72)";
+      ctx.fillRect(lx - fs * 0.35, ly - fs * 0.25, Math.max(w1, w2) + fs * 0.7, fs * 2.05);
+      ctx.fillStyle = c;
+      ctx.font = "bold ".concat(fs, "px ").concat(FONT);
+      ctx.fillText(t1, lx, ly);
+      ctx.font = "".concat(fs * 0.55, "px ").concat(FONT);
+      ctx.fillText(t2, lx, ly + fs * 1.12);
+    }
+    if (g.ovx || g.ovy) {
+      ctx.fillStyle = fg;
+      ctx.globalAlpha = 0.85;
+      ctx.font = "".concat(fs * 0.5, "px ").concat(FONT);
+      ctx.textAlign = "center";
+      for (let i = 1; i < g.nx; i++) {
+        const x0 = i * (g.pw - g.ovx);
+        ctx.save();
+        ctx.translate(X(x0 + g.ovx / 2), X(H * 0.3));
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText("перекрытие ".concat(g.ovx, " px"), 0, -fs * 0.25);
+        ctx.restore();
+      }
+      for (let j = 1; j < g.ny; j++) {
+        const y0 = j * (g.ph - g.ovy);
+        ctx.textBaseline = "middle";
+        ctx.fillText("перекрытие ".concat(g.ovy, " px"), X(W * 0.25), X(y0 + g.ovy / 2));
+        ctx.textBaseline = "top";
+      }
+      ctx.textAlign = "left";
+    }
+    ctx.restore();
+  }
+  if (P.bar) {
+    const bw = W * 0.5, bh = Math.max(12, H * 0.05), bx = (W - bw) / 2, by = H * 0.78, cols = ["#FFFFFF", "#FFFF00", "#00FFFF", "#00FF00", "#FF00FF", "#FF0000", "#0000FF", "#000000"];
+    cols.forEach((c, i) => {
+      ctx.fillStyle = c;
+      ctx.fillRect(X(bx + bw * i / cols.length), X(by), X(bw / cols.length) + 1, X(bh));
+    });
+    for (let i = 0; i < 11; i++) {
+      const v = Math.round(255 * i / 10);
+      ctx.fillStyle = "rgb(".concat(v, ",").concat(v, ",").concat(v, ")");
+      ctx.fillRect(X(bx + bw * i / 11), X(by + bh), X(bw / 11) + 1, X(bh * 0.5));
+    }
+    ctx.strokeStyle = fg;
+    ctx.lineWidth = lw(1);
+    ctx.strokeRect(X(bx), X(by), X(bw), X(bh * 1.5));
+  }
+  ctx.strokeStyle = fg;
+  ctx.lineWidth = lw(2);
+  ctx.strokeRect(lw(1), lw(1), Wp - lw(2), Hp - lw(2));
+  if (guides.circle || guides.diag) {
+    ctx.beginPath();
+    if (guides.diag) {
+      ctx.moveTo(0, 0);
+      ctx.lineTo(Wp, Hp);
+      ctx.moveTo(0, Hp);
+      ctx.lineTo(Wp, 0);
+    }
+    if (guides.circle) {
+      const d = Math.min(Wp, Hp);
+      ctx.moveTo(Wp / 2 + d / 2, Hp / 2);
+      ctx.arc(Wp / 2, Hp / 2, d / 2, 0, Math.PI * 2);
+    }
+    ctx.strokeStyle = P.invert ? "rgba(0,0,0,0.5)" : "rgba(255,255,255,0.5)";
+    ctx.lineWidth = Math.max(1, 2 * s);
+    ctx.stroke();
+  }
+  const lines = titleLines(st, s), b = blockSize(lines, TITLE_GAP * s), tx = W * s / 2 + (st.titleOffsetX || 0) * s, ty = H * s / 2 - (st.titleOffsetY || 0) * s;
+  ctx.fillStyle = P.invert ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.6)";
+  if (ROT_DEG[clampI(st.rotationIndex, 4)] % 180 === 0) ctx.fillRect(tx - b.w / 2 - 14 * s, ty - b.h / 2 - 8 * s, b.w + 28 * s, b.h + 16 * s);
+  ctx.fillStyle = fg;
+  drawBlock(ctx, lines, TITLE_GAP * s, tx, ty, ROT_DEG[clampI(st.rotationIndex, 4)]);
+  for (const it of st.extraLabels || []) {
+    const fs2 = Math.min(900, Math.max(6, +it.size || 120)) * s;
+    drawBlock(ctx, [[it.text || "Текст", fs2]], 0, W * s / 2 + (+it.x || 0) * s, H * s / 2 - (+it.y || 0) * s, +it.rotation || 0);
+  }
+  ctx.restore();
+}
 const shapedCount = (st) => Object.keys(st.shapedCols || {}).filter((c) => +c < st.cabCols).length + Object.keys(st.shapedRows || {}).filter((r) => +r < st.cabRows).length;
 const key = (c, r) => c + "," + r;
 const parseKey = (k) => {
@@ -1978,6 +2222,10 @@ function typeMM(st) {
   return t ? [t[3], t[4], true] : [500, 500, false];
 }
 function physM(st) {
+  if (st.kind === "proj") {
+    const [W2, H2] = dims(st), wm = +(st.proj && st.proj.wm) || 0;
+    return wm > 0 ? [wm, wm * H2 / W2, true] : [0, 0, false];
+  }
   const [w, h, k] = typeMM(st), [W, H] = dims(st);
   return [w / Math.max(1, st.cabWpx) * W / 1e3, h / Math.max(1, st.cabHpx) * H / 1e3, k];
 }
@@ -1987,7 +2235,8 @@ function compactM(v) {
   return s;
 }
 const physText = (st) => {
-  const [w, h] = physM(st);
+  const [w, h, k] = physM(st);
+  if (st.kind === "proj" && !k) return "проекция";
   return "".concat(compactM(w), "х").concat(compactM(h), " м");
 };
 const titleText = (st) => {
@@ -2062,6 +2311,7 @@ function blockSize(lines, gap) {
 }
 const numberFont = (st) => Math.min(35, Math.max(12.5, Math.min(st.cabWpx, st.cabHpx) / 5 * 1.25));
 function drawMask(ctx, st, s, guides) {
+  if (st.kind === "proj") return drawProj(ctx, st, s, guides);
   const [W, H] = dims(st), cols = st.cabCols, rows = st.cabRows, { xs, ys } = grid(st);
   const Wp = Math.max(1, Math.round(W * s)), Hp = Math.max(1, Math.round(H * s));
   const fx = (x) => Math.round(x * s), fy = (y) => Math.round((H - y) * s);
@@ -2258,6 +2508,15 @@ function normalizeScreen(d) {
     const o = pint(v, -1);
     if (parseKey(k) && o >= 0 && o <= 3) st.cornerCabinets[k] = o;
   }
+  st.kind = d.kind === "proj" ? "proj" : "led";
+  {
+    const P = defProj(), q = d.proj && typeof d.proj === "object" ? d.proj : {};
+    for (const k of ["pw", "ph", "nx", "ny", "grid"]) if (q[k] != null) P[k] = Math.max(1, pint(q[k], P[k]));
+    for (const k of ["ox", "oy", "wm"]) if (q[k] != null && isFinite(+q[k])) P[k] = Math.max(0, +q[k]);
+    for (const k of ["bg", "line"]) if (typeof q[k] === "string" && /^#[0-9a-f]{6}$/i.test(q[k])) P[k] = q[k].toUpperCase();
+    for (const k of ["zones", "frames", "circles", "cells", "hatch", "bar", "invert"]) if (q[k] != null) P[k] = !!q[k];
+    st.proj = P;
+  }
   for (const f of ["shapedCols", "shapedRows"]) {
     st[f] = {};
     if (d[f] && typeof d[f] === "object") for (const [k, v] of Object.entries(d[f])) {
@@ -2307,6 +2566,7 @@ function syncUI() {
   $("rows").value = st.cabRows;
   $("pixColor").value = hex(st.pixelColor);
   $("numColor").value = hex(st.numberColor);
+  syncProjUI();
   $("paintColor").value = hex(ui.paint);
   $("inscSize").value = st.inscriptionIndex;
   $("rot").value = st.rotationIndex;
@@ -2334,6 +2594,13 @@ function updateInfo(forcePhys) {
   $("numRGB").textContent = "RGB " + to255(st.numberColor).join(",");
   $("infoRes").textContent = "Разрешение: ".concat(W, "×").concat(H, " px");
   $("infoPhys").textContent = "".concat(known ? "Физический размер" : "Размер (условно 50 см)", ": ").concat(compactM(pw), "х").concat(compactM(ph), " м");
+  if (st.kind === "proj") {
+    const g = projGeom(st);
+    $("infoCab").textContent = "Проекторов: ".concat(g.nx, "×").concat(g.ny, " по ").concat(g.pw, "×").concat(g.ph).concat(g.ovx || g.ovy ? " • перекрытие ".concat(g.ovx, "/").concat(g.ovy, " px") : "");
+    $("pjInfo").textContent = "Итог: ".concat(W, "×").concat(H, " px").concat(g.ovx ? " · перекрытие по горизонтали ".concat(g.ovx, " px") : "").concat(g.ovy ? " · по вертикали ".concat(g.ovy, " px") : "");
+    $("zLabel").textContent = Math.round(ui.zoom * 100) + "%";
+    return;
+  }
   const total = st.cabCols * st.cabRows, nb = st.blackCabinets.length, nc = cornerList(st, new Set(st.blackCabinets)).length, ns = shapedCount(st);
   $("infoCab").textContent = "Кабинеты: ".concat(total, " • Чёрные: ").concat(nb).concat(nc ? " • Угловые: ".concat(nc) : "").concat(ns ? " • Фигурных столбцов: ".concat(ns) : "", " • Выделено: ").concat(ui.selected.size);
   $("zLabel").textContent = Math.round(ui.zoom * 100) + "%";
@@ -2490,7 +2757,7 @@ function labelFrame(i) {
   return { cx: L.ox + L.W * s / 2 + it.x * s, cy: L.oy + L.H * s / 2 - it.y * s, w, h };
 }
 function pointToCell(x, y) {
-  if (!L) return null;
+  if (!L || L.st.kind === "proj") return null;
   const st = L.st, s = L.scale;
   if (x < L.ox || x >= L.ox + L.gw || y < L.oy || y >= L.oy + L.gh) return null;
   const px = (x - L.ox) / s, py = (L.oy + L.gh - y) / s, { xs, ys } = L.G;
@@ -2686,6 +2953,77 @@ function clearSelection() {
   changed();
   status("Выделение снято");
 }
+function syncProjUI() {
+  const st = S(), P = st.proj || (st.proj = defProj()), kind = st.kind === "proj" ? "proj" : "led";
+  document.documentElement.setAttribute("data-kind", kind);
+  document.querySelectorAll(".seg.kind button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.kind === kind)));
+  const sel = $("pjPreset");
+  if (!sel.options.length) {
+    sel.innerHTML = PJ_PRESETS.map((t, i) => '<option value="'.concat(i, '">').concat(t[0], "</option>")).join("") + '<option value="">Своё разрешение</option>';
+  }
+  const pi = PJ_PRESETS.findIndex((t) => t[1] === P.pw && t[2] === P.ph);
+  sel.value = pi >= 0 ? pi : "";
+  const set = (id, v) => {
+    if (document.activeElement !== $(id)) $(id).value = v;
+  };
+  set("pjW", P.pw);
+  set("pjH", P.ph);
+  set("pjNx", P.nx);
+  set("pjNy", P.ny);
+  set("pjOx", P.ox);
+  set("pjOy", P.oy);
+  set("pjGrid", P.grid);
+  set("pjWm", P.wm || 0);
+  $("pjBg").value = (P.bg || "#101010").toLowerCase();
+  $("pjLine").value = (P.line || "#FFFFFF").toLowerCase();
+  for (const [id, k] of [["pjZones", "zones"], ["pjFrames", "frames"], ["pjCircles", "circles"], ["pjCells", "cells"], ["pjHatch", "hatch"], ["pjBar", "bar"], ["pjInvert", "invert"]]) $(id).checked = !!P[k];
+}
+document.querySelectorAll(".seg.kind button").forEach((b) => b.onclick = () => {
+  const st = S();
+  st.kind = b.dataset.kind;
+  if (!st.proj) st.proj = defProj();
+  ui.selected.clear();
+  syncProjUI();
+  changed({ forcePhys: true });
+  fitAuto && fitAuto();
+  status(st.kind === "proj" ? "Экран — проекция: задайте проекторы и перекрытие" : "Экран — LED", true);
+});
+var fitAuto = null;
+const projNum = (id, k, float, min = 0) => $(id).addEventListener("input", () => {
+  const v = float ? parseFloat(String($(id).value).replace(",", ".")) : pint($(id).value, NaN);
+  if (isFinite(v) && v >= min) {
+    S().proj[k] = v;
+    syncProjUI();
+    changed({ forcePhys: true });
+  }
+});
+projNum("pjW", "pw", false, 16);
+projNum("pjH", "ph", false, 16);
+projNum("pjNx", "nx", false, 1);
+projNum("pjNy", "ny", false, 1);
+projNum("pjOx", "ox", true);
+projNum("pjOy", "oy", true);
+projNum("pjGrid", "grid", false, 8);
+projNum("pjWm", "wm", true);
+$("pjPreset").addEventListener("change", (e) => {
+  const t = PJ_PRESETS[+e.target.value];
+  if (!t || e.target.value === "") return;
+  Object.assign(S().proj, { pw: t[1], ph: t[2] });
+  syncProjUI();
+  changed({ forcePhys: true });
+});
+$("pjBg").addEventListener("input", (e) => {
+  S().proj.bg = e.target.value.toUpperCase();
+  changed();
+});
+$("pjLine").addEventListener("input", (e) => {
+  S().proj.line = e.target.value.toUpperCase();
+  changed();
+});
+for (const [id, k] of [["pjZones", "zones"], ["pjFrames", "frames"], ["pjCircles", "circles"], ["pjCells", "cells"], ["pjHatch", "hatch"], ["pjBar", "bar"], ["pjInvert", "invert"]]) $(id).addEventListener("change", (e) => {
+  S().proj[k] = e.target.checked;
+  changed();
+});
 function bindNum(id, prop) {
   $(id).addEventListener("input", () => {
     const v = pint($(id).value, 0);
@@ -4260,6 +4598,10 @@ function fieldBBox(rs) {
   return { x: x0, y: y0, w: evenUp(x1 - x0), h: evenUp(y1 - y0), rawW: x1 - x0, rawH: y1 - y0 };
 }
 const pitchMM = (st) => {
+  if (st.kind === "proj") {
+    const [W] = dims(st), [pw, , k2] = physM(st);
+    return [pw * 1e3 / W, pw * 1e3 / W, k2];
+  }
   const [w, h, k] = typeMM(st);
   return [w / st.cabWpx, h / st.cabHpx, k];
 };
