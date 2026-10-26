@@ -213,7 +213,7 @@ html:not([data-page="mask"]) .mstrip { display: none; }
         <div class="row"><span class="lbl">Поворот <span class="num" id="fRotVal">0°</span></span><div class="ctl"><button class="b" id="fRotCCW" title="Против часовой на 45°">⟲ 45°</button><button class="b" id="fRotCW" title="По часовой на 45°">⟳ 45°</button><button class="b" id="fRot0">0°</button></div></div>
       </div>
       <div class="info" id="fInfo"></div>
-      <div class="btns"><button class="x" id="fPNG">Сохранить PNG поля</button></div>
+      <div class="btns"><button class="x" id="fPNG">Сохранить PNG поля</button><button class="x" id="fTZgo">Формирование ТЗ →</button></div>
     </div></details>
 
     <details class="sec tsec" open><summary>ФОРМИРОВАНИЕ ТЗ</summary><div class="sec-body">
@@ -1433,6 +1433,7 @@ async function exportTZ(label) {
 $("btnPNG").onclick = exportCurrentPNG;
 $("btnAllPNG").onclick = exportAllPNG;
 $("btnTZgo").onclick = () => setPage("tz");
+$("fTZgo").onclick = () => setPage("tz");
 $("btnSaveProj").onclick = () => STANDALONE
   ? save(`${safeName(project.name, "Проект")}.ledmask`, toPlist(ledmaskData()))
   : save(`${safeName(project.name, "Проект")}.ledmask.json`, JSON.stringify(projectData(), null, 1));
