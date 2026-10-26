@@ -219,7 +219,7 @@ html:not([data-page="mask"]) .mstrip { display: none; }
     <details class="sec tsec" open><summary>ФОРМИРОВАНИЕ ТЗ</summary><div class="sec-body">
       <p class="hint">Отметьте, что войдёт в ТЗ. По умолчанию — общие поля целиком и маски, которые не стоят на полях. Маски из полей можно добавить галочкой. На холсте — предпросмотр слайдов.</p>
       <div class="flist" id="tList"></div>
-      <div class="btns"><button class="b" id="tAllMasks">Все маски</button><button class="b" id="tNoMasks">Без масок</button><button class="b" id="tAllFields">Все поля</button><button class="b" id="tDefault">По умолчанию</button></div>
+      <div class="btns"><button class="b" id="tDefault">По умолчанию</button></div>
       <div class="tgroup">ОБЩИЙ ПЛАН (2-Й СЛАЙД)</div>
       <label class="chk"><input type="checkbox" id="tOverview" checked> Добавить картинку общего плана во 2-й слайд</label>
       <div class="btns"><button class="b" id="tOvPick">Выбрать картинку…</button><button class="b" id="tOvClear">Убрать</button></div>
@@ -1926,9 +1926,6 @@ function updateTZSummary() {
   $("tSummary").textContent = `Слайдов: ${tzSlides(items, !!tzOverview())} · масок: ${items.length - nf} · полей: ${nf}`;
 }
 function tzChanged() { refreshTZPanel(); requestDraw(); scheduleAutosave(); }
-$("tAllMasks").onclick = () => { project.screens.forEach(s => project.tz.masks[s.uid] = true); tzChanged(); };
-$("tNoMasks").onclick = () => { project.screens.forEach(s => project.tz.masks[s.uid] = false); tzChanged(); };
-$("tAllFields").onclick = () => { project.fields.forEach(f => project.tz.fields[f.id] = true); tzChanged(); };
 $("tDefault").onclick = () => { project.tz.fields = {}; project.tz.masks = {}; tzChanged(); status("Выбор ТЗ — по умолчанию"); };
 $("tOverview").onchange = e => { project.tz.overview = e.target.checked; tzChanged(); };
 $("tOvPick").onclick = () => $("tOvFile").click();
