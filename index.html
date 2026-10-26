@@ -134,6 +134,10 @@ html.nogap .ver .rowbtns > * {
 html.nogap .seg > * {
   margin-right: 2px;
 }
+.shp-px {
+  opacity: .7;
+  font-weight: 500;
+}
 html.nogap .zoom > *,
 html.nogap .undo > *,
 html.nogap .ftools > *,
@@ -431,6 +435,34 @@ html:not([data-page=tz]) .ttools {
   color: var(--accent-ink);
   border-color: var(--accent);
   font-weight: 700;
+}
+textarea.tzt {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--field);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 7px 8px;
+  color: var(--fg);
+  font:
+    13px/1.4 Arial,
+    "Helvetica Neue",
+    sans-serif;
+  resize: vertical;
+  min-height: 40px;
+}
+textarea.tzt.req {
+  min-height: 230px;
+  font-size: 12px;
+}
+.tzt-lbl {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.tzt-lbl b {
+  color: var(--fg);
+  font-weight: 600;
 }
 .tgroup {
   font-size: 11px;
@@ -1186,6 +1218,12 @@ html[data-page=about] #pv {
       <input type="file" id="tOvFile" accept="image/*" hidden>
       <p class="hint" id="tOvInfo">Картинка не выбрана — слайд не добавится.</p>
       <img id="tOvImg" class="ovthumb" alt="" hidden>
+      <div class="tgroup">ТЕКСТ В ТЗ</div>
+      <p class="hint">Текст любого слайда можно поменять или дополнить. **жирный** — между двумя звёздочками. Строки, которые вы не трогали, сохраняют оформление шаблона (цвет, ссылки). Тип шаблона выбирается ниже, в «Сохранить ТЗ».</p>
+      <div class="tzt-lbl" id="tReqLbl">Слайд 1 — требования шаблона</div>
+      <textarea class="tzt req" id="tReq" spellcheck="false" aria-label="Текст первого слайда"></textarea>
+      <div class="btns"><button class="b" id="tReqReset">Вернуть текст шаблона</button></div>
+      <div id="tNotes"></div>
       <div class="tgroup">СОХРАНИТЬ ТЗ</div>
       <div class="row"><label for="tTpl">Тип ТЗ</label><div class="ctl"><select id="tTpl" class="grow">
         <option value="Resolume">Resolume — кодек DXV3</option>
@@ -1225,8 +1263,8 @@ html[data-page=about] #pv {
       <div class="btns"><button class="b" id="btnCorner">Сделать угловыми</button><button class="b" id="btnCornerDel">Убрать угловые</button></div>
       <div class="row" style="grid-template-columns:1fr"><span class="lbl">Фигурные модули</span><div class="ctl">
         <div class="seg shaped" style="white-space:nowrap" role="group" aria-label="Тип фигурного модуля">
-          <button data-w="48" aria-pressed="true" title="Модуль на угол 90°: 48×192">90° · 48×192</button>
-          <button data-w="96" aria-pressed="false" title="Модуль на угол 60°: 96×192">60° · 96×192</button>
+          <button data-w="1/4" aria-pressed="true" title="Модуль на угол 90°: 1/4 ширины модуля">1/4 · 90° <span class="shp-px" data-f="1/4"></span></button>
+          <button data-w="1/2" aria-pressed="false" title="Модуль на угол 60°: 1/2 ширины модуля">1/2 · 60° <span class="shp-px" data-f="1/2"></span></button>
           <button data-w="custom" aria-pressed="false" title="Своя ширина модуля в пикселях">Свой</button>
         </div>
         <span id="shapedCustomBox" hidden><input id="shapedCustom" type="number" min="1" max="20000" step="1" value="128" style="width:72px" aria-label="Ширина своего фигурного модуля"> <span class="unit" id="shapedCustomH">×192 px</span></span>
@@ -1399,7 +1437,7 @@ html[data-page=about] #pv {
 <li><strong>Выключить все / Включить все</strong> — гасят или включают сразу все кабинеты.</li>
 <li><strong>Покрасить выделенные</strong> — выделенные кабинеты заливаются цветом из квадратика слева.</li>
 <li><strong>Угловые модули</strong> — выделите кабинеты, выберите, какая половина светится (◣ ◤ ◥ ◢), и нажмите «Сделать угловыми». Вторая половина станет чёрной. «Убрать угловые» возвращает выделенные (или все, если ничего не выделено).</li>
-<li><strong>Фигурные модули</strong> — узкие модули для углов: 90° — 48×192, 60° — 96×192 или «Свой» — впишите ширину в пикселях (например 128). Выделите любой модуль, выберите тип и нажмите «Сделать фигурными» — весь его столбец станет узким, без чёрных полей. Разрешение экрана и общего поля пересчитывается само. «Убрать фигурные» возвращает выделенные столбцы (или все).</li>
+<li><strong>Фигурные модули</strong> — узкие модули для углов: «1/4 · 90°» и «1/2 · 60°» — четверть и половина ширины выбранного модуля (для 192×192 это 48×192 и 96×192, пересчитывается само при смене модуля), или «Свой» — впишите ширину в пикселях (например 128). Выделите любой модуль, выберите тип и нажмите «Сделать фигурными» — весь его столбец станет узким, без чёрных полей. Разрешение экрана и общего поля пересчитывается само. «Убрать фигурные» возвращает выделенные столбцы (или все).</li>
 <li><strong>Контур участка</strong> — выделите кабинеты и нажмите «Создать контур»: вокруг участка появится белая рамка 2 px. Её можно скрыть или убрать.</li>
 </ul>
 <h3>Текст на маске</h3>
@@ -1890,11 +1928,12 @@ const pfloat = (v) => {
   const m = String(v != null ? v : "").match(/^\s*([-+]?\d+(?:[.,]\d+)?)/);
   return m ? parseFloat(m[1].replace(",", ".")) : 0;
 };
-const SHAPED = [[48, "90° 48×192"], [96, "60° 96×192"]];
+const SHAPED = { "1/4": [0.25, "1/4 · 90°"], "1/2": [0.5, "1/2 · 60°"] };
+const shapedPx = (st, v) => typeof v === "string" ? SHAPED[v] ? Math.max(1, Math.round(Math.max(1, st.cabWpx) * SHAPED[v][0])) : 0 : v > 0 ? v : 0;
 function grid(st) {
   const cols = Math.max(1, st.cabCols), rows = Math.max(1, st.cabRows), sc = st.shapedCols || {}, sr = st.shapedRows || {};
   const xs = [0], ys = [0];
-  for (let c = 0; c < cols; c++) xs.push(xs[c] + (sc[c] > 0 ? sc[c] : Math.max(1, st.cabWpx)));
+  for (let c = 0; c < cols; c++) xs.push(xs[c] + (shapedPx(st, sc[c]) || Math.max(1, st.cabWpx)));
   for (let r = 0; r < rows; r++) ys.push(ys[r] + (sr[r] > 0 ? sr[r] : Math.max(1, st.cabHpx)));
   return { xs, ys };
 }
@@ -2205,8 +2244,14 @@ function normalizeScreen(d) {
   for (const f of ["shapedCols", "shapedRows"]) {
     st[f] = {};
     if (d[f] && typeof d[f] === "object") for (const [k, v] of Object.entries(d[f])) {
-      const i = pint(k, -1), w = pint(v, 0);
-      if (i >= 0 && String(i) === String(k).trim() && w > 0 && w <= 2e4) st[f][i] = w;
+      const i = pint(k, -1);
+      if (!(i >= 0 && String(i) === String(k).trim())) continue;
+      if (typeof v === "string" && SHAPED[v]) {
+        st[f][i] = v;
+        continue;
+      }
+      const w = pint(v, 0);
+      if (w > 0 && w <= 2e4) st[f][i] = w;
     }
   }
   return st;
@@ -2275,6 +2320,7 @@ function updateInfo(forcePhys) {
   const total = st.cabCols * st.cabRows, nb = st.blackCabinets.length, nc = cornerList(st, new Set(st.blackCabinets)).length, ns = shapedCount(st);
   $("infoCab").textContent = "Кабинеты: ".concat(total, " • Чёрные: ").concat(nb).concat(nc ? " • Угловые: ".concat(nc) : "").concat(ns ? " • Фигурных столбцов: ".concat(ns) : "", " • Выделено: ").concat(ui.selected.size);
   $("zLabel").textContent = Math.round(ui.zoom * 100) + "%";
+  if (typeof shapedLabels === "function") shapedLabels();
 }
 function changed(opts = {}) {
   updateInfo(opts.forcePhys);
@@ -2593,7 +2639,7 @@ function applyBlack(k, target) {
 }
 function hoverStatus(cell) {
   const st = S(), [c, r] = cell;
-  const { xs, ys } = grid(st), fig = (st.shapedCols || {})[c] > 0 || (st.shapedRows || {})[r] > 0;
+  const { xs, ys } = grid(st), fig = !!shapedPx(st, (st.shapedCols || {})[c]) || (st.shapedRows || {})[r] > 0;
   status("Кабинет ".concat(cabLabel(st, c, r), " • ").concat(xs[c + 1] - xs[c], "×").concat(ys[r + 1] - ys[r], " px").concat(fig ? " (фигурный)" : "", " • X:").concat(xs[c], " Y:").concat(ys[r], " • ").concat(st.blackCabinets.includes(key(c, r)) ? "ЧЁРНЫЙ" : (st.cornerCabinets || {})[key(c, r)] != null ? "УГЛОВОЙ " + CORNER_GLYPH[st.cornerCabinets[key(c, r)]] : "АКТИВЕН"));
 }
 window.addEventListener("keydown", (e) => {
@@ -2771,12 +2817,19 @@ $("btnCorner").onclick = () => {
   changed();
   status("Угловых модулей ".concat(CORNER_GLYPH[ui.corner], ": ").concat(ui.selected.size), true);
 };
-ui.shapedW = 48;
+ui.shapedW = "1/4";
 ui.shapedCustom = false;
+function shapedLabels() {
+  const st = S();
+  document.querySelectorAll(".shp-px").forEach((e) => {
+    e.textContent = "· " + shapedPx(st, e.dataset.f) + "×" + st.cabHpx;
+  });
+  $("shapedCustomH").textContent = "×".concat(st.cabHpx, " px");
+}
 const customW = () => Math.max(1, Math.min(2e4, pint($("shapedCustom").value, 128)));
 document.querySelectorAll(".seg.shaped button").forEach((b) => b.onclick = () => {
   ui.shapedCustom = b.dataset.w === "custom";
-  ui.shapedW = ui.shapedCustom ? customW() : +b.dataset.w;
+  ui.shapedW = ui.shapedCustom ? customW() : b.dataset.w;
   $("shapedCustomBox").hidden = !ui.shapedCustom;
   if (ui.shapedCustom) {
     $("shapedCustomH").textContent = "×".concat(S().cabHpx, " px");
@@ -2804,11 +2857,11 @@ $("btnShaped").onclick = () => {
     return;
   }
   const isCol = true, f = "shapedCols", lines = selectedLines(st).cols;
+  if (ui.shapedCustom) ui.shapedW = customW();
   st[f] = st[f] || {};
   for (const i of lines) st[f][i] = ui.shapedW;
   changed({ forcePhys: true });
-  if (ui.shapedCustom) ui.shapedW = customW();
-  const [W, H] = dims(st), name = ui.shapedCustom ? "".concat(ui.shapedW, "×").concat(st.cabHpx) : (SHAPED.find((t) => t[0] === ui.shapedW) || [0, ""])[1];
+  const [W, H] = dims(st), name = ui.shapedCustom ? "".concat(ui.shapedW, "×").concat(st.cabHpx) : "".concat(SHAPED[ui.shapedW][1], " (").concat(shapedPx(st, ui.shapedW), "×").concat(st.cabHpx, ")");
   status("Фигурные ".concat(name, ": ").concat(isCol ? "столбцов" : "рядов", " ").concat(lines.length, " · разрешение ").concat(W, "×").concat(H), true);
 };
 $("btnShapedDel").onclick = () => {
@@ -3306,14 +3359,14 @@ const REL_NOTES = "http://schemas.openxmlformats.org/officeDocument/2006/relatio
 const CT_SLIDE = "application/vnd.openxmlformats-officedocument.presentationml.slide+xml";
 const xmlEsc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const BOX = { x: 42e4, y: 205e4, w: 6018e3, h: 72e5 }, GAP = 165e3, LABEL_H = 22e4, LABEL_GAP = 35e3;
-function maskCellLayout(hz, n, j, w, h) {
-  let cx0 = BOX.x, cy0 = BOX.y, cw = BOX.w, chh = BOX.h;
+function maskCellLayout(hz, n, j, w, h, B = BOX) {
+  let cx0 = B.x, cy0 = B.y, cw = B.w, chh = B.h;
   if (hz) {
-    chh = Math.floor((BOX.h - GAP * (n - 1)) / n);
-    cy0 = BOX.y + j * (chh + GAP);
+    chh = Math.floor((B.h - GAP * (n - 1)) / n);
+    cy0 = B.y + j * (chh + GAP);
   } else {
-    cw = Math.floor((BOX.w - GAP * (n - 1)) / n);
-    cx0 = BOX.x + j * (cw + GAP);
+    cw = Math.floor((B.w - GAP * (n - 1)) / n);
+    cx0 = B.x + j * (cw + GAP);
   }
   const ih = Math.max(1, chh - LABEL_H - LABEL_GAP);
   const sc = Math.min(cw / Math.max(1, w), ih / Math.max(1, h)), ew = Math.round(w * sc), eh = Math.round(h * sc);
@@ -3330,11 +3383,244 @@ function groupMasks(masks) {
   }
   return groups;
 }
-async function buildPptx(tplB64, masks, overview) {
+const PT = 12700, RT_FONT = 'Arial, "Liberation Sans", Helvetica, sans-serif', RT_LH = 1.2;
+const xmlUn = (s) => String(s).replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&#(\d+);/g, (_, d) => String.fromCharCode(+d)).replace(/&amp;/g, "&");
+const runsMd = (runs) => runs.map((r) => r.t ? r.b ? "**" + r.t + "**" : r.t : "").join("").replace(/\*\*\*\*/g, "");
+function mdRuns(line, base = {}) {
+  const out = [], parts = String(line).split("**");
+  parts.forEach((t, i) => {
+    if (t) t.split(/(https?:\/\/[^\s]+)/).forEach((u, k) => {
+      if (u) out.push({ ...base, t: u, b: i % 2 === 1, link: k % 2 === 1 ? u : null });
+    });
+  });
+  return out;
+}
+const mdParas = (text) => String(text || "").replace(/\r/g, "").split("\n").map((l) => mdRuns(l));
+const tplCache = {};
+async function tplInfo(label) {
+  if (tplCache[label]) return tplCache[label];
+  const files = await unzip(b64ToBytes(TPL[label])), get = (n) => {
+    const f = files.find((x) => x.name === n);
+    return f ? dec.decode(f.data) : "";
+  };
+  const slide = get("ppt/slides/slide1.xml"), theme = get("ppt/theme/theme1.xml"), rels = get("ppt/slides/_rels/slide1.xml.rels");
+  const clr = {};
+  for (const m of theme.matchAll(/<a:(\w+)>\s*<a:(?:srgbClr val|sysClr val="\w+" lastClr)="([0-9A-Fa-f]{6})"/g)) clr[m[1]] = "#" + m[2];
+  clr.tx1 = clr.dk1 || "#000000";
+  const link = {};
+  for (const m of rels.matchAll(/<Relationship\b[^>]*>/g)) {
+    const id = (m[0].match(/Id="([^"]+)"/) || [])[1], t = (m[0].match(/Target="([^"]+)"/) || [])[1];
+    if (id && /hyperlink/.test(m[0])) link[id] = xmlUn(t);
+  }
+  const sp = (slide.match(/<p:sp>(?:(?!<\/p:sp>)[\s\S])*?<p:txBody>[\s\S]*?<\/p:sp>/) || [""])[0];
+  const off = sp.match(/<a:off x="(\d+)" y="(\d+)"\/>/), ext = sp.match(/<a:ext cx="(\d+)" cy="(\d+)"\/>/);
+  const rect = { x: +off[1], y: +off[2], w: +ext[1], h: +ext[2] };
+  const body = sp.slice(sp.indexOf("<a:lstStyle/>") + 13, sp.lastIndexOf("</p:txBody>"));
+  const paraXml = body.match(/<a:p\b(?:\s[^>]*)?>[\s\S]*?<\/a:p>/g) || [];
+  const lines = [];
+  paraXml.forEach((px, pi) => {
+    let cur = { runs: [], xml: [], para: pi };
+    const push = () => {
+      cur.md = runsMd(cur.runs);
+      lines.push(cur);
+      cur = { runs: [], xml: [], para: pi };
+    };
+    for (const m of px.matchAll(/<a:r>([\s\S]*?)<\/a:r>|<a:br\b[^>]*\/>|<a:br\b[\s\S]*?<\/a:br>/g)) {
+      if (!m[0].startsWith("<a:r>")) {
+        push();
+        continue;
+      }
+      const rx = m[1], rpr = (rx.match(/<a:rPr\b[^>]*?(?:\/>|>[\s\S]*?<\/a:rPr>)/) || [""])[0], head = (rpr.match(/<a:rPr\b[^>]*>/) || [""])[0];
+      const t = xmlUn((rx.match(/<a:t>([\s\S]*?)<\/a:t>/) || ["", ""])[1]);
+      const sc = rpr.match(/<a:schemeClr val="(\w+)"/), rgb = rpr.match(/<a:srgbClr val="([0-9A-Fa-f]{6})"/), hl = rpr.match(/<a:hlinkClick\b[^>]*r:id="([^"]+)"/);
+      cur.runs.push({ t, b: /\bb="1"/.test(head), u: /\bu="(?!none)\w+"/.test(head), color: rgb ? "#" + rgb[1] : sc ? clr[sc[1]] : null, link: hl ? link[hl[1]] || null : null, sz: +((head.match(/\bsz="(\d+)"/) || [])[1] || 1e3) / 100 });
+      cur.xml.push(m[0]);
+    }
+    push();
+  });
+  const cnt = /* @__PURE__ */ new Map();
+  for (const l of lines) l.xml.forEach((x, i) => {
+    const r = l.runs[i];
+    if (r.color || r.link || r.u) return;
+    const rp = (x.match(/<a:rPr\b[^>]*?(?:\/>|>[\s\S]*?<\/a:rPr>)/) || [""])[0];
+    if (rp) cnt.set(rp, (cnt.get(rp) || 0) + r.t.length);
+  });
+  let baseRpr = '<a:rPr lang="ru-RU" sz="1000" dirty="0"><a:latin typeface="Arial"/><a:cs typeface="Arial"/></a:rPr>', best = 0;
+  for (const [k, v] of cnt) if (v > best) {
+    best = v;
+    baseRpr = k;
+  }
+  baseRpr = baseRpr.replace(/\s(b|u|i)="[^"]*"/g, "");
+  const baseSz = +((baseRpr.match(/\bsz="(\d+)"/) || [])[1] || 1e3) / 100;
+  const ins = { l: 91440, t: 45720 };
+  const info = { label, sp, paraXml, lines, rect, ins, baseRpr, baseSz, md: lines.map((l) => l.md).join("\n") };
+  tplCache[label] = info;
+  return info;
+}
+function reqText(label) {
+  const v = project.tz.req && project.tz.req[label];
+  return typeof v === "string" ? v : null;
+}
+function reqEdited(info) {
+  const v = reqText(info.label);
+  return v != null && v.replace(/\r/g, "") !== info.md;
+}
+function reqMatch(info, text) {
+  const a = info.lines.map((l) => l.md), b = String(text).replace(/\r/g, "").split("\n"), n = a.length, m = b.length;
+  const L2 = Array.from({ length: n + 1 }, () => new Int32Array(m + 1));
+  for (let i2 = n - 1; i2 >= 0; i2--) for (let j2 = m - 1; j2 >= 0; j2--) L2[i2][j2] = a[i2] === b[j2] ? L2[i2 + 1][j2 + 1] + 1 : Math.max(L2[i2 + 1][j2], L2[i2][j2 + 1]);
+  const map = new Array(m).fill(-1);
+  let i = 0, j = 0;
+  while (i < n && j < m) {
+    if (a[i] === b[j]) {
+      map[j] = i;
+      i++;
+      j++;
+    } else if (L2[i + 1][j] >= L2[i][j + 1]) i++;
+    else j++;
+  }
+  return { lines: b, map };
+}
+function reqParas(info, text) {
+  const { lines, map } = reqMatch(info, text);
+  return lines.map((l, j) => map[j] >= 0 ? info.lines[map[j]].runs : mdRuns(l, { sz: info.baseSz }));
+}
+function reqXml(info, text) {
+  const { lines, map } = reqMatch(info, text), out = [], rels = [];
+  const newRun = (t, b, link) => {
+    let rp = b ? info.baseRpr.replace("<a:rPr", '<a:rPr b="1"') : info.baseRpr;
+    if (link) {
+      const id = "rIdT" + (rels.length + 1);
+      rels.push({ id, url: link });
+      const hl = '<a:hlinkClick r:id="'.concat(id, '"/>');
+      rp = rp.endsWith("/>") ? rp.replace(/\/>$/, ">".concat(hl, "</a:rPr>")) : rp.replace("</a:rPr>", hl + "</a:rPr>");
+    }
+    return "<a:r>".concat(rp, "<a:t>").concat(xmlEsc(t), "</a:t></a:r>");
+  };
+  const endP = info.baseRpr.replace(/^<a:rPr/, "<a:endParaRPr").replace(/<\/a:rPr>$/, "</a:endParaRPr>");
+  for (let j = 0; j < lines.length; ) {
+    const oi = map[j];
+    if (oi >= 0) {
+      const pi = info.lines[oi].para, span = info.lines.filter((x) => x.para === pi), first = info.lines.indexOf(span[0]);
+      if (oi === first && span.every((x, k) => map[j + k] === first + k)) {
+        out.push(info.paraXml[pi]);
+        j += span.length;
+        continue;
+      }
+      out.push("<a:p>".concat(info.lines[oi].xml.join("")).concat(endP, "</a:p>"));
+      j++;
+      continue;
+    }
+    const runs = mdRuns(lines[j]);
+    out.push("<a:p>".concat(runs.map((r) => newRun(r.t, r.b, r.link)).join("")).concat(endP, "</a:p>"));
+    j++;
+  }
+  return { xml: out.join(""), rels };
+}
+function rtLayout(ctx, paras, wPt, defSz = 10) {
+  const lines = [];
+  const font = (r) => "".concat(r.b ? "bold " : "").concat(r.sz || defSz, "px ").concat(RT_FONT);
+  for (const runs of paras) {
+    const sz0 = Math.max(defSz, ...runs.map((r) => r.sz || defSz));
+    let line = [], lw = 0;
+    const flush = () => {
+      lines.push({ segs: line, h: sz0 * RT_LH, sz: sz0 });
+      line = [];
+      lw = 0;
+    };
+    for (const r of runs) {
+      ctx.font = font(r);
+      for (const tok of r.t.split(/(\s+)/)) {
+        if (!tok) continue;
+        const w = ctx.measureText(tok).width;
+        if (lw + w > wPt && line.length && !/^\s+$/.test(tok)) {
+          while (line.length && /^\s+$/.test(line[line.length - 1].t)) lw -= line.pop().w;
+          flush();
+        }
+        if (!line.length && /^\s+$/.test(tok)) continue;
+        line.push({ ...r, t: tok, w, x: lw });
+        lw += w;
+      }
+    }
+    flush();
+  }
+  return { lines, h: lines.reduce((a, l) => a + l.h, 0), font };
+}
+function rtPaint(ctx, paras, x0, y0, wPt, k, defSz = 10, color = "#000") {
+  ctx.save();
+  ctx.scale(k, k);
+  const L2 = rtLayout(ctx, paras, wPt, defSz), links = [];
+  let y = 0;
+  ctx.textBaseline = "alphabetic";
+  for (const ln of L2.lines) {
+    const base = y + ln.sz * 0.905 + (ln.h - ln.sz * 1.117) / 2;
+    for (const sg of ln.segs) {
+      ctx.font = L2.font(sg);
+      ctx.fillStyle = sg.color || (sg.link ? "#0563C1" : color);
+      const X = x0 / k + sg.x, Y = y0 / k + base;
+      ctx.fillText(sg.t, X, Y);
+      if (sg.u || sg.link) ctx.fillRect(X, Y + (sg.sz || defSz) * 0.12, sg.w, Math.max(0.5, (sg.sz || defSz) * 0.07));
+      if (sg.link) links.push({ x: sg.x, y, w: sg.w, h: ln.h, url: sg.link });
+    }
+    y += ln.h;
+  }
+  ctx.restore();
+  return { h: y, links };
+}
+const mctxRT = document.createElement("canvas").getContext("2d");
+const NOTE_SZ = 12;
+function noteLayout(text) {
+  const t = String(text || "").replace(/\s+$/, "");
+  if (!t.trim()) return { box: BOX, note: null };
+  const paras = mdParas(t), wPt = BOX.w / PT;
+  let sz = NOTE_SZ, h = rtLayout(mctxRT, paras, wPt, sz).h;
+  while (h * PT > BOX.h * 0.45 && sz > 6) {
+    sz -= 0.5;
+    h = rtLayout(mctxRT, paras, wPt, sz).h;
+  }
+  const hE = Math.ceil(h * PT), dy = hE + GAP;
+  return { box: { x: BOX.x, y: BOX.y + dy, w: BOX.w, h: BOX.h - dy }, note: { paras, sz, rect: [BOX.x, BOX.y, BOX.w, hE] } };
+}
+const noteKey = (items) => items.length ? items[0].key || "" : "";
+const noteText = (key2) => project.tz.notes && project.tz.notes[key2] || "";
+function noteShapeXml(id, note) {
+  const [x, y, w, h] = note.rect, sz = Math.round(note.sz * 100);
+  const rp = (b) => '<a:rPr lang="ru-RU" sz="'.concat(sz, '"').concat(b ? ' b="1"' : "", ' dirty="0"><a:solidFill><a:srgbClr val="222222"/></a:solidFill><a:latin typeface="Arial"/><a:cs typeface="Arial"/></a:rPr>');
+  const ps = note.paras.map((runs) => "<a:p>".concat(runs.map((r) => "<a:r>".concat(rp(r.b), "<a:t>").concat(xmlEsc(r.t), "</a:t></a:r>")).join(""), '<a:endParaRPr lang="ru-RU" sz="').concat(sz, '" dirty="0"/></a:p>')).join("");
+  return '<p:sp><p:nvSpPr><p:cNvPr id="'.concat(id, '" name="Свой текст"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="').concat(x, '" y="').concat(y, '"/><a:ext cx="').concat(w, '" cy="').concat(h, '"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/></p:spPr><p:txBody><a:bodyPr wrap="square" lIns="0" tIns="0" rIns="0" bIns="0" rtlCol="0"><a:noAutofit/></a:bodyPr><a:lstStyle/>').concat(ps, "</p:txBody></p:sp>");
+}
+async function rtImage(paras, wPt, hPt, defSz, k = 4) {
+  const W = Math.max(1, Math.round(wPt * k)), H = Math.max(1, Math.round(hPt * k));
+  const cv = document.createElement("canvas");
+  cv.width = W;
+  cv.height = H;
+  const c = cv.getContext("2d", { willReadFrequently: true, alpha: false });
+  c.fillStyle = "#fff";
+  c.fillRect(0, 0, W, H);
+  const r = rtPaint(c, paras, 0, 0, wPt, k, defSz, "#000");
+  const px = c.getImageData(0, 0, W, H).data, rgb = new Uint8Array(W * H * 3);
+  for (let i = 0, j = 0; i < px.length; i += 4, j += 3) {
+    rgb[j] = px[i];
+    rgb[j + 1] = px[i + 1];
+    rgb[j + 2] = px[i + 2];
+  }
+  return { w: W, h: H, data: await zlibDeflate(rgb), links: r.links };
+}
+async function buildPptx(tplB64, masks, overview, label) {
   const files = await unzip(b64ToBytes(tplB64)), map = new Map(files.map((f) => [f.name, f.data]));
   const order = files.map((f) => f.name);
   const txt = (n) => dec.decode(map.get(n));
   const slide2 = txt("ppt/slides/slide2.xml"), rels2 = txt("ppt/slides/_rels/slide2.xml.rels");
+  const info = label ? await tplInfo(label) : null;
+  if (info && reqEdited(info)) {
+    const s1 = txt("ppt/slides/slide1.xml"), body = info.sp.slice(info.sp.indexOf("<a:lstStyle/>") + 13, info.sp.lastIndexOf("</p:txBody>"));
+    const rx = reqXml(info, reqText(label)), sp2 = info.sp.replace(body, rx.xml);
+    map.set("ppt/slides/slide1.xml", enc.encode(s1.replace(info.sp, sp2)));
+    if (rx.rels.length) {
+      const rn = "ppt/slides/_rels/slide1.xml.rels";
+      map.set(rn, enc.encode(txt(rn).replace("</Relationships>", rx.rels.map((r) => '<Relationship Id="'.concat(r.id, '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="').concat(xmlEsc(r.url), '" TargetMode="External"/>')).join("") + "</Relationships>")));
+    }
+  }
   let pres = txt("ppt/presentation.xml"), presRels = txt("ppt/_rels/presentation.xml.rels"), types = txt("[Content_Types].xml");
   const slideTpl = slide2.replace(/<p:pic>[\s\S]*?<\/p:pic>/g, "");
   const relItems = rels2.match(/<Relationship\b[^>]*\/>/g) || [];
@@ -3361,9 +3647,11 @@ async function buildPptx(tplB64, masks, overview) {
     const base = gi === 0 ? keep : keepClone;
     let rid = maxId(/Id="rId(\d+)"/g, base.join(""), 1);
     const shapes = [], rels = [];
-    const items = groups[gi].kind === "overview" ? [{ png: overview.jpeg, w: overview.w, h: overview.h, label: "Общий план", ext: "jpeg" }] : g.map((mi) => masks[mi]);
+    const items = groups[gi].kind === "overview" ? [{ png: overview.jpeg, w: overview.w, h: overview.h, label: "Общий план", ext: "jpeg", key: "ov" }] : g.map((mi) => masks[mi]);
+    const NL = noteLayout(noteText(noteKey(items)));
+    if (NL.note) shapes.push(noteShapeXml(90, NL.note));
     items.forEach((m, j) => {
-      const lay = maskCellLayout(hz, items.length, j, m.w, m.h), [cx0, cy0, cw] = lay.label;
+      const lay = maskCellLayout(hz, items.length, j, m.w, m.h, NL.box), [cx0, cy0, cw] = lay.label;
       shapes.push('<p:sp><p:nvSpPr><p:cNvPr id="'.concat(100 + j, '" name="Mask info ').concat(j + 1, '"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="').concat(cx0, '" y="').concat(cy0, '"/><a:ext cx="').concat(cw, '" cy="').concat(LABEL_H, '"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></p:spPr><p:txBody><a:bodyPr wrap="none" lIns="0" rIns="0" tIns="0" bIns="0" anchor="ctr"/><a:lstStyle/><a:p><a:pPr algn="ctr"/><a:r><a:rPr lang="ru-RU" sz="1000"><a:solidFill><a:srgbClr val="222222"/></a:solidFill><a:latin typeface="Arial"/><a:ea typeface="Arial"/><a:cs typeface="Arial"/></a:rPr><a:t>').concat(xmlEsc(m.label), '</a:t></a:r><a:endParaRPr lang="ru-RU" sz="1100"/></a:p></p:txBody></p:sp>'));
       const [x, y, ew, eh] = lay.image;
       const img = "mask_".concat(gi + 1, "_").concat(j + 1, ".").concat(m.ext || "png");
@@ -3466,28 +3754,48 @@ async function buildPdf(label, masks, overview) {
     return stream("/Type /XObject /Subtype /Image /Width ".concat(w, " /Height ").concat(h, " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode"), d);
   };
   const catalog = add(null), pagesId = add(null);
-  const bg1 = jpeg(PDF_BG[label]), bg2 = jpeg(PDF_BG.masks);
+  const info = await tplInfo(label), edited = reqEdited(info);
+  const bg1 = edited ? null : jpeg(PDF_BG[label]), bg2 = jpeg(PDF_BG.masks);
   const pages = [], f = (n) => n.toFixed(4);
   const full = "q ".concat(f(PDF_W), " 0 0 ").concat(f(PDF_H), " 0 0 cm /BG Do Q\n");
-  const page = (xobj, content, annots = "") => {
+  const page = (xobj, content, annots2 = "") => {
     const cs = stream("", str(content));
-    pages.push(add(str("<< /Type /Page /Parent ".concat(pagesId, " 0 R /MediaBox [0 0 ").concat(f(PDF_W), " ").concat(f(PDF_H), "] /Resources << /XObject << ").concat(xobj.map(([n, id]) => "/".concat(n, " ").concat(id, " 0 R")).join(" "), " >> >> /Contents ").concat(cs, " 0 R").concat(annots, " >>"))));
+    pages.push(add(str("<< /Type /Page /Parent ".concat(pagesId, " 0 R /MediaBox [0 0 ").concat(f(PDF_W), " ").concat(f(PDF_H), "] /Resources << /XObject << ").concat(xobj.map(([n, id]) => "/".concat(n, " ").concat(id, " 0 R")).join(" "), " >> >> /Contents ").concat(cs, " 0 R").concat(annots2, " >>"))));
   };
-  const ann = (PDF_LINKS[label] || []).map(([[x0, y0, x1, y1], uri]) => add(str("<< /Type /Annot /Subtype /Link /Rect [".concat(x0, " ").concat(y0, " ").concat(x1, " ").concat(y1, "] /Border [0 0 0] /A << /S /URI /URI (").concat(uri, ") >> >>"))));
-  page([["BG", bg1]], full, ann.length ? " /Annots [".concat(ann.map((a) => a + " 0 R").join(" "), "]") : "");
+  const linkAnn = ([x0, y0, x1, y1], uri) => add(str("<< /Type /Annot /Subtype /Link /Rect [".concat(x0, " ").concat(y0, " ").concat(x1, " ").concat(y1, "] /Border [0 0 0] /A << /S /URI /URI (").concat(uri.replace(/[()\\]/g, (m) => "\\" + m), ") >> >>")));
+  const annots = (a) => a.length ? " /Annots [".concat(a.map((x) => x + " 0 R").join(" "), "]") : "";
+  if (!edited) {
+    const ann = (PDF_LINKS[label] || []).map(([r, uri]) => linkAnn(r, uri));
+    page([["BG", bg1]], full, annots(ann));
+  } else {
+    const r = info.rect, tx = (r.x + info.ins.l) / EMU_PT, ty = (r.y + info.ins.t) / EMU_PT, tw = (r.w - 2 * info.ins.l) / EMU_PT;
+    const paras = reqParas(info, reqText(label)), th = Math.min(PDF_H - ty - 60, Math.max(20, rtLayout(mctxRT, paras, tw, info.baseSz).h + 4));
+    const img = await rtImage(paras, tw, th, info.baseSz);
+    const tid = stream("/Type /XObject /Subtype /Image /Width ".concat(img.w, " /Height ").concat(img.h, " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /FlateDecode"), img.data);
+    const ann = img.links.filter((l) => l.y < th).map((l) => linkAnn([f(tx + l.x), f(PDF_H - ty - l.y - l.h), f(tx + l.x + l.w), f(PDF_H - ty - l.y)], l.url));
+    page([["BG", bg2], ["T0", tid]], full + "q ".concat(f(tw), " 0 0 ").concat(f(th), " ").concat(f(tx), " ").concat(f(PDF_H - ty - th), " cm /T0 Do Q\n"), annots(ann));
+  }
+  const notePdf = async (NL, xo, name) => {
+    if (!NL.note) return "";
+    const [x, y, w, h] = toPdf(NL.note.rect), img = await rtImage(NL.note.paras, w, h, NL.note.sz);
+    xo.push([name, stream("/Type /XObject /Subtype /Image /Width ".concat(img.w, " /Height ").concat(img.h, " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /FlateDecode"), img.data)]);
+    return "q ".concat(f(w), " 0 0 ").concat(f(h), " ").concat(f(x), " ").concat(f(y), " cm /").concat(name, " Do Q\n");
+  };
   const toPdf = ([x, y, w, h]) => [x / EMU_PT, PDF_H - (y + h) / EMU_PT, w / EMU_PT, h / EMU_PT];
   if (overview) {
-    const lay = maskCellLayout(true, 1, 0, overview.w, overview.h), [lx, ly, lw, lh] = toPdf(lay.label), [ix, iy, iw, ih] = toPdf(lay.image);
+    const NL = noteLayout(noteText("ov")), xo = [];
+    const nc = await notePdf(NL, xo, "N0");
+    const lay = maskCellLayout(true, 1, 0, overview.w, overview.h, NL.box), [lx, ly, lw, lh] = toPdf(lay.label), [ix, iy, iw, ih] = toPdf(lay.image);
     const lab = await labelImage("Общий план", lw, lh);
     const lid = stream("/Type /XObject /Subtype /Image /Width ".concat(lab.w, " /Height ").concat(lab.h, " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /FlateDecode"), lab.data);
     const oid = stream("/Type /XObject /Subtype /Image /Width ".concat(overview.w, " /Height ").concat(overview.h, " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode"), overview.jpeg);
-    page([["BG", bg2], ["L0", lid], ["O0", oid]], full + "q ".concat(f(lw), " 0 0 ").concat(f(lh), " ").concat(f(lx), " ").concat(f(ly), " cm /L0 Do Q\nq ").concat(f(iw), " 0 0 ").concat(f(ih), " ").concat(f(ix), " ").concat(f(iy), " cm /O0 Do Q\n"));
+    page([["BG", bg2], ["L0", lid], ["O0", oid], ...xo], full + nc + "q ".concat(f(lw), " 0 0 ").concat(f(lh), " ").concat(f(lx), " ").concat(f(ly), " cm /L0 Do Q\nq ").concat(f(iw), " 0 0 ").concat(f(ih), " ").concat(f(ix), " ").concat(f(iy), " cm /O0 Do Q\n"));
   }
   for (const { hz, g } of groupMasks(masks)) {
-    const xo = [["BG", bg2]];
-    let content = full;
+    const xo = [["BG", bg2]], NL = noteLayout(noteText(noteKey(g.map((i) => masks[i]))));
+    let content = full + await notePdf(NL, xo, "N0");
     for (let j = 0; j < g.length; j++) {
-      const m = masks[g[j]], lay = maskCellLayout(hz, g.length, j, m.w, m.h);
+      const m = masks[g[j]], lay = maskCellLayout(hz, g.length, j, m.w, m.h, NL.box);
       const [lx, ly, lw, lh] = toPdf(lay.label), [ix, iy, iw, ih] = toPdf(lay.image);
       const lab = await labelImage(m.label, lw, lh);
       const lid = stream("/Type /XObject /Subtype /Image /Width ".concat(lab.w, " /Height ").concat(lab.h, " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /FlateDecode"), lab.data);
@@ -3699,13 +4007,14 @@ async function exportTZ(label) {
       busy("Рендер ".concat(n + 1, " из ").concat(items.length, ": ").concat(it.w, "×").concat(it.h, "…"));
       await tick();
       const r = it.kind === "field" ? await renderFieldPNG(it.f) : await renderPNG(it.st);
-      pngs.push({ ...r, file: "".concat(folder).concat(uniq(it.kind === "field" ? fieldFileBase(it.f) : maskFileBase(it.st)), ".png"), label: it.label });
+      pngs.push({ ...r, file: "".concat(folder).concat(uniq(it.kind === "field" ? fieldFileBase(it.f) : maskFileBase(it.st)), ".png"), label: it.label, key: it.key });
     }
     const ov = tzOverview();
     busy("Сборка PPTX…");
     await tick();
-    const masks = pngs.map((p) => ({ png: p.png, w: p.w, h: p.h, label: p.label }));
-    const pptBytes = new Uint8Array(await (await buildPptx(TPL[label], masks, ov)).arrayBuffer());
+    const masks = pngs.map((p) => ({ png: p.png, w: p.w, h: p.h, label: p.label, key: p.key }));
+    await tplInfo(label);
+    const pptBytes = new Uint8Array(await (await buildPptx(TPL[label], masks, ov, label)).arrayBuffer());
     busy("Сборка PDF…");
     await tick();
     const pdfBytes = new Uint8Array(await (await buildPdf(label, masks, ov)).arrayBuffer());
@@ -3777,7 +4086,7 @@ function freshField(k) {
   return { id: newUid(), name: k ? "Общее поле ".concat(k + 1) : "Общее поле", items: [], title: { on: true, x: 0, y: 0, size: 0, meters: false } };
 }
 function freshFieldState() {
-  return { fields: [freshField(0)], fieldCur: 0, tz: { fields: {}, masks: {}, overview: true } };
+  return { fields: [freshField(0)], fieldCur: 0, tz: { fields: {}, masks: {}, overview: true, req: {}, notes: {} } };
 }
 function loadFieldState(d, raw) {
   const seen = /* @__PURE__ */ new Set();
@@ -3813,7 +4122,14 @@ function loadFieldState(d, raw) {
     if (m && typeof m === "object" && !Array.isArray(m)) for (const [k, v] of Object.entries(m)) o[k] = !!v;
     return o;
   };
-  project.tz = { fields: boolMap(tz.fields), masks: boolMap(tz.masks), overview: tz.overview == null ? true : !!tz.overview };
+  const strMap = (m) => {
+    const o = {};
+    if (m && typeof m === "object" && !Array.isArray(m)) {
+      for (const [k, v] of Object.entries(m)) if (typeof v === "string") o[k] = v;
+    }
+    return o;
+  };
+  project.tz = { fields: boolMap(tz.fields), masks: boolMap(tz.masks), overview: tz.overview == null ? true : !!tz.overview, req: strMap(tz.req), notes: strMap(tz.notes) };
 }
 const CF = () => project.fields[Math.max(0, Math.min(project.fields.length - 1, project.fieldCur || 0))];
 const evenUp = (v) => {
@@ -4559,11 +4875,11 @@ function tzItems() {
   const out = [];
   for (const f of project.fields) if (tzFieldOn(f)) {
     const fi = fieldInfo(f);
-    if (fi) out.push({ kind: "field", f, name: f.name, ...fi });
+    if (fi) out.push({ kind: "field", f, key: "f:" + f.id, name: f.name, ...fi });
   }
   for (const st of project.screens) if (tzMaskOn(st)) {
     const [w, h] = dims(st);
-    out.push({ kind: "mask", st, name: st.name || "screen", w, h, label: "".concat(w, "×").concat(h, "  |  ").concat(st.name || "screen", "  |  ").concat(physText(st)) });
+    out.push({ kind: "mask", st, key: "m:" + st.uid, name: st.name || "screen", w, h, label: "".concat(w, "×").concat(h, "  |  ").concat(st.name || "screen", "  |  ").concat(physText(st)) });
   }
   return out;
 }
@@ -4634,8 +4950,77 @@ function refreshTZPanel() {
   if (ov) $("tOvImg").src = ov.url;
   $("tTpl").value = ui.tzTpl;
   $("tSave").textContent = "Сохранить ТЗ ".concat(ui.tzTpl);
+  refreshTZText();
   updateTZSummary();
 }
+function refreshTZText() {
+  const label = ui.tzTpl, ta = $("tReq");
+  $("tReqLbl").innerHTML = "<b>Слайд 1</b> — требования шаблона ".concat(xmlEsc(label));
+  tplInfo(label).then((info) => {
+    if (ui.tzTpl !== label || document.activeElement === ta) return;
+    const v = reqText(label);
+    ta.value = v != null ? v : info.md;
+    $("tReqReset").disabled = !reqEdited(info);
+  }).catch((e) => {
+    ta.value = "";
+    status("Шаблон не прочитан: " + e.message, true);
+  });
+  const box = $("tNotes"), items = tzItems(), ov = tzOverview(), slides = [];
+  if (ov) slides.push({ key: "ov", title: "Общий план" });
+  for (const g of groupMasks(items)) {
+    const its = g.g.map((i) => items[i]);
+    slides.push({ key: noteKey(its), title: its.map((i) => i.kind === "field" ? i.f.name : i.name).join(", ") });
+  }
+  const keep = new Map([...box.querySelectorAll("textarea")].map((t) => [t.dataset.key, t]));
+  const frag = document.createDocumentFragment();
+  slides.forEach((sl, i) => {
+    const lbl = document.createElement("div");
+    lbl.className = "tzt-lbl";
+    lbl.innerHTML = "<b>Слайд ".concat(i + 2, "</b> — ").concat(xmlEsc(sl.title));
+    let t = keep.get(sl.key);
+    if (!t) {
+      t = document.createElement("textarea");
+      t.className = "tzt";
+      t.rows = 2;
+      t.dataset.key = sl.key;
+      t.spellcheck = false;
+      t.placeholder = "Свой текст на этом слайде (необязательно)";
+      t.addEventListener("input", () => {
+        const v = t.value;
+        if (v.trim()) project.tz.notes[t.dataset.key] = v;
+        else delete project.tz.notes[t.dataset.key];
+        requestDraw();
+        scheduleAutosave();
+        scheduleHistory();
+      });
+    }
+    if (document.activeElement !== t) t.value = noteText(sl.key);
+    frag.append(lbl, t);
+  });
+  box.innerHTML = "";
+  box.appendChild(frag);
+}
+$("tReq").addEventListener("input", () => {
+  const label = ui.tzTpl, info = tplCache[label];
+  if (!info) return;
+  const v = $("tReq").value;
+  if (v.replace(/\r/g, "") === info.md) delete project.tz.req[label];
+  else project.tz.req[label] = v;
+  $("tReqReset").disabled = !reqEdited(info);
+  requestDraw();
+  scheduleAutosave();
+  scheduleHistory();
+});
+$("tReqReset").onclick = () => {
+  delete project.tz.req[ui.tzTpl];
+  const info = tplCache[ui.tzTpl];
+  if (info) $("tReq").value = info.md;
+  $("tReqReset").disabled = true;
+  requestDraw();
+  scheduleAutosave();
+  scheduleHistory();
+  status("Текст 1-го слайда — как в шаблоне " + ui.tzTpl);
+};
 function tzSlides(items, withOv) {
   const groups = groupMasks(items);
   return 1 + (withOv ? 1 : 0) + groups.length;
@@ -4720,6 +5105,7 @@ async function loadImageFile(file) {
 $("tTpl").addEventListener("change", (e) => {
   ui.tzTpl = e.target.value;
   $("tSave").textContent = "Сохранить ТЗ ".concat(ui.tzTpl);
+  refreshTZText();
   requestDraw();
 });
 $("tSave").onclick = () => exportTZ($("tTpl").value);
@@ -4762,10 +5148,28 @@ function drawTZ() {
   const k = sw / 6858e3;
   slides.forEach((sl, si) => {
     const x = x0 + si % cols * (sw + gap), y = y0 + Math.floor(si / cols) * (sh + gap + 16);
-    const bg = bgImg(sl.kind === "title" ? PDF_BG[ui.tzTpl] ? ui.tzTpl : "Resolume" : "masks");
+    const info = tplCache[ui.tzTpl], editedTitle = sl.kind === "title" && info && reqEdited(info);
+    const bg = bgImg(sl.kind === "title" && !editedTitle ? PDF_BG[ui.tzTpl] ? ui.tzTpl : "Resolume" : "masks");
     c.fillStyle = "#fff";
     c.fillRect(x, y, sw, sh);
     if (bg) c.drawImage(bg, x, y, sw, sh);
+    const kp = k * PT;
+    if (editedTitle) {
+      const r = info.rect;
+      c.save();
+      c.beginPath();
+      c.rect(x, y, sw, sh);
+      c.clip();
+      rtPaint(c, reqParas(info, reqText(ui.tzTpl)), x + (r.x + info.ins.l) * k, y + (r.y + info.ins.t) * k, (r.w - 2 * info.ins.l) / PT, kp, info.baseSz, "#000");
+      c.restore();
+    }
+    let NL = { box: BOX, note: null };
+    if (sl.kind === "ov") NL = noteLayout(noteText("ov"));
+    if (sl.kind === "g") NL = noteLayout(noteText(noteKey(sl.g.map((i) => items[i]))));
+    if (NL.note) {
+      const [nx, ny, nw] = NL.note.rect;
+      rtPaint(c, NL.note.paras, x + nx * k, y + ny * k, nw / PT, kp, NL.note.sz, "#222");
+    }
     const cell = (lay, img, text) => {
       const [lx, ly, lw, lh] = lay.label, [ix, iy, iw, ih] = lay.image;
       if (img) c.drawImage(img, x + ix * k, y + iy * k, iw * k, ih * k);
@@ -4777,10 +5181,10 @@ function drawTZ() {
       c.textAlign = "left";
       c.textBaseline = "alphabetic";
     };
-    if (sl.kind === "ov") cell(maskCellLayout(true, 1, 0, ov.w, ov.h), ov.img, "Общий план");
+    if (sl.kind === "ov") cell(maskCellLayout(true, 1, 0, ov.w, ov.h, NL.box), ov.img, "Общий план");
     if (sl.kind === "g") sl.g.forEach((mi, j) => {
       const it = items[mi];
-      cell(maskCellLayout(sl.hz, sl.g.length, j, it.w, it.h), it.kind === "field" ? fieldThumb(it.f) : thumb({ uid: it.st.uid, st: it.st, w0: it.w, h0: it.h }), it.label);
+      cell(maskCellLayout(sl.hz, sl.g.length, j, it.w, it.h, NL.box), it.kind === "field" ? fieldThumb(it.f) : thumb({ uid: it.st.uid, st: it.st, w0: it.w, h0: it.h }), it.label);
     });
     c.strokeStyle = "#2b3946";
     c.lineWidth = 1;
@@ -5016,6 +5420,7 @@ function startPlatform() {
   }
   if (SELFTEST) setTimeout(() => runSelfTest(), 1500);
 }
+$("verText").textContent = "Версия ".concat(APP_VERSION, " · ").concat(PLATFORM_LABEL);
 if (PLATFORM !== "web") startPlatform();
 else if (STANDALONE) {
   pywebviewReady.then(async () => {
