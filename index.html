@@ -259,6 +259,9 @@ input[type=number] {
 input.w-sm {
   width: 62px;
 }
+input.w-md {
+  width: 76px;
+}
 input[readonly] {
   color: var(--muted);
 }
@@ -1263,10 +1266,9 @@ html[data-page=about] #pv {
         <button data-kind="led" aria-pressed="true">LED-экран</button><button data-kind="proj" aria-pressed="false">Проекция</button>
       </div>
       <div class="row led-only"><label for="cabType">Тип кабинета</label><div class="ctl"><select id="cabType" class="grow"></select></div></div>
-      <div class="row led-only"><label for="wpx">Пикселей по горизонтали</label><div class="ctl"><input type="number" id="wpx" min="1" inputmode="numeric"><span class="unit">px</span></div></div>
-      <div class="row led-only"><label for="hpx">Пикселей по вертикали</label><div class="ctl"><input type="number" id="hpx" min="1" inputmode="numeric"><span class="unit">px</span></div></div>
-      <div class="row led-only"><label for="cols">Кабинетов по гориз. / ширина</label><div class="ctl"><input type="number" id="cols" min="1" class="w-sm" inputmode="numeric"><span class="unit">каб.</span><input type="text" id="physW" class="num" style="width:72px;text-align:right" inputmode="decimal" aria-label="Ширина, м"><span class="unit">м</span></div></div>
-      <div class="row led-only"><label for="rows">Кабинетов по верт. / высота</label><div class="ctl"><input type="number" id="rows" min="1" class="w-sm" inputmode="numeric"><span class="unit">каб.</span><input type="text" id="physH" class="num" style="width:72px;text-align:right" inputmode="decimal" aria-label="Высота, м"><span class="unit">м</span></div></div>
+      <div class="row led-only"><label for="wpx">Пиксели кабинета</label><div class="ctl"><input type="number" id="wpx" min="1" class="w-md" inputmode="numeric" aria-label="Ширина кабинета, px"><span class="unit">×</span><input type="number" id="hpx" min="1" class="w-md" inputmode="numeric" aria-label="Высота кабинета, px"><span class="unit">px</span></div></div>
+      <div class="row led-only"><label for="cols">Кабинеты</label><div class="ctl"><input type="number" id="cols" min="1" class="w-md" inputmode="numeric" aria-label="Кабинетов по горизонтали"><span class="unit">×</span><input type="number" id="rows" min="1" class="w-md" inputmode="numeric" aria-label="Кабинетов по вертикали"><span class="unit">шт.</span></div></div>
+      <div class="row led-only"><label for="physW">Размер</label><div class="ctl"><input type="text" id="physW" class="num w-md" style="text-align:right" inputmode="decimal" aria-label="Ширина, м"><span class="unit">×</span><input type="text" id="physH" class="num w-md" style="text-align:right" inputmode="decimal" aria-label="Высота, м"><span class="unit">м</span></div></div>
       <div class="row led-only"><label for="pixColor">Цвет маски</label><div class="ctl"><input type="color" id="pixColor"><span class="unit num" id="pixRGB"></span></div></div>
       <div class="row led-only"><label for="numColor">Цвет нумерации</label><div class="ctl"><input type="color" id="numColor"><span class="unit num" id="numRGB"></span></div></div>
     </div></details>
@@ -1274,11 +1276,11 @@ html[data-page=about] #pv {
     <details class="sec proj-only" open><summary>ПРОЕКЦИЯ</summary><div class="sec-body">
       <p class="hint">Тест-паттерн для проекторов: сетка, рамки и номера проекторов, зоны перекрытия, круги. Общее разрешение считается само.</p>
       <div class="row"><label for="pjPreset">Проектор</label><div class="ctl"><select id="pjPreset" class="grow"></select></div></div>
-      <div class="row"><label for="pjW">Разрешение проектора</label><div class="ctl"><input type="number" id="pjW" min="16" inputmode="numeric"><span class="unit">×</span><input type="number" id="pjH" min="16" inputmode="numeric"></div></div>
-      <div class="row"><label for="pjNx">Проекторов гориз. × верт.</label><div class="ctl"><input type="number" id="pjNx" min="1" max="32" class="w-sm" inputmode="numeric"><span class="unit">×</span><input type="number" id="pjNy" min="1" max="32" class="w-sm" inputmode="numeric"></div></div>
+      <div class="row"><label for="pjW">Пиксели проектора</label><div class="ctl"><input type="number" id="pjW" min="16" class="w-md" inputmode="numeric"><span class="unit">×</span><input type="number" id="pjH" min="16" class="w-md" inputmode="numeric"><span class="unit">px</span></div></div>
+      <div class="row"><label for="pjNx">Проекторы</label><div class="ctl"><input type="number" id="pjNx" min="1" max="32" class="w-md" inputmode="numeric"><span class="unit">×</span><input type="number" id="pjNy" min="1" max="32" class="w-md" inputmode="numeric"><span class="unit">шт.</span></div></div>
+      <div class="row"><label for="pjWm">Размер</label><div class="ctl"><input type="number" id="pjWm" min="0" step="0.01" class="w-md" inputmode="decimal" aria-label="Ширина изображения, м"><span class="unit">×</span><input type="number" id="pjHm" min="0" step="0.01" class="w-md" inputmode="decimal" aria-label="Высота изображения, м"><span class="unit">м</span></div></div>
       <div class="row"><label for="pjOx">Перекрытие гориз. / верт.</label><div class="ctl"><input type="number" id="pjOx" min="0" max="50" step="0.5" class="w-sm" inputmode="decimal"><span class="unit">%</span><input type="number" id="pjOy" min="0" max="50" step="0.5" class="w-sm" inputmode="decimal"><span class="unit">%</span></div></div>
       <div class="row"><label for="pjGrid">Шаг сетки</label><div class="ctl"><input type="number" id="pjGrid" min="8" inputmode="numeric"><span class="unit">px</span></div></div>
-      <div class="row"><label for="pjWm">Ширина изображения</label><div class="ctl"><input type="number" id="pjWm" min="0" step="0.01" inputmode="decimal"><span class="unit">м (0 — не задана)</span></div></div>
       <div class="row"><label for="pjBg">Фон / линии</label><div class="ctl"><input type="color" id="pjBg"><input type="color" id="pjLine"></div></div>
       <div class="ctl" style="row-gap:6px">
         <label class="chk"><input type="checkbox" id="pjZones"> Зоны перекрытия</label>
@@ -1442,8 +1444,8 @@ html[data-page=about] #pv {
 <p>На этой вкладке настраивается один экран. Под холстом — лента миниатюр всех экранов проекта: нажатие открывает экран, «+» добавляет новый.</p>
 <h3>Экран и кабинеты</h3>
 <ol>
-<li>Выберите <strong>Тип кабинета</strong> — подставятся разрешение кабинета, физический размер и цвет маски. Нет в списке — введите пиксели по горизонтали и вертикали вручную.</li>
-<li>Задайте число кабинетов по ширине и высоте — или размер в метрах: программа подберёт ближайшее целое число кабинетов (7,8 м при кабинете 0,5 м → 16 кабинетов → 8 м).</li>
+<li>Выберите <strong>Тип кабинета</strong> — подставятся разрешение кабинета, физический размер и цвет маски. Нет в списке — введите вручную строку <strong>«Пиксели кабинета»</strong> (ширина × высота).</li>
+<li>Три строки, везде «ширина × высота»: 1-я — пиксели кабинета, 2-я — <strong>«Кабинеты»</strong> (сколько штук), 3-я — <strong>«Размер»</strong> в метрах. Можно задать кабинеты или метры: программа подберёт ближайшее целое число кабинетов (7,8 м при кабинете 0,5 м → 16 кабинетов → 8 м).</li>
 <li>Цвет маски и цвет нумерации меняются своими квадратиками цвета.</li>
 </ol>
 <p>Несколько экранов в проекте: «+ Экран» добавляет новый с теми же настройками (но без гашения, покраски, контуров и доп. текста), «−» удаляет текущий.</p>
@@ -2966,6 +2968,10 @@ function syncProjUI() {
   const set = (id, v) => {
     if (document.activeElement !== $(id)) $(id).value = v;
   };
+  {
+    const [W, H] = dims(st), wm = +P.wm || 0;
+    set("pjHm", wm > 0 ? +(wm * H / W).toFixed(3) : 0);
+  }
   set("pjW", P.pw);
   set("pjH", P.ph);
   set("pjNx", P.nx);
@@ -3001,6 +3007,15 @@ projNum("pjW", "pw", false, 16);
 projNum("pjH", "ph", false, 16);
 projNum("pjNx", "nx", false, 1);
 projNum("pjNy", "ny", false, 1);
+$("pjHm").addEventListener("input", () => {
+  const v = parseFloat(String($("pjHm").value).replace(",", "."));
+  if (isFinite(v) && v >= 0) {
+    const [W, H] = dims(S());
+    S().proj.wm = +(v * W / H).toFixed(4);
+    syncProjUI();
+    changed({ forcePhys: true });
+  }
+});
 projNum("pjOx", "ox", true);
 projNum("pjOy", "oy", true);
 projNum("pjGrid", "grid", false, 8);
