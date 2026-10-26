@@ -112,8 +112,18 @@ button.x:hover { background: var(--export-hi); }
 .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
 .zoom { display: inline-flex; align-items: center; gap: 4px; margin-left: auto; }
 .undo { display: inline-flex; align-items: center; gap: 4px; }
-html.field .seg.tools, html.field .toolbar .zoom, html.field .panel > details.sec:not(.fsec):not(.psec) { display: none; }
-html:not(.field) .fsec, html:not(.field) .ftools { display: none !important; }
+html:not([data-page="mask"]) .seg.tools, html:not([data-page="mask"]) .toolbar .zoom { display: none; }
+html[data-page="field"] .panel > details.sec:not(.fsec):not(.psec), html[data-page="tz"] .panel > details.sec:not(.tsec):not(.psec) { display: none; }
+html:not([data-page="field"]) .fsec, html:not([data-page="field"]) .ftools, html:not([data-page="tz"]) .tsec, html:not([data-page="tz"]) .ttools { display: none !important; }
+.ttools { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; font-size: 12px; color: var(--muted); }
+.ftabs { display: flex; flex-wrap: wrap; gap: 4px; }
+.ftabs button { background: var(--raise); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 12.5px; color: var(--muted); }
+.ftabs button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 700; }
+.tgroup { font-size: 11px; font-weight: 700; letter-spacing: .06em; color: var(--muted); margin-top: 6px; }
+.fitem.sub { padding-left: 26px; }
+.fitem.head .nm { font-weight: 700; }
+button.x:disabled { background: var(--raise); border-color: var(--line); color: var(--muted); cursor: default; }
+.ovthumb { max-width: 100%; max-height: 120px; border-radius: 6px; border: 1px solid var(--line); display: block; }
 .ftools { display: inline-flex; align-items: center; gap: 4px; margin-left: auto; }
 .ftools .num { font-size: 12px; color: var(--muted); min-width: 46px; text-align: center; }
 .flist { display: flex; flex-direction: column; gap: 2px; }
@@ -174,14 +184,34 @@ html:not(.field) .fsec, html:not(.field) .ftools { display: none !important; }
     </div></details>
 
     <details class="sec fsec" open><summary>ОБЩЕЕ ПОЛЕ</summary><div class="sec-body">
-      <p class="hint">Отметьте экраны, которые стоят на общем поле, и двигайте их на холсте. С магнитом края притягиваются друг к другу. Alt — без магнита, стрелки — на 1 px (Shift — на 10 px), двойной клик — открыть экран. Надпись поля тоже двигается мышью или пальцем.</p>
+      <div class="ftabs" id="fTabs"></div>
+      <div class="btns"><button class="b" id="fRename">Переименовать</button><button class="b" id="fDelete">Удалить поле</button></div>
+      <p class="hint">Отметьте экраны этого поля и двигайте их на холсте. С магнитом края притягиваются друг к другу. Alt — без магнита, стрелки — на 1 px (Shift — на 10 px), двойной клик — открыть экран. Надпись поля тоже двигается. Размер поля всегда чётный.</p>
       <div class="flist" id="fList"></div>
       <div class="btns"><button class="b" id="fAll">Все на поле</button><button class="b" id="fRow">В ряд</button><button class="b" id="fCol">В столбик</button><button class="b" id="fClear">Убрать все</button></div>
       <div class="row"><span class="lbl">Магнит</span><div class="ctl"><label class="chk"><input type="checkbox" id="fMagnet" checked> притягивать края</label></div></div>
-      <div class="row"><span class="lbl">Надпись</span><div class="ctl"><label class="chk"><input type="checkbox" id="fTitle" checked> «Общее поле» и разрешение</label><button class="b" id="fTitleCenter">В центр</button></div></div>
-      <div class="row" id="fSelRow"><span class="lbl" id="fSelName">Выбран экран</span><div class="ctl"><span class="unit">X</span><input type="number" id="fX" class="w-sm" inputmode="numeric"><span class="unit">Y</span><input type="number" id="fY" class="w-sm" inputmode="numeric"><span class="unit">px</span></div></div>
+      <div class="row"><span class="lbl">Надпись</span><div class="ctl"><label class="chk"><input type="checkbox" id="fTitle" checked> название и разрешение</label><button class="b" id="fTitleCenter">В центр</button></div></div>
+      <div id="fSelBox">
+        <div class="row"><span class="lbl" id="fSelName">Выбран экран</span><div class="ctl"><span class="unit">X</span><input type="number" id="fX" inputmode="numeric"><span class="unit">Y</span><input type="number" id="fY" inputmode="numeric"><span class="unit">px</span></div></div>
+        <div class="row"><span class="lbl">Поворот <span class="num" id="fRotVal">0°</span></span><div class="ctl"><button class="b" id="fRotCCW" title="Против часовой на 45°">⟲ 45°</button><button class="b" id="fRotCW" title="По часовой на 45°">⟳ 45°</button><button class="b" id="fRot0">0°</button></div></div>
+      </div>
       <div class="info" id="fInfo"></div>
       <div class="btns"><button class="x" id="fPNG">Сохранить PNG поля</button></div>
+    </div></details>
+
+    <details class="sec tsec" open><summary>ФОРМИРОВАНИЕ ТЗ</summary><div class="sec-body">
+      <p class="hint">Отметьте, что войдёт в ТЗ. По умолчанию — все маски по отдельности; общие поля добавляются галочкой. На холсте — предпросмотр слайдов.</p>
+      <div class="flist" id="tList"></div>
+      <div class="btns"><button class="b" id="tAllMasks">Все маски</button><button class="b" id="tNoMasks">Без масок</button><button class="b" id="tAllFields">Все поля</button></div>
+      <div class="tgroup">ОБЩИЙ ПЛАН (2-Й СЛАЙД)</div>
+      <label class="chk"><input type="checkbox" id="tOverview" checked> Добавить картинку общего плана во 2-й слайд</label>
+      <div class="btns"><button class="b" id="tOvPick">Выбрать картинку…</button><button class="b" id="tOvClear">Убрать</button></div>
+      <input type="file" id="tOvFile" accept="image/*" hidden>
+      <p class="hint" id="tOvInfo">Картинка не выбрана — слайд не добавится.</p>
+      <img id="tOvImg" class="ovthumb" alt="" hidden>
+      <div class="tgroup">СОХРАНИТЬ ТЗ</div>
+      <div class="btns"><button class="x" id="tSaveR">ТЗ Resolume</button><button class="x" id="tSaveD">ТЗ D3</button><button class="x" id="tSaveM" disabled>ТЗ медиаплееры (MP4)</button></div>
+      <p class="hint" id="tNote">ZIP с папкой: PPTX по шаблону, такой же PDF и PNG каждой маски и поля. Для MP4 шаблон будет добавлен позже.</p>
     </div></details>
 
     <details class="sec" open><summary>ЭКРАН И КАБИНЕТЫ</summary><div class="sec-body">
@@ -223,7 +253,7 @@ html:not(.field) .fsec, html:not(.field) .ftools { display: none !important; }
     </div></details>
 
     <details class="sec" open><summary>ОСНОВНОЙ ТЕКСТ</summary><div class="sec-body">
-      <div class="row"><label for="inscSize">Размер текста</label><div class="ctl"><select id="inscSize"></select><button class="b sq" id="mainPlus">+</button><button class="b sq" id="mainMinus">−</button></div></div>
+      <div class="row"><label for="inscSize">Размер текста</label><div class="ctl"><select id="inscSize"></select><button class="b sq" id="mainMinus">−</button><button class="b sq" id="mainPlus">+</button></div></div>
       <div class="row"><label for="rot">Поворот текста</label><div class="ctl"><select id="rot"></select></div></div>
       <div class="row"><label for="resText">Разрешение (центр)</label><div class="ctl"><input type="text" id="resText" class="num grow" readonly></div></div>
       <div class="row"><label for="scrName">Название (2-я строка)</label><div class="ctl"><input type="text" id="scrName" class="grow"><label class="chk"><input type="checkbox" id="line2"> показ</label></div></div>
@@ -233,7 +263,7 @@ html:not(.field) .fsec, html:not(.field) .ftools { display: none !important; }
     <details class="sec"><summary>ДОПОЛНИТЕЛЬНЫЙ ТЕКСТ</summary><div class="sec-body">
       <div class="row"><label for="activeText">Активный текст</label><div class="ctl"><select id="activeText" class="grow"></select></div></div>
       <div class="btns"><button class="b" id="btnAddText">+ Добавить</button><button class="b" id="btnEditText">Изменить текст</button><button class="b" id="btnDelText">Удалить</button></div>
-      <div class="row"><label for="exSize">Размер текста</label><div class="ctl"><select id="exSize"></select><button class="b sq" id="exPlus">+</button><button class="b sq" id="exMinus">−</button></div></div>
+      <div class="row"><label for="exSize">Размер текста</label><div class="ctl"><select id="exSize"></select><button class="b sq" id="exMinus">−</button><button class="b sq" id="exPlus">+</button></div></div>
       <div class="row"><label for="exRot">Поворот текста</label><div class="ctl"><select id="exRot"></select></div></div>
       <p class="hint">Выбранный текст (и основной) двигается пальцем или мышью прямо на холсте.</p>
     </div></details>
@@ -249,7 +279,7 @@ html:not(.field) .fsec, html:not(.field) .ftools { display: none !important; }
 
     <details class="sec" open><summary>ЭКСПОРТ</summary><div class="sec-body">
       <div class="btns"><button class="x" id="btnPNG">Сохранить PNG</button><button class="x" id="btnAllPNG">Все PNG (ZIP)</button></div>
-      <div class="btns"><button class="x" id="btnTZR">Сохранить ТЗ Resolume</button><button class="x" id="btnTZD">Сохранить ТЗ D3</button></div>
+      <div class="btns"><button class="x" id="btnTZgo">Формирование ТЗ →</button></div>
       <p class="hint" id="exportNote">PNG — в точном разрешении экрана, без потерь. ТЗ — ZIP с папкой: PPTX по шаблону, такой же PDF и PNG каждой маски.</p>
     </div></details>
     <div class="ver">Версия 12.43.27 · Web · ТЕСТ: общее поле</div>
@@ -260,6 +290,7 @@ html:not(.field) .fsec, html:not(.field) .ftools { display: none !important; }
       <div class="seg pages" role="group" aria-label="Страница">
         <button data-page="mask" aria-pressed="true">Маска</button>
         <button data-page="field" aria-pressed="false">Общее поле</button>
+        <button data-page="tz" aria-pressed="false">Формирование ТЗ</button>
       </div>
       <div class="seg tools" role="group" aria-label="Инструмент">
         <button data-tool="select" aria-pressed="true">Выбор</button>
@@ -268,6 +299,7 @@ html:not(.field) .fsec, html:not(.field) .ftools { display: none !important; }
         <button data-tool="pan" aria-pressed="false">Рука</button>
       </div>
       <div class="undo"><button class="b sq" id="btnUndo" title="Отменить (Ctrl/⌘+Z)" aria-label="Отменить шаг" disabled>↶</button><button class="b sq" id="btnRedo" title="Вернуть (Ctrl/⌘+Shift+Z, Ctrl+Y)" aria-label="Вернуть шаг" disabled>↷</button></div>
+      <div class="ttools" id="tSummary"></div>
       <div class="ftools"><button class="b sq" id="fzMinus" aria-label="Уменьшить">−</button><span class="num" id="fzLabel">100%</span><button class="b sq" id="fzPlus" aria-label="Увеличить">+</button><button class="b" id="fzFit">Вписать</button></div>
       <div class="zoom"><button class="b sq" id="zMinus" aria-label="Уменьшить">−</button><span class="num" id="zLabel">100%</span><button class="b sq" id="zPlus" aria-label="Увеличить">+</button><button class="b" id="zAuto">Авто</button></div>
     </div>
@@ -334,6 +366,7 @@ const fromRGB = ([r, g, b]) => col(r / 255, g / 255, b / 255, 1);
 const DEF_NUM_COLOR = col(128 / 255, 128 / 255, 128 / 255);
 const DEF_PAINT = col(0.475, 0.125, 0.025);
 
+function newUid() { return Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4); }
 function defaultScreen(name = "screen 1") {
   const t = TYPES.find(t => t[0] === DEFAULT_TYPE);
   return {
@@ -342,7 +375,7 @@ function defaultScreen(name = "screen 1") {
     pixelColor: fromRGB(t[5]), numberColor: { ...DEF_NUM_COLOR },
     inscriptionIndex: 0, rotationIndex: 0, numberFormatIndex: 0, numberOriginIndex: 0,
     blackCabinets: [], cabinetColors: {}, extraLabels: [], titleOffsetX: 0, titleOffsetY: 0,
-    persistentContours: [], showPersistentContour: true, cornerCabinets: {},
+    persistentContours: [], showPersistentContour: true, cornerCabinets: {}, uid: newUid(),
   };
 }
 
@@ -530,7 +563,7 @@ function cornerList(st, black) {
 }
 
 /* ======================= СОСТОЯНИЕ ======================= */
-let project = { name: "Проект", screens: [defaultScreen()], cur: 0, guides: { circle: true, diag: true }, fieldTitle: { on: true, x: 0, y: 0 } };
+let project = { name: "Проект", screens: [defaultScreen()], cur: 0, guides: { circle: true, diag: true }, ...freshFieldState() };
 const S = () => project.screens[project.cur];
 const ui = { corner: 0, selected: new Set(), anchor: null, textMode: -1, selLabel: -1, zoom: 1, panX: 0, panY: 0, tool: "select", mod: false, hover: null, paint: { ...DEF_PAINT } };
 let downloads = null;
@@ -557,7 +590,7 @@ function normalizeScreen(d) {
   st.titleOffsetX = +d.titleOffsetX || 0; st.titleOffsetY = +d.titleOffsetY || 0;
   st.persistentContours = (Array.isArray(d.persistentContours) ? d.persistentContours : []).map(c => ({ col: pint(c.col, 0), row: pint(c.row, 0), cols: pint(c.cols, 0), rows: pint(c.rows, 0) })).filter(c => c.cols > 0 && c.rows > 0);
   st.showPersistentContour = d.showPersistentContour == null ? true : !!d.showPersistentContour;
-  if (d.field && typeof d.field === "object" && isFinite(+d.field.x) && isFinite(+d.field.y)) st.field = { x: Math.round(+d.field.x), y: Math.round(+d.field.y) };
+  st.uid = typeof d.uid === "string" && d.uid ? d.uid : newUid();
   st.cornerCabinets = {};
   if (d.cornerCabinets && typeof d.cornerCabinets === "object") for (const [k, v] of Object.entries(d.cornerCabinets)) { const o = pint(v, -1); if (parseKey(k) && o >= 0 && o <= 3) st.cornerCabinets[k] = o; }
   return st;
@@ -586,7 +619,7 @@ function syncUI() {
   $("scrName").value = st.name; $("line2").checked = st.line2Enabled; $("line3").checked = st.line3Enabled;
   $("numFmt").value = st.numberFormatIndex; $("numOrigin").value = st.numberOriginIndex; $("numPos").value = st.numberPositionIndex;
   $("gCircle").checked = project.guides.circle; $("gDiag").checked = project.guides.diag;
-  refreshFieldPanel();
+  refreshFieldPanel(); refreshTZPanel();
   refreshTextList();
   updateInfo(true);
 }
@@ -660,6 +693,7 @@ function fitStage(wh) {
 function draw() {
   drawQueued = false;
   if (ui.page === "field") { drawField(); return; }
+  if (ui.page === "tz") { drawTZ(); return; }
   fitStage();
   const dpr = Math.min(3, window.devicePixelRatio || 1);
   const r = $("wrap").getBoundingClientRect();
@@ -912,7 +946,7 @@ $("screens").addEventListener("change", e => { project.cur = +e.target.value; ui
 $("btnAddScreen").onclick = () => {
   const base = JSON.parse(JSON.stringify(S()));
   Object.assign(base, { name: `screen ${project.screens.length + 1}`, blackCabinets: [], cabinetColors: {}, persistentContours: [], showPersistentContour: true, extraLabels: [], cornerCabinets: {} });
-  delete base.field;
+  delete base.field; base.uid = newUid();
   project.screens.push(base); project.cur = project.screens.length - 1; ui.selected.clear(); ui.textMode = -1; syncUI(); changed();
 };
 $("btnDelScreen").onclick = async () => {
@@ -922,7 +956,7 @@ $("btnDelScreen").onclick = async () => {
 };
 $("btnReset").onclick = async () => {
   const ok = await ask("Сбросить всё?", "Все экраны и настройки вернутся к значениям по умолчанию.", "", "Сбросить", false); if (!ok) return;
-  project = { name: "Проект", screens: [defaultScreen()], cur: 0, guides: { circle: true, diag: true }, fieldTitle: { on: true, x: 0, y: 0 } };
+  project = { name: "Проект", screens: [defaultScreen()], cur: 0, guides: { circle: true, diag: true }, ...freshFieldState() };
   Object.assign(ui, { selected: new Set(), anchor: null, textMode: -1, selLabel: -1, zoom: 1, panX: 0, panY: 0, paint: { ...DEF_PAINT } });
   syncUI(); changed();
 };
@@ -938,7 +972,7 @@ $("zAuto").onclick = () => { ui.zoom = 1; ui.panX = ui.panY = 0; updateInfo(); r
    История — снимки проекта (все экраны). Шаг записывается, когда изменения затихли
    на 0,35 с и палец/мышь отпущены, поэтому перетаскивание — один шаг. */
 const hist = { stack: [], i: -1, timer: 0 };
-const histSnap = () => JSON.stringify({ name: project.name, guides: project.guides, screens: project.screens, fieldTitle: project.fieldTitle });
+const histSnap = () => JSON.stringify({ name: project.name, guides: project.guides, screens: project.screens, fields: project.fields, tz: project.tz });
 function histCommit() {
   clearTimeout(hist.timer); hist.timer = 0;
   const s = histSnap();
@@ -960,7 +994,8 @@ function histGo(d) {
   if (j < 0 || j >= hist.stack.length) { status(d < 0 ? "Отменять больше нечего" : "Возвращать больше нечего"); return; }
   const cur = (d < 0 ? hist.stack[hist.i] : hist.stack[j]).cur; // показываем экран, где было изменение
   const o = JSON.parse(hist.stack[j].s);
-  project = { name: o.name, guides: o.guides, screens: o.screens, fieldTitle: o.fieldTitle || { on: true, x: 0, y: 0 }, cur: Math.max(0, Math.min(o.screens.length - 1, cur)) };
+  const fs0 = freshFieldState();
+  project = { name: o.name, guides: o.guides, screens: o.screens, fields: o.fields || fs0.fields, tz: o.tz || fs0.tz, fieldCur: Math.min(project.fieldCur || 0, (o.fields || fs0.fields).length - 1), cur: Math.max(0, Math.min(o.screens.length - 1, cur)) };
   hist.i = j;
   ui.textMode = -1; ui.selLabel = -1;
   syncUI(); changed({ forcePhys: true }); updateUndoButtons();
@@ -984,13 +1019,13 @@ function scheduleAutosave() {
   clearTimeout(autosaveTimer);
   autosaveTimer = setTimeout(() => { try { localStorage.setItem("ledmask.project", JSON.stringify(projectData())); } catch (e) { } }, 500);
 }
-function projectData() { return { version: "4.0", projectName: project.name, activeScreen: project.cur, guides: project.guides, fieldTitle: project.fieldTitle, screens: project.screens }; }
+function projectData() { return { version: "4.0", projectName: project.name, activeScreen: project.cur, guides: project.guides, screens: project.screens, fieldCur: project.fieldCur, tz: project.tz,
+  fields: project.fields.map(f => ({ ...f, items: f.items.map(it => ({ ...it, si: project.screens.findIndex(s => s.uid === it.uid) })) })) }; }
 function loadData(d) {
   const raw = Array.isArray(d.screens) ? d.screens : [d];
   const screens = raw.filter(x => x && typeof x === "object").map(normalizeScreen);
   project = { name: typeof d.projectName === "string" ? d.projectName : project.name, screens: screens.length ? screens : [defaultScreen()], cur: 0, guides: { circle: true, diag: true, ...(d.guides || {}) } };
-  const ft = d.fieldTitle && typeof d.fieldTitle === "object" ? d.fieldTitle : {};
-  project.fieldTitle = { on: ft.on == null ? true : !!ft.on, x: Math.round(+ft.x || 0), y: Math.round(+ft.y || 0) };
+  loadFieldState(d, raw.filter(x => x && typeof x === "object"));
   project.cur = clampI(d.activeScreen, project.screens.length);
   ui.selected.clear(); ui.anchor = null; ui.textMode = -1;
 }
@@ -1138,16 +1173,18 @@ const BOX = { x: 420000, y: 2050000, w: 6018000, h: 7200000 }, GAP = 165000, LAB
 function maskCellLayout(hz, n, j, w, h) {
   let cx0 = BOX.x, cy0 = BOX.y, cw = BOX.w, chh = BOX.h;
   if (hz) { chh = Math.floor((BOX.h - GAP * (n - 1)) / n); cy0 = BOX.y + j * (chh + GAP); } else { cw = Math.floor((BOX.w - GAP * (n - 1)) / n); cx0 = BOX.x + j * (cw + GAP); }
-  const iy = cy0 + LABEL_H + LABEL_GAP, ih = Math.max(1, chh - LABEL_H - LABEL_GAP);
+  // подпись всегда вплотную над маской: блок «подпись + маска» центрируется в ячейке
+  const ih = Math.max(1, chh - LABEL_H - LABEL_GAP);
   const sc = Math.min(cw / Math.max(1, w), ih / Math.max(1, h)), ew = Math.round(w * sc), eh = Math.round(h * sc);
-  return { label: [cx0, cy0, cw, LABEL_H], image: [cx0 + Math.floor((cw - ew) / 2), iy + Math.floor((ih - eh) / 2), ew, eh] };
+  const by = cy0 + Math.floor((chh - (LABEL_H + LABEL_GAP + eh)) / 2), ix = cx0 + Math.floor((cw - ew) / 2);
+  return { label: [cx0, by, cw, LABEL_H], image: [ix, by + LABEL_H + LABEL_GAP, ew, eh] };
 }
 function groupMasks(masks) {
   const groups = []; let i = 0;
   while (i < masks.length) { const hz = masks[i].w >= masks[i].h, lim = hz ? 3 : 2, g = []; while (i < masks.length && g.length < lim && (masks[i].w >= masks[i].h) === hz) g.push(i++); groups.push({ hz, g }); }
   return groups;
 }
-async function buildPptx(tplB64, masks) {
+async function buildPptx(tplB64, masks, overview) {
   const files = await unzip(b64ToBytes(tplB64)), map = new Map(files.map(f => [f.name, f.data]));
   const order = files.map(f => f.name);
   const txt = n => dec.decode(map.get(n));
@@ -1160,7 +1197,9 @@ async function buildPptx(tplB64, masks) {
   let nextPresRel = maxId(/Id="rId(\d+)"/g, presRels, 1), nextSlideId = maxId(/<p:sldId\s+id="(\d+)"/g, pres, 256);
   const relsHead = rels2.slice(0, rels2.indexOf("<Relationships")), relsOpen = rels2.match(/<Relationships\b[^>]*>/)[0];
   // группы: горизонтальные маски — до 3 столбиком, вертикальные — до 2 в ряд
-  const groups = groupMasks(masks);
+  const groups = groupMasks(masks).map(g => ({ ...g, kind: "masks" }));
+  if (overview) groups.unshift({ kind: "overview", hz: true, g: [] });
+  if (overview && !/Extension="jpe?g"/i.test(types)) types = types.replace(/<Default\b/, '<Default Extension="jpeg" ContentType="image/jpeg"/><Default');
   const used = new Set(order.filter(n => /^ppt\/slides\/slide\d+\.xml$/.test(n)));
   const put = (n, data) => { if (!map.has(n)) order.push(n); map.set(n, data); };
   groups.forEach(({ hz, g }, gi) => {
@@ -1169,11 +1208,12 @@ async function buildPptx(tplB64, masks) {
     const base = gi === 0 ? keep : keepClone;
     let rid = maxId(/Id="rId(\d+)"/g, base.join(""), 1);
     const shapes = [], rels = [];
-    g.forEach((mi, j) => {
-      const m = masks[mi], lay = maskCellLayout(hz, g.length, j, m.w, m.h), [cx0, cy0, cw] = lay.label;
+    const items = groups[gi].kind === "overview" ? [{ png: overview.jpeg, w: overview.w, h: overview.h, label: "Общий план", ext: "jpeg" }] : g.map(mi => masks[mi]);
+    items.forEach((m, j) => {
+      const lay = maskCellLayout(hz, items.length, j, m.w, m.h), [cx0, cy0, cw] = lay.label;
       shapes.push(`<p:sp><p:nvSpPr><p:cNvPr id="${100 + j}" name="Mask info ${j + 1}"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="${cx0}" y="${cy0}"/><a:ext cx="${cw}" cy="${LABEL_H}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></p:spPr><p:txBody><a:bodyPr wrap="none" lIns="0" rIns="0" tIns="0" bIns="0" anchor="ctr"/><a:lstStyle/><a:p><a:pPr algn="ctr"/><a:r><a:rPr lang="ru-RU" sz="1000"><a:solidFill><a:srgbClr val="222222"/></a:solidFill><a:latin typeface="Arial"/><a:ea typeface="Arial"/><a:cs typeface="Arial"/></a:rPr><a:t>${xmlEsc(m.label)}</a:t></a:r><a:endParaRPr lang="ru-RU" sz="1100"/></a:p></p:txBody></p:sp>`);
       const [x, y, ew, eh] = lay.image;
-      const img = `mask_${gi + 1}_${j + 1}.png`; put("ppt/media/" + img, m.png);
+      const img = `mask_${gi + 1}_${j + 1}.${m.ext || "png"}`; put("ppt/media/" + img, m.png);
       const r = "rId" + rid++;
       shapes.push(`<p:pic><p:nvPicPr><p:cNvPr id="${j + 2}" name="Mask ${j + 1}" descr="${img}"/><p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="${r}"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm><a:off x="${x}" y="${y}"/><a:ext cx="${ew}" cy="${eh}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic>`);
       rels.push(`<Relationship Id="${r}" Type="${REL_IMAGE}" Target="../media/${img}"/>`);
@@ -1218,7 +1258,7 @@ async function labelImage(text, wPt, hPt, k = 4) {
   for (let i = 0, j = 0; i < px.length; i += 4, j += 3) { rgb[j] = px[i]; rgb[j + 1] = px[i + 1]; rgb[j + 2] = px[i + 2]; }
   return { w: W, h: H, data: await zlibDeflate(rgb) };
 }
-async function buildPdf(label, masks) {
+async function buildPdf(label, masks, overview) {
   const objs = [];
   const add = body => { objs.push(body); return objs.length; };
   const str = s => enc.encode(s);
@@ -1236,6 +1276,13 @@ async function buildPdf(label, masks) {
   const ann = (PDF_LINKS[label] || []).map(([[x0, y0, x1, y1], uri]) => add(str(`<< /Type /Annot /Subtype /Link /Rect [${x0} ${y0} ${x1} ${y1}] /Border [0 0 0] /A << /S /URI /URI (${uri}) >> >>`)));
   page([["BG", bg1]], full, ann.length ? ` /Annots [${ann.map(a => a + " 0 R").join(" ")}]` : "");
   const toPdf = ([x, y, w, h]) => [x / EMU_PT, PDF_H - (y + h) / EMU_PT, w / EMU_PT, h / EMU_PT];
+  if (overview) {
+    const lay = maskCellLayout(true, 1, 0, overview.w, overview.h), [lx, ly, lw, lh] = toPdf(lay.label), [ix, iy, iw, ih] = toPdf(lay.image);
+    const lab = await labelImage("Общий план", lw, lh);
+    const lid = stream(`/Type /XObject /Subtype /Image /Width ${lab.w} /Height ${lab.h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /FlateDecode`, lab.data);
+    const oid = stream(`/Type /XObject /Subtype /Image /Width ${overview.w} /Height ${overview.h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode`, overview.jpeg);
+    page([["BG", bg2], ["L0", lid], ["O0", oid]], full + `q ${f(lw)} 0 0 ${f(lh)} ${f(lx)} ${f(ly)} cm /L0 Do Q\nq ${f(iw)} 0 0 ${f(ih)} ${f(ix)} ${f(iy)} cm /O0 Do Q\n`);
+  }
   for (const { hz, g } of groupMasks(masks)) {
     const xo = [["BG", bg2]]; let content = full;
     for (let j = 0; j < g.length; j++) {
@@ -1334,13 +1381,23 @@ async function exportAllPNG() {
   } catch (e) { busy(""); status("Ошибка экспорта: " + e.message, true); }
 }
 async function exportTZ(label) {
+  if (!TPL[label]) { status("Шаблон для этого ТЗ ещё не добавлен", true); return; }
+  const items = tzItems();
+  if (!items.length) { status("В ТЗ ничего не отмечено", true); return; }
   try {
-    const project_ = safeName(project.name, "Проект"), folder = `${project_} ТЗ_${label}/`;
-    const pngs = await renderAll(folder); busy("Сборка PPTX…"); await tick();
-    const pptx = await buildPptx(TPL[label], pngs.map(p => ({ png: p.png, w: p.w, h: p.h, label: p.label })));
-    const pptBytes = new Uint8Array(await pptx.arrayBuffer());
+    const project_ = safeName(project.name, "Проект"), folder = `${project_} ТЗ_${label}/`, pngs = [];
+    for (let n = 0; n < items.length; n++) {
+      const it = items[n];
+      busy(`Рендер ${n + 1} из ${items.length}: ${it.w}×${it.h}…`); await tick();
+      const r = it.kind === "field" ? await renderFieldPNG(it.f) : await renderPNG(it.st);
+      pngs.push({ ...r, file: `${folder}${pad2(n + 1)}_${r.w}x${r.h}_${safeName(it.name)}.png`, label: it.label });
+    }
+    const ov = tzOverview();
+    busy("Сборка PPTX…"); await tick();
+    const masks = pngs.map(p => ({ png: p.png, w: p.w, h: p.h, label: p.label }));
+    const pptBytes = new Uint8Array(await (await buildPptx(TPL[label], masks, ov)).arrayBuffer());
     busy("Сборка PDF…"); await tick();
-    const pdfBytes = new Uint8Array(await (await buildPdf(label, pngs.map(p => ({ png: p.png, w: p.w, h: p.h, label: p.label })))).arrayBuffer());
+    const pdfBytes = new Uint8Array(await (await buildPdf(label, masks, ov)).arrayBuffer());
     busy("Упаковка ZIP…"); await tick();
     const z = await zip([{ name: `${folder}${project_}_ТЗ_${label}.pptx`, data: pptBytes }, { name: `${folder}${project_}_ТЗ_${label}.pdf`, data: pdfBytes }, ...pngs.map(p => ({ name: p.file, data: p.png }))]);
     busy("");
@@ -1349,8 +1406,7 @@ async function exportTZ(label) {
 }
 $("btnPNG").onclick = exportCurrentPNG;
 $("btnAllPNG").onclick = exportAllPNG;
-$("btnTZR").onclick = () => exportTZ("Resolume");
-$("btnTZD").onclick = () => exportTZ("D3");
+$("btnTZgo").onclick = () => setPage("tz");
 $("btnSaveProj").onclick = () => STANDALONE
   ? save(`${safeName(project.name, "Проект")}.ledmask`, toPlist(ledmaskData()))
   : save(`${safeName(project.name, "Проект")}.ledmask.json`, JSON.stringify(projectData(), null, 1));
@@ -1365,38 +1421,52 @@ $("fileProj").addEventListener("change", async e => {
 });
 
 
-/* ======================= ОБЩЕЕ ПОЛЕ (ТЕСТ) =======================
-   Экраны проекта ставятся на одно поле в пикселях (Y вниз), магнит притягивает края.
-   Позиция экрана хранится в нём самом: screen.field = {x, y}; нет поля — экран не на поле. */
+/* ======================= ОБЩИЕ ПОЛЯ =======================
+   Несколько общих полей (вкладки). Поле — набор экранов проекта (по uid) с позицией
+   в пикселях (Y вниз, левый верхний угол габарита) и поворотом, кратным 45°.
+   Размер поля всегда чётный: габарит округляется вверх до чётного числа. */
 ui.page = "mask"; ui.magnet = true;
-const FTL = () => project.fieldTitle || (project.fieldTitle = { on: true, x: 0, y: 0 });
-// центр надписи поля в координатах поля и её рамка на холсте
-function fieldTitleCenter(b) { return [b.x + b.w / 2 + FTL().x, b.y + b.h / 2 + FTL().y]; }
-function fieldTitleFrame(rs, b) {
-  const lines = fieldTitleLines(rs, b, FV.s), bs = blockSize(lines, TITLE_GAP * FV.s), [cx, cy] = fieldTitleCenter(b);
-  return { cx: FX(cx), cy: FY(cy), w: bs.w, h: bs.h };
+function freshField(k) { return { id: newUid(), name: k ? `Общее поле ${k + 1}` : "Общее поле", items: [], title: { on: true, x: 0, y: 0 } }; }
+function freshFieldState() { return { fields: [freshField(0)], fieldCur: 0, tz: { fieldsOn: [], masksOff: [], overview: true } }; }
+function loadFieldState(d, raw) {
+  const seen = new Set(); project.screens.forEach(s => { if (seen.has(s.uid)) s.uid = newUid(); seen.add(s.uid); });
+  let fields = Array.isArray(d.fields) ? d.fields : null;
+  if (!fields) { // старые проекты: позиция была в самом экране, одна надпись на проект
+    const items = [];
+    raw.forEach((x, i) => { if (x && x.field && isFinite(+x.field.x) && isFinite(+x.field.y) && project.screens[i]) items.push({ uid: project.screens[i].uid, x: +x.field.x, y: +x.field.y, rot: 0 }); });
+    fields = [{ name: "Общее поле", items, title: d.fieldTitle || {} }];
+  }
+  project.fields = fields.filter(f => f && typeof f === "object").map((f, k) => {
+    const t = f.title && typeof f.title === "object" ? f.title : {}, used = new Set();
+    const items = (Array.isArray(f.items) ? f.items : []).map(it => {
+      let uid = String(it && it.uid || "");
+      if (!project.screens.some(s => s.uid === uid)) { const si = parseInt(it && it.si, 10); uid = project.screens[si] ? project.screens[si].uid : ""; }
+      return { uid, x: Math.round(+it.x || 0), y: Math.round(+it.y || 0), rot: ((Math.round((+it.rot || 0) / 45) * 45) % 360 + 360) % 360 };
+    }).filter(it => it.uid && !used.has(it.uid) && used.add(it.uid));
+    return { id: typeof f.id === "string" && f.id ? f.id : newUid(), name: String(f.name || (k ? `Общее поле ${k + 1}` : "Общее поле")), items, title: { on: t.on == null ? true : !!t.on, x: Math.round(+t.x || 0), y: Math.round(+t.y || 0) } };
+  });
+  if (!project.fields.length) project.fields = [freshField(0)];
+  project.fieldCur = clampI(d.fieldCur, project.fields.length);
+  const tz = d.tz && typeof d.tz === "object" ? d.tz : {};
+  project.tz = { fieldsOn: (Array.isArray(tz.fieldsOn) ? tz.fieldsOn : []).map(String), masksOff: (Array.isArray(tz.masksOff) ? tz.masksOff : []).map(String), overview: tz.overview == null ? true : !!tz.overview };
 }
-// надпись общего поля — как у маски: разрешение, «Общее поле», размер в метрах
-function fieldTitleLines(rs, b, s) {
-  const size = autoSize(b.w, b.h, "Общее поле"), ph = fieldPhys(rs, b);
-  const s1 = Math.max(10, size) * s, s2 = Math.max(8, size * 0.55) * s, s3 = Math.max(4, Math.max(8, size * 0.55) * 0.5) * s;
-  const lines = [[`${b.w}×${b.h}`, s1], ["Общее поле", s2]];
-  if (ph) lines.push([`${compactM(ph.w)}х${compactM(ph.h)} м`, s3]);
-  return lines;
-}
-const FV = { s: 0.2, ox: 0, oy: 0, fitted: false };
-const fld = { sel: -1, drag: null, pointers: new Map(), pinch: null, gx: null, gy: null };
-const thumbs = new Map();
-function fieldRects() {
+const CF = () => project.fields[Math.max(0, Math.min(project.fields.length - 1, project.fieldCur || 0))];
+const evenUp = v => { v = Math.ceil(v - 1e-9); return v % 2 ? v + 1 : v; };
+const rotDims = (w, h, rot) => { const a = rot * Math.PI / 180, c = Math.abs(Math.cos(a)), s = Math.abs(Math.sin(a)); return [Math.round(w * c + h * s), Math.round(w * s + h * c)]; };
+function fieldRects(f = CF()) {
   const out = [];
-  project.screens.forEach((st, i) => { if (st.field) { const [w, h] = dims(st); out.push({ i, st, x: st.field.x, y: st.field.y, w, h }); } });
+  for (const it of f.items) {
+    const i = project.screens.findIndex(s => s.uid === it.uid); if (i < 0) continue;
+    const st = project.screens[i], [w0, h0] = dims(st), [w, h] = rotDims(w0, h0, it.rot || 0);
+    out.push({ i, uid: it.uid, it, st, x: it.x, y: it.y, rot: it.rot || 0, w0, h0, w, h });
+  }
   return out;
 }
 function fieldBBox(rs) {
   if (!rs.length) return null;
   const x0 = Math.min(...rs.map(r => r.x)), y0 = Math.min(...rs.map(r => r.y));
   const x1 = Math.max(...rs.map(r => r.x + r.w)), y1 = Math.max(...rs.map(r => r.y + r.h));
-  return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+  return { x: x0, y: y0, w: evenUp(x1 - x0), h: evenUp(y1 - y0), rawW: x1 - x0, rawH: y1 - y0 };
 }
 const pitchMM = st => { const [w, h, k] = typeMM(st); return [w / st.cabWpx, h / st.cabHpx, k]; };
 function fieldPhys(rs, b) {
@@ -1405,76 +1475,117 @@ function fieldPhys(rs, b) {
   return same ? { w: b.w * p[0][0] / 1000, h: b.h * p[0][1] / 1000, known: p.every(q => q[2]) } : null;
 }
 function overlaps(rs) {
-  const out = [];
-  for (let a = 0; a < rs.length; a++) for (let b = a + 1; b < rs.length; b++) {
-    const A = rs[a], B = rs[b], x0 = Math.max(A.x, B.x), y0 = Math.max(A.y, B.y), x1 = Math.min(A.x + A.w, B.x + B.w), y1 = Math.min(A.y + A.h, B.y + B.h);
+  const out = [], ax = rs.filter(r => r.rot % 90 === 0);
+  for (let a = 0; a < ax.length; a++) for (let b = a + 1; b < ax.length; b++) {
+    const A = ax[a], B = ax[b], x0 = Math.max(A.x, B.x), y0 = Math.max(A.y, B.y), x1 = Math.min(A.x + A.w, B.x + B.w), y1 = Math.min(A.y + A.h, B.y + B.h);
     if (x1 > x0 && y1 > y0) out.push({ a: A.i, b: B.i, x: x0, y: y0, w: x1 - x0, h: y1 - y0 });
   }
   return out;
 }
+// надпись поля — как у маски: разрешение, название поля, размер в метрах
+function fieldTitleCenter(f, b) { return [b.x + b.w / 2 + f.title.x, b.y + b.h / 2 + f.title.y]; }
+function fieldTitleLines(f, rs, b, s) {
+  const name = f.name || "Общее поле", size = autoSize(b.w, b.h, name), ph = fieldPhys(rs, b);
+  const s1 = Math.max(10, size) * s, s2 = Math.max(8, size * 0.55) * s, s3 = Math.max(4, Math.max(8, size * 0.55) * 0.5) * s;
+  const lines = [[`${b.w}×${b.h}`, s1], [name, s2]];
+  if (ph) lines.push([`${compactM(ph.w)}х${compactM(ph.h)} м`, s3]);
+  return lines;
+}
+// рисует поле целиком в ctx в масштабе s (левый верх габарита — в 0,0)
+function paintField(ctx, f, s) {
+  const rs = fieldRects(f), b = fieldBBox(rs); if (!b) return;
+  ctx.fillStyle = "#000"; ctx.fillRect(0, 0, Math.round(b.w * s), Math.round(b.h * s));
+  for (const r of rs) {
+    ctx.save();
+    ctx.translate((r.x - b.x + r.w / 2) * s, (r.y - b.y + r.h / 2) * s); ctx.rotate(r.rot * Math.PI / 180); ctx.translate(-r.w0 * s / 2, -r.h0 * s / 2);
+    ctx.beginPath(); ctx.rect(0, 0, r.w0 * s, r.h0 * s); ctx.clip();
+    drawMask(ctx, r.st, s, project.guides);
+    ctx.restore();
+  }
+  if (f.title.on) { const [tx, ty] = fieldTitleCenter(f, b); ctx.fillStyle = "#fff"; ctx.textBaseline = "alphabetic"; drawBlock(ctx, fieldTitleLines(f, rs, b, s), TITLE_GAP * s, (tx - b.x) * s, (ty - b.y) * s, 0); }
+}
+async function renderFieldPNG(f, onBand) {
+  const b = fieldBBox(fieldRects(f));
+  return renderBands(b.w, b.h, ctx => paintField(ctx, f, 1), onBand);
+}
+
+const FV = { s: 0.2, ox: 0, oy: 0, fitted: false };
+const fld = { sel: null, drag: null, pointers: new Map(), pinch: null, gx: null, gy: null };
+const thumbs = new Map();
 function thumb(r) {
   const k = JSON.stringify({ ...r.st, field: 0 }) + JSON.stringify(project.guides);
-  const c = thumbs.get(r.i);
+  const c = thumbs.get(r.uid);
   if (c && c.k === k) return c.cv;
-  const s = Math.min(1, 1600 / Math.max(r.w, r.h)), cv = document.createElement("canvas");
-  cv.width = Math.max(1, Math.round(r.w * s)); cv.height = Math.max(1, Math.round(r.h * s));
+  const s = Math.min(1, 1600 / Math.max(r.w0, r.h0)), cv = document.createElement("canvas");
+  cv.width = Math.max(1, Math.round(r.w0 * s)); cv.height = Math.max(1, Math.round(r.h0 * s));
   drawMask(cv.getContext("2d"), r.st, s, project.guides);
-  thumbs.set(r.i, { k, cv });
+  thumbs.set(r.uid, { k, cv });
   return cv;
 }
 const FX = x => FV.ox + x * FV.s, FY = y => FV.oy + y * FV.s;
+function fieldTitleFrame(f, rs, b) {
+  const bs = blockSize(fieldTitleLines(f, rs, b, FV.s), TITLE_GAP * FV.s), [cx, cy] = fieldTitleCenter(f, b);
+  return { cx: FX(cx), cy: FY(cy), w: bs.w, h: bs.h };
+}
 function fitField() {
-  const r = $("wrap").getBoundingClientRect(), rs = fieldRects(), b = fieldBBox(rs) || { x: 0, y: 0, w: 1920, h: 1080 };
+  const r = $("wrap").getBoundingClientRect(), b = fieldBBox(fieldRects()) || { x: 0, y: 0, w: 1920, h: 1080 };
   const pad = r.width < 600 ? 28 : 64;
   FV.s = Math.max(1e-4, Math.min((r.width - pad * 2) / b.w, (r.height - pad * 2) / b.h));
   FV.ox = (r.width - b.w * FV.s) / 2 - b.x * FV.s; FV.oy = (r.height - b.h * FV.s) / 2 - b.y * FV.s;
   FV.fitted = true; FV.base = FV.s;
 }
-function drawField() {
-  const rs = fieldRects(), b = fieldBBox(rs);
-  fitStage(b ? [b.w, b.h] : [16, 9]);
+function prepCanvas(wh) {
+  fitStage(wh);
   const dpr = Math.min(3, window.devicePixelRatio || 1), R = $("wrap").getBoundingClientRect();
   const w = Math.max(1, Math.round(R.width * dpr)), h = Math.max(1, Math.round(R.height * dpr));
   if (pv.width !== w || pv.height !== h) { pv.width = w; pv.height = h; }
+  pctx.setTransform(1, 0, 0, 1, 0, 0);
+  pctx.fillStyle = (getComputedStyle(document.documentElement).getPropertyValue("--stage") || "#1d1f21").trim(); pctx.fillRect(0, 0, w, h);
+  pctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return R;
+}
+function drawField() {
+  const f = CF(), rs = fieldRects(), b = fieldBBox(rs);
+  const R = prepCanvas(b ? [b.w, b.h] : [16, 9]);
   if (!FV.fitted) fitField();
   const c = pctx;
-  c.setTransform(1, 0, 0, 1, 0, 0);
-  c.fillStyle = (getComputedStyle(document.documentElement).getPropertyValue("--stage") || "#1d1f21").trim(); c.fillRect(0, 0, w, h);
-  c.setTransform(dpr, 0, 0, dpr, 0, 0);
   $("fzLabel").textContent = Math.round(FV.s / (FV.base || FV.s) * 100) + "%";
   if (!rs.length) {
     c.fillStyle = "#8c9bab"; c.font = `14px ${FONT}`; c.textAlign = "center";
-    c.fillText("Отметьте экраны в разделе «Общее поле»", R.width / 2, R.height / 2); c.textAlign = "left";
+    c.fillText(`«${f.name}»: отметьте экраны в разделе «Общее поле»`, R.width / 2, R.height / 2); c.textAlign = "left";
     return;
   }
-  // общее поле: фон-пустота и рамка
   c.fillStyle = "#000"; c.fillRect(FX(b.x), FY(b.y), b.w * FV.s, b.h * FV.s);
-  const order = rs.filter(r => r.i !== fld.sel).concat(rs.filter(r => r.i === fld.sel));
+  const order = rs.filter(r => r.uid !== fld.sel).concat(rs.filter(r => r.uid === fld.sel));
   c.imageSmoothingEnabled = true; c.imageSmoothingQuality = "high";
-  for (const r of order) c.drawImage(thumb(r), FX(r.x), FY(r.y), r.w * FV.s, r.h * FV.s);
+  for (const r of order) {
+    c.save(); c.translate(FX(r.x + r.w / 2), FY(r.y + r.h / 2)); c.rotate(r.rot * Math.PI / 180);
+    c.drawImage(thumb(r), -r.w0 * FV.s / 2, -r.h0 * FV.s / 2, r.w0 * FV.s, r.h0 * FV.s); c.restore();
+  }
   for (const o of overlaps(rs)) { c.fillStyle = "rgba(255,40,40,.45)"; c.fillRect(FX(o.x), FY(o.y), o.w * FV.s, o.h * FV.s); }
-  if (FTL().on) {
-    const [tx, ty] = fieldTitleCenter(b);
-    c.fillStyle = "#fff"; c.textBaseline = "alphabetic"; drawBlock(c, fieldTitleLines(rs, b, FV.s), TITLE_GAP * FV.s, FX(tx), FY(ty), 0);
+  if (f.title.on) {
+    const [tx, ty] = fieldTitleCenter(f, b);
+    c.fillStyle = "#fff"; c.textBaseline = "alphabetic"; drawBlock(c, fieldTitleLines(f, rs, b, FV.s), TITLE_GAP * FV.s, FX(tx), FY(ty), 0);
     if (fld.titleHover || (fld.drag && fld.drag.kind === "title")) {
-      const f = fieldTitleFrame(rs, b); c.strokeStyle = "#ffdb0d"; c.lineWidth = 1.5; c.setLineDash([4, 3]);
-      c.strokeRect(f.cx - f.w / 2 - 6, f.cy - f.h / 2 - 4, f.w + 12, f.h + 8); c.setLineDash([]);
+      const fr = fieldTitleFrame(f, rs, b); c.strokeStyle = "#ffdb0d"; c.lineWidth = 1.5; c.setLineDash([4, 3]);
+      c.strokeRect(fr.cx - fr.w / 2 - 6, fr.cy - fr.h / 2 - 4, fr.w + 12, fr.h + 8); c.setLineDash([]);
     }
   }
-  // подписи экранов
   c.font = `600 12px ${FONT}`; c.textBaseline = "top";
   for (const r of order) {
-    const t = `${r.i + 1}. ${r.st.name || "screen"} · ${r.w}×${r.h}`, tw = c.measureText(t).width;
+    const t = `${r.i + 1}. ${r.st.name || "screen"} · ${r.w0}×${r.h0}${r.rot ? ` · ${rotLabel(r.rot)}` : ""}`, tw = c.measureText(t).width;
     const x = FX(r.x) + 4, y = FY(r.y) + 4;
     if (r.w * FV.s > 40 && r.h * FV.s > 22) { c.fillStyle = "rgba(10,14,18,.78)"; c.fillRect(x, y, Math.min(tw + 10, r.w * FV.s - 8), 18); c.fillStyle = "#e8eff5"; c.save(); c.beginPath(); c.rect(x, y, r.w * FV.s - 8, 18); c.clip(); c.fillText(t, x + 5, y + 3); c.restore(); }
   }
-  const sel = rs.find(r => r.i === fld.sel);
-  if (sel) { c.strokeStyle = "#19c5b5"; c.lineWidth = 2; c.strokeRect(FX(sel.x) + 1, FY(sel.y) + 1, sel.w * FV.s - 2, sel.h * FV.s - 2); }
-  // магнитные направляющие
+  const sel = rs.find(r => r.uid === fld.sel);
+  if (sel) {
+    c.save(); c.translate(FX(sel.x + sel.w / 2), FY(sel.y + sel.h / 2)); c.rotate(sel.rot * Math.PI / 180);
+    c.strokeStyle = "#19c5b5"; c.lineWidth = 2; c.strokeRect(-sel.w0 * FV.s / 2 + 1, -sel.h0 * FV.s / 2 + 1, sel.w0 * FV.s - 2, sel.h0 * FV.s - 2); c.restore();
+    if (sel.rot % 90) { c.strokeStyle = "rgba(25,197,181,.5)"; c.lineWidth = 1; c.setLineDash([3, 3]); c.strokeRect(FX(sel.x) + .5, FY(sel.y) + .5, sel.w * FV.s - 1, sel.h * FV.s - 1); c.setLineDash([]); }
+  }
   c.strokeStyle = "#00f2ff"; c.lineWidth = 1; c.setLineDash([5, 4]);
   if (fld.gx != null) { c.beginPath(); c.moveTo(FX(fld.gx) + .5, FY(b.y) - 14); c.lineTo(FX(fld.gx) + .5, FY(b.y + b.h) + 14); c.stroke(); }
   if (fld.gy != null) { c.beginPath(); c.moveTo(FX(b.x) - 14, FY(fld.gy) + .5); c.lineTo(FX(b.x + b.w) + 14, FY(fld.gy) + .5); c.stroke(); }
-  // габарит общего поля
   c.strokeStyle = "rgba(255,255,255,.75)"; c.setLineDash([6, 5]);
   c.strokeRect(FX(b.x) - 3.5, FY(b.y) - 3.5, b.w * FV.s + 7, b.h * FV.s + 7);
   c.setLineDash([]);
@@ -1485,6 +1596,7 @@ function drawField() {
   dimLine(c, 0, 0, b.h * FV.s, 0, `${b.h} px${mH}`); c.restore();
   c.textAlign = "left"; c.textBaseline = "alphabetic";
 }
+const rotLabel = r => r === 0 ? "0°" : r <= 180 ? `${r}° ⟳` : `${360 - r}° ⟲`;
 function dimLine(c, x0, y0, x1, y1, text) {
   c.strokeStyle = "rgba(255,255,255,.75)"; c.lineWidth = 1;
   c.beginPath(); c.moveTo(x0, y0 + .5); c.lineTo(x1, y1 + .5); c.moveTo(x0 + .5, y0 - 4); c.lineTo(x0 + .5, y0 + 4); c.moveTo(x1 - .5, y1 - 4); c.lineTo(x1 - .5, y1 + 4); c.stroke();
@@ -1494,14 +1606,24 @@ function dimLine(c, x0, y0, x1, y1, text) {
 }
 function fieldHit(p) {
   const rs = fieldRects(), wx = (p[0] - FV.ox) / FV.s, wy = (p[1] - FV.oy) / FV.s;
-  const order = rs.filter(r => r.i === fld.sel).concat(rs.filter(r => r.i !== fld.sel).reverse());
-  return order.find(r => wx >= r.x && wx < r.x + r.w && wy >= r.y && wy < r.y + r.h) || null;
+  const order = rs.filter(r => r.uid === fld.sel).concat(rs.filter(r => r.uid !== fld.sel).reverse());
+  return order.find(r => { // точка в повёрнутом прямоугольнике
+    const a = -r.rot * Math.PI / 180, dx = wx - (r.x + r.w / 2), dy = wy - (r.y + r.h / 2);
+    const lx = dx * Math.cos(a) - dy * Math.sin(a), ly = dx * Math.sin(a) + dy * Math.cos(a);
+    return Math.abs(lx) <= r.w0 / 2 && Math.abs(ly) <= r.h0 / 2;
+  }) || null;
 }
-// магнит: края притягиваются к краям других экранов (стык и выравнивание)
-function snapPos(i, x, y, w, h, T) {
+function titleHit(p) {
+  const f = CF(), rs = fieldRects(), b = fieldBBox(rs);
+  if (!b || !f.title.on) return false;
+  const fr = fieldTitleFrame(f, rs, b);
+  return Math.abs(p[0] - fr.cx) <= fr.w / 2 + 8 && Math.abs(p[1] - fr.cy) <= fr.h / 2 + 6;
+}
+// магнит: края (габарит) притягиваются к краям других экранов — стык и выравнивание
+function snapPos(uid, x, y, w, h, T) {
   let bx = null, gx = null, dx = T + 1e-9, by = null, gy = null, dy = T + 1e-9;
   for (const o of fieldRects()) {
-    if (o.i === i) continue;
+    if (o.uid === uid) continue;
     const vNear = y < o.y + o.h + T && y + h > o.y - T, hNear = x < o.x + o.w + T && x + w > o.x - T;
     for (const [cx, line, ok] of [[o.x + o.w, o.x + o.w, vNear], [o.x - w, o.x, vNear], [o.x, o.x, true], [o.x + o.w - w, o.x + o.w, true]])
       if (ok && Math.abs(cx - x) < dx) { dx = Math.abs(cx - x); bx = cx; gx = line; }
@@ -1515,9 +1637,12 @@ function zoomFieldAt(ns, px, py) {
   const wx = (px - FV.ox) / FV.s, wy = (py - FV.oy) / FV.s;
   FV.s = ns; FV.ox = px - wx * ns; FV.oy = py - wy * ns; requestDraw();
 }
+const selItem = () => CF().items.find(it => it.uid === fld.sel) || null;
 pv.addEventListener("pointerdown", e => {
+  if (ui.page === "mask") return;
+  e.stopImmediatePropagation();
   if (ui.page !== "field") return;
-  e.stopImmediatePropagation(); pv.setPointerCapture(e.pointerId);
+  pv.setPointerCapture(e.pointerId);
   const p = local(e); fld.pointers.set(e.pointerId, p);
   if (fld.pointers.size === 2) {
     const [a, b] = [...fld.pointers.values()];
@@ -1525,21 +1650,16 @@ pv.addEventListener("pointerdown", e => {
     return;
   }
   if (fld.pointers.size > 2) return;
-  const rs0 = fieldRects(), b0 = fieldBBox(rs0);
-  if (b0 && FTL().on) {
-    const f = fieldTitleFrame(rs0, b0);
-    if (Math.abs(p[0] - f.cx) <= f.w / 2 + 8 && Math.abs(p[1] - f.cy) <= f.h / 2 + 6) {
-      fld.drag = { kind: "title", sx: p[0], sy: p[1], x0: FTL().x, y0: FTL().y, bw: b0.w, bh: b0.h }; requestDraw(); return;
-    }
-  }
+  if (titleHit(p)) { const t = CF().title; fld.drag = { kind: "title", sx: p[0], sy: p[1], x0: t.x, y0: t.y }; requestDraw(); return; }
   const hit = fieldHit(p);
-  if (hit) { fld.sel = hit.i; fld.drag = { kind: "move", i: hit.i, sx: p[0], sy: p[1], x0: hit.x, y0: hit.y, w: hit.w, h: hit.h }; refreshFieldPanel(); }
+  if (hit) { fld.sel = hit.uid; fld.drag = { kind: "move", uid: hit.uid, sx: p[0], sy: p[1], x0: hit.x, y0: hit.y, w: hit.w, h: hit.h }; refreshFieldPanel(); }
   else fld.drag = { kind: "pan", sx: p[0], sy: p[1], ox: FV.ox, oy: FV.oy, moved: false };
   requestDraw();
 }, true);
 pv.addEventListener("pointermove", e => {
-  if (ui.page !== "field") return;
+  if (ui.page === "mask") return;
   e.stopImmediatePropagation();
+  if (ui.page !== "field") return;
   const p = local(e);
   if (fld.pointers.has(e.pointerId)) fld.pointers.set(e.pointerId, p);
   if (fld.pinch && fld.pointers.size >= 2) {
@@ -1549,21 +1669,16 @@ pv.addEventListener("pointermove", e => {
   }
   const g = fld.drag;
   if (!g) {
-    const rs0 = fieldRects(), b0 = fieldBBox(rs0); let th = false;
-    if (b0 && FTL().on) { const f = fieldTitleFrame(rs0, b0); th = Math.abs(p[0] - f.cx) <= f.w / 2 + 8 && Math.abs(p[1] - f.cy) <= f.h / 2 + 6; }
+    const th = titleHit(p);
     if (th !== !!fld.titleHover) { fld.titleHover = th; requestDraw(); }
     pv.style.cursor = th || fieldHit(p) ? "move" : "grab"; return;
   }
   if (g.kind === "title") {
     let nx = Math.round(g.x0 + (p[0] - g.sx) / FV.s), ny = Math.round(g.y0 + (p[1] - g.sy) / FV.s);
-    const T = Math.max(1, 12 / FV.s);
+    const T = Math.max(1, 12 / FV.s), b = fieldBBox(fieldRects()), t = CF().title;
     fld.gx = fld.gy = null;
-    if (ui.magnet && !e.altKey) { // притягивается к центру поля
-      const b = fieldBBox(fieldRects());
-      if (Math.abs(nx) < T) { nx = 0; fld.gx = b.x + b.w / 2; }
-      if (Math.abs(ny) < T) { ny = 0; fld.gy = b.y + b.h / 2; }
-    }
-    if (FTL().x !== nx || FTL().y !== ny) { FTL().x = nx; FTL().y = ny; fieldChanged(false); } else requestDraw();
+    if (ui.magnet && !e.altKey) { if (Math.abs(nx) < T) { nx = 0; fld.gx = b.x + b.w / 2; } if (Math.abs(ny) < T) { ny = 0; fld.gy = b.y + b.h / 2; } }
+    if (t.x !== nx || t.y !== ny) { t.x = nx; t.y = ny; fieldChanged(false); } else requestDraw();
     return;
   }
   if (g.kind === "pan") {
@@ -1572,23 +1687,23 @@ pv.addEventListener("pointermove", e => {
   }
   let nx = Math.round(g.x0 + (p[0] - g.sx) / FV.s), ny = Math.round(g.y0 + (p[1] - g.sy) / FV.s);
   fld.gx = fld.gy = null;
-  if (ui.magnet && !e.altKey) { const sn = snapPos(g.i, nx, ny, g.w, g.h, Math.max(1, 12 / FV.s)); nx = sn.x; ny = sn.y; fld.gx = sn.gx; fld.gy = sn.gy; }
-  const st = project.screens[g.i];
-  if (st.field.x !== nx || st.field.y !== ny) { st.field = { x: nx, y: ny }; fieldChanged(false); } else requestDraw();
+  if (ui.magnet && !e.altKey) { const sn = snapPos(g.uid, nx, ny, g.w, g.h, Math.max(1, 12 / FV.s)); nx = sn.x; ny = sn.y; fld.gx = sn.gx; fld.gy = sn.gy; }
+  const it = CF().items.find(q => q.uid === g.uid);
+  if (it && (it.x !== nx || it.y !== ny)) { it.x = nx; it.y = ny; fieldChanged(false); } else requestDraw();
 }, true);
 function fieldUp(e) {
-  if (ui.page !== "field") return;
+  if (ui.page === "mask") return;
   e.stopImmediatePropagation();
   fld.pointers.delete(e.pointerId);
   if (fld.pointers.size < 2) fld.pinch = null;
   if (fld.pointers.size === 0) {
-    if (fld.drag && fld.drag.kind === "pan" && !fld.drag.moved && fld.sel >= 0) { fld.sel = -1; refreshFieldPanel(); }
+    if (fld.drag && fld.drag.kind === "pan" && !fld.drag.moved && fld.sel) { fld.sel = null; refreshFieldPanel(); }
     fld.drag = null; fld.gx = fld.gy = null; requestDraw(); scheduleHistory();
   }
 }
 pv.addEventListener("pointerup", fieldUp, true);
 pv.addEventListener("pointercancel", fieldUp, true);
-pv.addEventListener("pointerleave", e => { if (ui.page === "field") { e.stopImmediatePropagation(); if (fld.titleHover) { fld.titleHover = false; requestDraw(); } } }, true);
+pv.addEventListener("pointerleave", e => { if (ui.page !== "mask") { e.stopImmediatePropagation(); if (fld.titleHover) { fld.titleHover = false; requestDraw(); } } }, true);
 pv.addEventListener("wheel", e => {
   if (ui.page !== "field") return;
   e.stopImmediatePropagation(); e.preventDefault();
@@ -1600,97 +1715,253 @@ pv.addEventListener("dblclick", e => {
   project.cur = hit.i; ui.selected.clear(); ui.anchor = null; ui.textMode = -1; setPage("mask"); syncUI(); changed({ forcePhys: true });
 });
 window.addEventListener("keydown", e => {
-  if (ui.page !== "field" || fld.sel < 0 || !$("modal").hidden) return;
+  if (ui.page !== "field" || !$("modal").hidden) return;
   const tag = e.target && e.target.tagName; if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") return;
+  const it = selItem(); if (!it) return;
   const d = e.shiftKey ? 10 : 1, mv = { ArrowLeft: [-d, 0], ArrowRight: [d, 0], ArrowUp: [0, -d], ArrowDown: [0, d] }[e.key];
-  const st = project.screens[fld.sel]; if (!mv || !st || !st.field) return;
-  e.preventDefault(); st.field = { x: st.field.x + mv[0], y: st.field.y + mv[1] }; fieldChanged(false);
+  if (!mv) return;
+  e.preventDefault(); it.x += mv[0]; it.y += mv[1]; fieldChanged(false);
 });
+// поворот вокруг центра экрана, шаг 45°
+function rotateSel(delta) {
+  const it = selItem(); if (!it) { status("Сначала выберите экран на поле", true); return; }
+  const r = fieldRects().find(q => q.uid === it.uid), cx = r.x + r.w / 2, cy = r.y + r.h / 2;
+  it.rot = delta == null ? 0 : ((it.rot + delta) % 360 + 360) % 360;
+  const [w, h] = rotDims(r.w0, r.h0, it.rot);
+  it.x = Math.round(cx - w / 2); it.y = Math.round(cy - h / 2);
+  fieldChanged(true); status(`Поворот: ${rotLabel(it.rot)}`);
+}
 
-function placeAtRight(i) {
-  const b = fieldBBox(fieldRects().filter(r => r.i !== i));
-  project.screens[i].field = b ? { x: b.x + b.w, y: b.y } : { x: 0, y: 0 };
+function placeAtRight(uid) {
+  const f = CF(), b = fieldBBox(fieldRects().filter(r => r.uid !== uid));
+  let it = f.items.find(q => q.uid === uid);
+  if (!it) { it = { uid, x: 0, y: 0, rot: 0 }; f.items.push(it); }
+  if (b) { it.x = b.x + b.rawW; it.y = b.y; } else { it.x = 0; it.y = 0; }
 }
 function arrange(horizontal) {
   let pos = 0;
-  project.screens.forEach(st => { if (!st.field) return; const [w, h] = dims(st); st.field = horizontal ? { x: pos, y: 0 } : { x: 0, y: pos }; pos += horizontal ? w : h; });
+  for (const r of fieldRects()) { r.it.x = horizontal ? pos : 0; r.it.y = horizontal ? 0 : pos; pos += horizontal ? r.w : r.h; }
   FV.fitted = false; fieldChanged(true);
 }
 function fieldChanged(full) { if (full) refreshFieldPanel(); else updateFieldInfo(); requestDraw(); scheduleAutosave(); }
 function refreshFieldPanel() {
   if (ui.page !== "field") return;
-  if (fld.sel >= project.screens.length || (fld.sel >= 0 && !project.screens[fld.sel].field)) fld.sel = -1;
+  const f = CF();
+  if (fld.sel && !f.items.some(it => it.uid === fld.sel)) fld.sel = null;
+  const tabs = $("fTabs"); tabs.innerHTML = "";
+  project.fields.forEach((q, k) => {
+    const b = document.createElement("button"); b.textContent = q.name || `Поле ${k + 1}`; b.setAttribute("aria-pressed", String(k === project.fieldCur));
+    b.onclick = () => { project.fieldCur = k; fld.sel = null; FV.fitted = false; refreshFieldPanel(); requestDraw(); };
+    tabs.appendChild(b);
+  });
+  const add = document.createElement("button"); add.textContent = "+ Поле"; add.title = "Новое общее поле";
+  add.onclick = () => { project.fields.push(freshField(project.fields.length)); project.fieldCur = project.fields.length - 1; fld.sel = null; FV.fitted = false; fieldChanged(true); };
+  tabs.appendChild(add);
   const list = $("fList"); list.innerHTML = "";
   project.screens.forEach((st, i) => {
-    const [w, h] = dims(st), row = document.createElement("div");
-    row.className = "fitem" + (i === fld.sel ? " sel" : "");
-    const cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = !!st.field; cb.setAttribute("aria-label", "На поле");
-    cb.onclick = ev => { ev.stopPropagation(); if (cb.checked) { placeAtRight(i); fld.sel = i; } else { delete st.field; if (fld.sel === i) fld.sel = -1; } FV.fitted = false; fieldChanged(true); };
+    const [w, h] = dims(st), row = document.createElement("div"), it = f.items.find(q => q.uid === st.uid);
+    row.className = "fitem" + (st.uid === fld.sel ? " sel" : "");
+    const cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = !!it; cb.setAttribute("aria-label", "На поле");
+    cb.onclick = ev => { ev.stopPropagation(); if (cb.checked) { placeAtRight(st.uid); fld.sel = st.uid; } else { f.items = f.items.filter(q => q.uid !== st.uid); if (fld.sel === st.uid) fld.sel = null; } FV.fitted = false; fieldChanged(true); };
     const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = `${i + 1}. ${st.name || "screen"}`;
-    const sz = document.createElement("span"); sz.className = "sz"; sz.textContent = `${w}×${h}`;
+    const sz = document.createElement("span"); sz.className = "sz"; sz.textContent = `${w}×${h}${it && it.rot ? " · " + rotLabel(it.rot) : ""}`;
     row.append(cb, nm, sz);
-    row.onclick = () => { if (st.field) { fld.sel = i; refreshFieldPanel(); requestDraw(); } };
+    row.onclick = () => { if (it) { fld.sel = st.uid; refreshFieldPanel(); requestDraw(); } };
     list.appendChild(row);
   });
-  $("fMagnet").checked = ui.magnet; $("fTitle").checked = FTL().on;
+  $("fMagnet").checked = ui.magnet; $("fTitle").checked = f.title.on;
+  $("fDelete").disabled = project.fields.length <= 1;
   updateFieldInfo();
 }
 function updateFieldInfo() {
   if (ui.page !== "field") return;
-  const rs = fieldRects(), b = fieldBBox(rs), sel = rs.find(r => r.i === fld.sel);
-  $("fSelRow").hidden = !sel;
-  if (sel) { $("fSelName").textContent = `${sel.i + 1}. ${sel.st.name || "screen"}`; if (document.activeElement !== $("fX")) $("fX").value = sel.x; if (document.activeElement !== $("fY")) $("fY").value = sel.y; }
+  const rs = fieldRects(), b = fieldBBox(rs), sel = rs.find(r => r.uid === fld.sel);
+  $("fSelBox").hidden = !sel;
+  if (sel) {
+    $("fSelName").textContent = `${sel.i + 1}. ${sel.st.name || "screen"}`; $("fRotVal").textContent = rotLabel(sel.rot);
+    if (document.activeElement !== $("fX")) $("fX").value = sel.x; if (document.activeElement !== $("fY")) $("fY").value = sel.y;
+  }
   const out = [];
   if (!b) out.push("<span>На поле пока нет экранов</span>");
   else {
-    out.push(`<span class="big">Общее поле: ${b.w}×${b.h} px</span>`);
+    out.push(`<span class="big">${xmlEsc(CF().name)}: ${b.w}×${b.h} px</span>`);
+    if (b.w !== b.rawW || b.h !== b.rawH) out.push(`<span>Габарит экранов ${b.rawW}×${b.rawH} — поле дополнено до чётного</span>`);
     const ph = fieldPhys(rs, b);
     out.push(ph ? `<span>${ph.known ? "Физический размер" : "Размер (условно 50 см)"}: ${compactM(ph.w)}х${compactM(ph.h)} м</span>` : `<span class="warn">Физический размер не считается: на поле экраны с разным шагом пикселя</span>`);
     out.push(`<span>Экранов на поле: ${rs.length} из ${project.screens.length}</span>`);
     const ov = overlaps(rs);
     for (const o of ov) out.push(`<span class="warn">⚠ Экраны ${o.a + 1} и ${o.b + 1} пересекаются: ${o.w}×${o.h} px</span>`);
-    const area = rs.reduce((a, r) => a + r.w * r.h, 0) - ov.reduce((a, o) => a + o.w * o.h, 0);
-    if (area < b.w * b.h) out.push(`<span>Пустые места внутри поля: ${Math.round((1 - area / (b.w * b.h)) * 1000) / 10}% — в PNG они чёрные</span>`);
+    if (rs.every(r => r.rot % 90 === 0)) {
+      const area = rs.reduce((a, r) => a + r.w * r.h, 0) - ov.reduce((a, o) => a + o.w * o.h, 0);
+      if (area < b.w * b.h) out.push(`<span>Пустые места внутри поля: ${Math.round((1 - area / (b.w * b.h)) * 1000) / 10}% — в PNG они чёрные</span>`);
+    } else out.push(`<span>Есть экраны под 45° — углы вокруг них в PNG чёрные</span>`);
   }
   $("fInfo").innerHTML = out.join("");
 }
 function setPage(pg) {
   ui.page = pg;
-  document.documentElement.classList.toggle("field", pg === "field");
+  document.documentElement.dataset.page = pg;
   document.querySelectorAll(".seg.pages button").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.page === pg)));
   pv.style.cursor = "";
   if (pg === "field") { FV.fitted = false; refreshFieldPanel(); }
+  if (pg === "tz") refreshTZPanel();
   requestDraw();
 }
 document.querySelectorAll(".seg.pages button").forEach(b => b.onclick = () => setPage(b.dataset.page));
-$("fAll").onclick = () => { project.screens.forEach((st, i) => { if (!st.field) placeAtRight(i); }); FV.fitted = false; fieldChanged(true); };
+$("fAll").onclick = () => { project.screens.forEach(st => { if (!CF().items.some(q => q.uid === st.uid)) placeAtRight(st.uid); }); FV.fitted = false; fieldChanged(true); };
 $("fRow").onclick = () => arrange(true);
 $("fCol").onclick = () => arrange(false);
-$("fClear").onclick = () => { project.screens.forEach(st => delete st.field); fld.sel = -1; fieldChanged(true); };
+$("fClear").onclick = () => { CF().items = []; fld.sel = null; fieldChanged(true); };
 $("fMagnet").onchange = e => { ui.magnet = e.target.checked; };
-$("fTitle").onchange = e => { FTL().on = e.target.checked; fieldChanged(false); };
-$("fTitleCenter").onclick = () => { FTL().x = 0; FTL().y = 0; fieldChanged(false); status("Надпись поля — по центру"); };
+$("fTitle").onchange = e => { CF().title.on = e.target.checked; fieldChanged(false); };
+$("fTitleCenter").onclick = () => { CF().title.x = 0; CF().title.y = 0; fieldChanged(false); status("Надпись поля — по центру"); };
+$("fRotCCW").onclick = () => rotateSel(-45);
+$("fRotCW").onclick = () => rotateSel(45);
+$("fRot0").onclick = () => rotateSel(null);
+$("fRename").onclick = async () => { const f = CF(), t = await ask("Название поля", "Оно же — вторая строка надписи поля и подпись в ТЗ.", f.name, "Сохранить"); if (t == null) return; f.name = t.trim() || f.name; fieldChanged(true); };
+$("fDelete").onclick = async () => {
+  if (project.fields.length <= 1) return;
+  const f = CF(), ok = await ask("Удалить поле?", `«${f.name}» будет удалено. Экраны останутся в проекте.`, "", "Удалить", false); if (!ok) return;
+  project.fields.splice(project.fieldCur, 1); project.fieldCur = Math.max(0, project.fieldCur - 1); fld.sel = null; FV.fitted = false; fieldChanged(true);
+};
 for (const [id, k] of [["fX", "x"], ["fY", "y"]]) $(id).addEventListener("input", () => {
-  const st = project.screens[fld.sel]; if (!st || !st.field) return;
+  const it = selItem(); if (!it) return;
   const v = parseInt($(id).value, 10); if (isNaN(v)) return;
-  st.field = { ...st.field, [k]: v }; fieldChanged(false);
+  it[k] = v; fieldChanged(false);
 });
 $("fzFit").onclick = () => { fitField(); requestDraw(); };
 $("fzPlus").onclick = () => { const r = $("wrap").getBoundingClientRect(); zoomFieldAt(FV.s * 1.25, r.width / 2, r.height / 2); };
 $("fzMinus").onclick = () => { const r = $("wrap").getBoundingClientRect(); zoomFieldAt(FV.s / 1.25, r.width / 2, r.height / 2); };
 $("fPNG").onclick = async () => {
-  const rs = fieldRects(), b = fieldBBox(rs);
+  const f = CF(), b = fieldBBox(fieldRects());
   if (!b) { status("Сначала поставьте экраны на поле", true); return; }
   busy(`Рендер поля ${b.w}×${b.h}…`); await tick();
   try {
-    const r = await renderBands(b.w, b.h, ctx => {
-      ctx.fillStyle = "#000"; ctx.fillRect(0, 0, b.w, b.h);
-      for (const q of rs) { ctx.save(); ctx.translate(q.x - b.x, q.y - b.y); ctx.beginPath(); ctx.rect(0, 0, q.w, q.h); ctx.clip(); drawMask(ctx, q.st, 1, project.guides); ctx.restore(); }
-      if (FTL().on) { const [tx, ty] = fieldTitleCenter(b); ctx.fillStyle = "#fff"; ctx.textBaseline = "alphabetic"; drawBlock(ctx, fieldTitleLines(rs, b, 1), TITLE_GAP, tx - b.x, ty - b.y, 0); }
-    }, async p => { busy(`Рендер поля ${b.w}×${b.h}… ${Math.round(p * 100)}%`); await tick(); });
-    busy(""); await save(`${b.w}x${b.h}_${safeName(project.name, "Проект")}_общее_поле.png`, new Blob([r.png], { type: "image/png" }));
+    const r = await renderFieldPNG(f, async p => { busy(`Рендер поля ${b.w}×${b.h}… ${Math.round(p * 100)}%`); await tick(); });
+    busy(""); await save(`${b.w}x${b.h}_${safeName(f.name, "Общее_поле")}.png`, new Blob([r.png], { type: "image/png" }));
   } catch (e) { busy(""); status("Ошибка рендера: " + e.message, true); }
 };
+
+/* ======================= ФОРМИРОВАНИЕ ТЗ ======================= */
+ui.overview = null; // { name, jpeg, w, h, url } — картинка общего плана (только в этой сессии)
+function fieldInfo(f) {
+  const rs = fieldRects(f), b = fieldBBox(rs); if (!b) return null;
+  const ph = fieldPhys(rs, b);
+  return { w: b.w, h: b.h, label: `${b.w}×${b.h}  |  ${f.name}${ph ? `  |  ${compactM(ph.w)}х${compactM(ph.h)} м` : ""}` };
+}
+// что идёт в ТЗ: сначала отмеченные общие поля, затем отмеченные маски (порядок проекта)
+function tzItems() {
+  const out = [], tz = project.tz;
+  for (const f of project.fields) if (tz.fieldsOn.includes(f.id)) { const fi = fieldInfo(f); if (fi) out.push({ kind: "field", f, name: f.name, ...fi }); }
+  for (const st of project.screens) if (!tz.masksOff.includes(st.uid)) { const [w, h] = dims(st); out.push({ kind: "mask", st, name: st.name || "screen", w, h, label: `${w}×${h}  |  ${st.name || "screen"}  |  ${physText(st)}` }); }
+  return out;
+}
+const tzOverview = () => project.tz.overview && ui.overview ? ui.overview : null;
+function refreshTZPanel() {
+  if (ui.page !== "tz") return;
+  const tz = project.tz, list = $("tList"); list.innerHTML = "";
+  const row = (text, size, checked, onToggle, cls = "") => {
+    const r = document.createElement("label"); r.className = "fitem " + cls;
+    const cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = checked; cb.onchange = () => { onToggle(cb.checked); tzChanged(); };
+    const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = text;
+    const sz = document.createElement("span"); sz.className = "sz"; sz.textContent = size;
+    r.append(cb, nm, sz); list.appendChild(r);
+  };
+  const maskRow = st => { const [w, h] = dims(st), i = project.screens.indexOf(st); row(`${i + 1}. ${st.name || "screen"}`, `${w}×${h}`, !tz.masksOff.includes(st.uid), on => { tz.masksOff = tz.masksOff.filter(u => u !== st.uid); if (!on) tz.masksOff.push(st.uid); }, "sub"); };
+  const inField = new Set();
+  for (const f of project.fields) {
+    const rs = fieldRects(f), fi = fieldInfo(f);
+    const head = document.createElement("div"); head.className = "tgroup"; head.textContent = f.name.toUpperCase(); list.appendChild(head);
+    if (!fi) { const p = document.createElement("p"); p.className = "hint"; p.textContent = "На этом поле нет экранов"; list.appendChild(p); continue; }
+    row(`Общее поле целиком`, `${fi.w}×${fi.h}`, tz.fieldsOn.includes(f.id), on => { tz.fieldsOn = tz.fieldsOn.filter(x => x !== f.id); if (on) tz.fieldsOn.push(f.id); }, "head");
+    for (const r of rs) { maskRow(r.st); inField.add(r.uid); }
+  }
+  const rest = project.screens.filter(st => !inField.has(st.uid));
+  if (rest.length) { const head = document.createElement("div"); head.className = "tgroup"; head.textContent = "МАСКИ ВНЕ ОБЩИХ ПОЛЕЙ"; list.appendChild(head); rest.forEach(maskRow); }
+  $("tOverview").checked = tz.overview;
+  const ov = ui.overview;
+  $("tOvInfo").textContent = ov ? `${ov.name} · ${ov.w}×${ov.h}${tz.overview ? " — будет 2-м слайдом" : " — галочка снята, слайд не добавится"}` : "Картинка не выбрана — слайд не добавится.";
+  $("tOvImg").hidden = !ov; if (ov) $("tOvImg").src = ov.url;
+  $("tSaveM").disabled = !TPL.MP4;
+  updateTZSummary();
+}
+function tzSlides(items, withOv) {
+  const groups = groupMasks(items);
+  return 1 + (withOv ? 1 : 0) + groups.length;
+}
+function updateTZSummary() {
+  const items = tzItems(), nf = items.filter(i => i.kind === "field").length;
+  $("tSummary").textContent = `Слайдов: ${tzSlides(items, !!tzOverview())} · масок: ${items.length - nf} · полей: ${nf}`;
+}
+function tzChanged() { refreshTZPanel(); requestDraw(); scheduleAutosave(); }
+$("tAllMasks").onclick = () => { project.tz.masksOff = []; tzChanged(); };
+$("tNoMasks").onclick = () => { project.tz.masksOff = project.screens.map(s => s.uid); tzChanged(); };
+$("tAllFields").onclick = () => { project.tz.fieldsOn = project.fields.filter(f => fieldInfo(f)).map(f => f.id); tzChanged(); };
+$("tOverview").onchange = e => { project.tz.overview = e.target.checked; tzChanged(); };
+$("tOvPick").onclick = () => $("tOvFile").click();
+$("tOvClear").onclick = () => { if (ui.overview) URL.revokeObjectURL(ui.overview.url); ui.overview = null; tzChanged(); };
+$("tOvFile").addEventListener("change", async e => {
+  const file = e.target.files[0]; e.target.value = ""; if (!file) return;
+  busy("Подготовка картинки…"); await tick();
+  try {
+    const bmp = await createImageBitmap(file);
+    const k = Math.min(1, 3000 / Math.max(bmp.width, bmp.height)), w = Math.max(1, Math.round(bmp.width * k)), h = Math.max(1, Math.round(bmp.height * k));
+    const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+    const c = cv.getContext("2d"); c.fillStyle = "#fff"; c.fillRect(0, 0, w, h); c.drawImage(bmp, 0, 0, w, h);
+    const blob = await new Promise(r => cv.toBlob(r, "image/jpeg", 0.9));
+    if (ui.overview) URL.revokeObjectURL(ui.overview.url);
+    ui.overview = { name: file.name, jpeg: new Uint8Array(await blob.arrayBuffer()), w, h, url: URL.createObjectURL(blob), img: bmp };
+    project.tz.overview = true; busy(""); tzChanged();
+  } catch (err) { busy(""); status("Не удалось открыть картинку: " + err.message, true); }
+});
+$("tSaveR").onclick = () => exportTZ("Resolume");
+$("tSaveD").onclick = () => exportTZ("D3");
+$("tSaveM").onclick = () => exportTZ("MP4");
+// предпросмотр слайдов: фон шаблона, подписи и маски по тем же правилам, что в PPTX/PDF
+const bgImgs = {};
+function bgImg(key) {
+  if (!bgImgs[key] && PDF_BG[key]) { const im = new Image(); im.onload = requestDraw; im.src = "data:image/jpeg;base64," + PDF_BG[key]; bgImgs[key] = im; }
+  return bgImgs[key] && bgImgs[key].complete ? bgImgs[key] : null;
+}
+ui.tzTpl = "Resolume";
+const fieldThumbs = new Map();
+function fieldThumb(f) {
+  const k = JSON.stringify(f) + JSON.stringify(fieldRects(f).map(r => r.st)) + JSON.stringify(project.guides);
+  const c = fieldThumbs.get(f.id); if (c && c.k === k) return c.cv;
+  const b = fieldBBox(fieldRects(f)), s = Math.min(1, 1200 / Math.max(b.w, b.h)), cv = document.createElement("canvas");
+  cv.width = Math.max(1, Math.round(b.w * s)); cv.height = Math.max(1, Math.round(b.h * s));
+  paintField(cv.getContext("2d"), f, s); fieldThumbs.set(f.id, { k, cv }); return cv;
+}
+function drawTZ() {
+  const R = prepCanvas([16, 9]), c = pctx, items = tzItems(), ov = tzOverview();
+  const slides = [{ kind: "title" }]; if (ov) slides.push({ kind: "ov" });
+  for (const g of groupMasks(items)) slides.push({ kind: "g", ...g });
+  const n = slides.length, ar = PDF_W / PDF_H, gap = 14, pad = 16, aw = R.width - pad * 2, ah = R.height - pad * 2 - 16;
+  let best = { h: 0, cols: 1 };
+  for (let cols = 1; cols <= n; cols++) { const rows = Math.ceil(n / cols), h = Math.min((ah - gap * (rows - 1)) / rows, ((aw - gap * (cols - 1)) / cols) / ar); if (h > best.h) best = { h, cols }; }
+  const sh = Math.max(40, best.h), sw = sh * ar, cols = best.cols, rows = Math.ceil(n / cols);
+  const x0 = pad + (aw - (cols * sw + (cols - 1) * gap)) / 2, y0 = pad + Math.max(0, (ah - (rows * (sh + 16) + (rows - 1) * gap)) / 2);
+  const k = sw / 6858000; // EMU -> px
+  slides.forEach((sl, si) => {
+    const x = x0 + (si % cols) * (sw + gap), y = y0 + Math.floor(si / cols) * (sh + gap + 16);
+    const bg = bgImg(sl.kind === "title" ? (ui.tzTpl === "D3" ? "D3" : "Resolume") : "masks");
+    c.fillStyle = "#fff"; c.fillRect(x, y, sw, sh); if (bg) c.drawImage(bg, x, y, sw, sh);
+    const cell = (lay, img, text) => {
+      const [lx, ly, lw, lh] = lay.label, [ix, iy, iw, ih] = lay.image;
+      if (img) c.drawImage(img, x + ix * k, y + iy * k, iw * k, ih * k);
+      c.fillStyle = "#222"; c.font = `${Math.max(5, 10 * 12700 * k)}px Arial, sans-serif`; c.textAlign = "center"; c.textBaseline = "middle";
+      c.fillText(text, x + (lx + lw / 2) * k, y + (ly + lh / 2) * k, lw * k); c.textAlign = "left"; c.textBaseline = "alphabetic";
+    };
+    if (sl.kind === "ov") cell(maskCellLayout(true, 1, 0, ov.w, ov.h), ov.img, "Общий план");
+    if (sl.kind === "g") sl.g.forEach((mi, j) => { const it = items[mi]; cell(maskCellLayout(sl.hz, sl.g.length, j, it.w, it.h), it.kind === "field" ? fieldThumb(it.f) : thumb({ uid: it.st.uid, st: it.st, w0: it.w, h0: it.h }), it.label); });
+    c.strokeStyle = "#2b3946"; c.lineWidth = 1; c.strokeRect(x + .5, y + .5, sw - 1, sh - 1);
+    c.fillStyle = "#8c9bab"; c.font = `11px ${FONT}`; c.textAlign = "center";
+    c.fillText(sl.kind === "title" ? `1 · шаблон ${ui.tzTpl}` : sl.kind === "ov" ? "2 · общий план" : `${si + 1}`, x + sw / 2, y + sh + 13); c.textAlign = "left";
+  });
+  if (!items.length) { c.fillStyle = "#ffb020"; c.font = `13px ${FONT}`; c.fillText("В ТЗ ничего не отмечено", pad, R.height - 10); }
+}
+$("tSaveR").addEventListener("pointerenter", () => { ui.tzTpl = "Resolume"; requestDraw(); });
+$("tSaveD").addEventListener("pointerenter", () => { ui.tzTpl = "D3"; requestDraw(); });
 
 /* ======================= СТАРТ ======================= */
 $("appicon").src = "data:image/png;base64," + ICON_B64;
@@ -1699,6 +1970,7 @@ fillSelect($("inscSize"), INSC); fillSelect($("exSize"), INSC);
 fillSelect($("rot"), ROTS); fillSelect($("exRot"), ROTS);
 fillSelect($("numFmt"), NUM_FORMATS); fillSelect($("numOrigin"), NUM_ORIGINS); fillSelect($("numPos"), NUM_POS);
 try { const saved = localStorage.getItem("ledmask.project"); if (saved) loadData(JSON.parse(saved)); } catch (e) { }
+document.documentElement.dataset.page = "mask";
 syncUI(); requestDraw(); histCommit();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { autoCache.clear(); requestDraw(); });
 if (typeof CompressionStream === "undefined") { $("exportNote").textContent = "Этот браузер слишком старый для экспорта: нужен Safari 16.4+ или свежий Chrome."; }
