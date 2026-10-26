@@ -1409,8 +1409,8 @@ const pad2 = n => String(n).padStart(2, "0");
 // имена файлов: «разрешение-название»; у общего поля — список экранов на нём
 const maskFileBase = st => { const [W, H] = dims(st); return `${W}x${H}-${safeName(st.name || "screen")}`; };
 function fieldFileBase(f) {
-  const rs = fieldRects(f), b = fieldBBox(rs), list = rs.map(r => r.st.name || "screen").join("-");
-  return safeName(`${b.w}x${b.h}-${f.name || "Общее поле"}${list ? `-${list}` : ""}`, "Общее_поле").slice(0, 180);
+  const rs = fieldRects(f), b = fieldBBox(rs), nums = rs.map(r => r.i + 1).sort((x, y) => x - y).join("-");
+  return safeName(`${b.w}x${b.h}-scr${nums}`, "Общее_поле").slice(0, 180);
 }
 // одинаковые имена в одном архиве: вторая и далее получают « (2)», « (3)»…
 function uniqueNamer() { const used = new Map(); return base => { const k = base.toLowerCase(), n = (used.get(k) || 0) + 1; used.set(k, n); return n === 1 ? base : `${base} (${n})`; }; }
