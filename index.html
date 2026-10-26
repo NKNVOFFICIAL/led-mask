@@ -161,6 +161,21 @@ html[data-page="about"] #pv { visibility: hidden; }
 .tgtext { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .tgtext b { font-size: 14px; } .tgtext .nick { font-size: 12.5px; color: #2AABEE; font-family: var(--font-num); } .tgtext .ru { font-size: 11.5px; color: var(--muted); }
 .tgcard .go { margin-left: auto; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.ver .rowbtns { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; } .ver .rowbtns .authors-btn { margin: 0; }
+.help-q::before { content: "?"; background: var(--accent); color: var(--accent-ink); font-weight: 800; font-size: 10px; display: grid; place-items: center; }
+.help { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,.6); display: grid; place-items: center; padding: 16px; }
+.help-card { width: min(780px, 100%); max-height: calc(100vh - 32px); display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.help-head { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.help-head h2 { margin: 0; font-size: 17px; font-weight: 800; } .help-head .x2 { margin-left: auto; }
+.help-toc { display: flex; gap: 6px; flex-wrap: wrap; padding: 10px 16px; border-bottom: 1px solid var(--line); }
+.help-toc a { font-size: 12px; padding: 5px 9px; border-radius: 999px; background: var(--raise); border: 1px solid var(--line); color: var(--fg); text-decoration: none; }
+.help-toc a:hover { border-color: var(--accent); }
+.help-body { overflow-y: auto; padding: 4px 20px 24px; font-size: 14px; line-height: 1.55; overscroll-behavior: contain; }
+.help-body h2 { font-size: 17px; margin: 22px 0 8px; color: var(--accent); scroll-margin-top: 8px; } .help-body h3 { font-size: 14.5px; margin: 16px 0 6px; }
+.help-body p { margin: 6px 0; } .help-body li { margin: 3px 0; } .help-body a { color: #2AABEE; }
+.help-body table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 13px; }
+.help-body th, .help-body td { border: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; } .help-body th { background: var(--raise); }
+@media (max-width: 820px) { .help { padding: 0; } .help-card { max-height: none; height: 100%; border-radius: 0; } .help-body { padding: 4px 14px 24px; } .help-body table { font-size: 12px; } }
 .ovthumb { align-self: flex-start; width: auto; height: auto; max-width: 100%; max-height: 160px; object-fit: contain; border-radius: 6px; border: 1px solid var(--line); display: block; }
 .ftools { display: inline-flex; align-items: center; gap: 4px; margin-left: auto; }
 .ftools .num { font-size: 12px; color: var(--muted); min-width: 46px; text-align: center; }
@@ -355,7 +370,7 @@ html[data-page="about"] #pv { visibility: hidden; }
       <div class="btns"><button class="x" id="btnTZgo">Формирование ТЗ →</button></div>
       <p class="hint" id="exportNote">PNG — в точном разрешении экрана, без потерь. ТЗ — ZIP с папкой: PPTX по шаблону, такой же PDF и PNG каждой маски.</p>
     </div></details>
-    <div class="ver"><button class="b authors-btn" id="btnAuthors">Авторы · Telegram</button>Версия 2.0.5 · Web</div>
+    <div class="ver"><div class="rowbtns"><button class="b authors-btn help-q" id="btnHelp">Как пользоваться</button><button class="b authors-btn" id="btnAuthors">Авторы · Telegram</button></div>Версия 2.0.5 · Web</div>
   </aside>
 
   <main class="stage">
@@ -371,7 +386,7 @@ html[data-page="about"] #pv { visibility: hidden; }
         <button data-tool="black" aria-pressed="false">Гашение</button>
         <button data-tool="pan" aria-pressed="false">Рука</button>
       </div>
-      <div class="undo"><button class="b sq" id="btnUndo" title="Отменить (Ctrl/⌘+Z)" aria-label="Отменить шаг" disabled>↶</button><button class="b sq" id="btnRedo" title="Вернуть (Ctrl/⌘+Shift+Z, Ctrl+Y)" aria-label="Вернуть шаг" disabled>↷</button></div>
+      <div class="undo"><button class="b sq" id="btnUndo" title="Отменить (Ctrl/⌘+Z)" aria-label="Отменить шаг" disabled>↶</button><button class="b sq" id="btnRedo" title="Вернуть (Ctrl/⌘+Shift+Z, Ctrl+Y)" aria-label="Вернуть шаг" disabled>↷</button><button class="b sq" id="btnHelpTop" title="Как пользоваться" aria-label="Как пользоваться">?</button></div>
       <div class="ttools" id="tSummary"></div>
       <div class="ftools"><button class="b sq" id="fzMinus" aria-label="Уменьшить">−</button><span class="num" id="fzLabel">100%</span><button class="b sq" id="fzPlus" aria-label="Увеличить">+</button><button class="b" id="fzFit">Вписать</button></div>
       <div class="zoom"><button class="b sq" id="zMinus" aria-label="Уменьшить">−</button><span class="num" id="zLabel">100%</span><button class="b sq" id="zPlus" aria-label="Увеличить">+</button><button class="b" id="zAuto">Авто</button></div>
@@ -398,6 +413,247 @@ html[data-page="about"] #pv { visibility: hidden; }
     <p class="hint" id="modalText"></p>
     <input type="text" id="modalInput">
     <div class="btns" style="justify-content:flex-end"><button class="b" id="modalCancel">Отмена</button><button class="b" id="modalOk" style="border-color:var(--accent)">OK</button></div>
+  </div>
+</div>
+<div class="help" id="help" hidden role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+  <div class="help-card">
+    <div class="help-head"><h2 id="helpTitle">Как пользоваться</h2><button class="b sq x2" id="helpClose" aria-label="Закрыть">✕</button></div>
+    <nav class="help-toc" aria-label="Разделы"><a href="#help-s1" data-h="help-s1">Где открыть</a><a href="#help-s2" data-h="help-s2">Вкладка «Маска»</a><a href="#help-s3" data-h="help-s3">Вкладка «Общее поле»</a><a href="#help-s4" data-h="help-s4">Вкладка «Формирование ТЗ»</a><a href="#help-s5" data-h="help-s5">Проект</a><a href="#help-s6" data-h="help-s6">Имена файлов</a><a href="#help-s7" data-h="help-s7">Клавиши и жесты</a><a href="#help-s8" data-h="help-s8">Авторы и связь</a></nav>
+    <div class="help-body" id="helpBody"><p>LED Pixel Mask Generator делает пиксельные маски LED-экранов (PNG в точном разрешении) и ТЗ для подрядчиков контента (PPTX + PDF). Инструкция написана по веб-версии 2.0.5 — в ней есть всё, включая общие поля и формирование ТЗ.</p>
+<h2 id="help-s1">Где открыть</h2>
+<table>
+<thead>
+<tr>
+<th>Версия</th>
+<th>Где взять</th>
+<th>Что есть</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Веб (браузер, iPhone, iPad)</td>
+<td><a target="_blank" rel="noopener" href="https://nknvofficial.github.io/led-mask/">nknvofficial.github.io/led-mask</a></td>
+<td>Всё: маски, общие поля, ТЗ Resolume / D3 / MP4</td>
+</tr>
+<tr>
+<td>Android</td>
+<td>файл LED-Mask-Android.apk</td>
+<td>То же, что веб</td>
+</tr>
+<tr>
+<td>Mac и Windows</td>
+<td><a target="_blank" rel="noopener" href="https://nknvofficial.github.io/led-mask/download/">страница скачивания</a></td>
+<td>Маски и ТЗ Resolume / D3; общих полей и вкладки ТЗ пока нет</td>
+</tr>
+</tbody>
+</table>
+<p>На iPhone сайт можно добавить на экран «Домой» (Поделиться → На экран «Домой») — откроется как приложение. Проект между запусками хранится в браузере; чтобы передать его другому человеку или на другой компьютер, сохраните файл проекта (раздел «Проект»).</p>
+<p>Вверху три вкладки: <strong>Маска</strong> — один экран, <strong>Общее поле</strong> — несколько экранов вместе, <strong>Формирование ТЗ</strong> — сборка ТЗ. Внизу левой панели — кнопка «Авторы · Telegram».</p>
+<h2 id="help-s2">Вкладка «Маска»</h2>
+<p>На этой вкладке настраивается один экран. Под холстом — лента миниатюр всех экранов проекта: нажатие открывает экран, «+» добавляет новый.</p>
+<h3>Экран и кабинеты</h3>
+<ol>
+<li>Выберите <strong>Тип кабинета</strong> — подставятся разрешение кабинета, физический размер и цвет маски. Нет в списке — введите пиксели по горизонтали и вертикали вручную.</li>
+<li>Задайте число кабинетов по ширине и высоте — или размер в метрах: программа подберёт ближайшее целое число кабинетов (7,8 м при кабинете 0,5 м → 16 кабинетов → 8 м).</li>
+<li>Цвет маски и цвет нумерации меняются своими квадратиками цвета.</li>
+</ol>
+<p>Несколько экранов в проекте: «+ Экран» добавляет новый с теми же настройками (но без гашения, покраски, контуров и доп. текста), «−» удаляет текущий.</p>
+<h3>Выделение и цвет кабинетов</h3>
+<p>Инструмент выбирается над холстом:</p>
+<table>
+<thead>
+<tr>
+<th>Инструмент</th>
+<th>Что делает</th>
+<th>С мышью</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Выбор</td>
+<td>Нажатие добавляет или убирает кабинет из выделения</td>
+<td>Ctrl / ⌘ + клик</td>
+</tr>
+<tr>
+<td>Диапазон</td>
+<td>Протяните — выделится прямоугольник</td>
+<td>Shift + клик / протяжка</td>
+</tr>
+<tr>
+<td>Гашение</td>
+<td>Кабинет становится чёрным; можно протянуть по ряду</td>
+<td>Alt + клик / протяжка</td>
+</tr>
+<tr>
+<td>Рука</td>
+<td>Двигает изображение</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Выключить все / Включить все</strong> — гасят или включают сразу все кабинеты.</li>
+<li><strong>Покрасить выделенные</strong> — выделенные кабинеты заливаются цветом из квадратика слева.</li>
+<li><strong>Угловые модули</strong> — выделите кабинеты, выберите, какая половина светится (◣ ◤ ◥ ◢), и нажмите «Сделать угловыми». Вторая половина станет чёрной. «Убрать угловые» возвращает выделенные (или все, если ничего не выделено).</li>
+<li><strong>Контур участка</strong> — выделите кабинеты и нажмите «Создать контур»: вокруг участка появится белая рамка 2 px. Её можно скрыть или убрать.</li>
+</ul>
+<h3>Текст на маске</h3>
+<ul>
+<li><strong>Основной текст</strong> — до трёх строк в центре: разрешение, название экрана, размер в метрах. Каждая строка включается галочкой «показ»; метраж по умолчанию выключен. Размер — «Авто» или из списка, кнопки − / + меняют на 10 px; есть поворот 0° / ±90° / 180°.</li>
+<li><strong>Дополнительный текст</strong> — «+ Добавить», затем выберите его в списке «Активный текст» и двигайте прямо на холсте. Так же двигается и основной текст.</li>
+</ul>
+<h3>Нумерация и направляющие</h3>
+<p>Формат номера (1,1 · 1-1 · 1 / 1 · C1-R1 · сквозной), угол, с которого начинается нумерация, и место номера в кабинете выбираются списками. Направляющие «Круг» и «Линии через центр» включаются по отдельности.</p>
+<h3>Сохранение PNG</h3>
+<p>«Сохранить PNG» — текущая маска в точном разрешении без потерь. «Все PNG (ZIP)» — все маски проекта одним архивом. Сетка между кабинетами — 2 px цвета RGB 64,64,64, внешняя рамка — 1 px белая.</p>
+<h2 id="help-s3">Вкладка «Общее поле»</h2>
+<p>Общее поле собирает несколько экранов проекта в одну картинку и считает её ширину и высоту. Размер поля всегда чётный: если экраны дают нечётный габарит, поле дополняется на 1 px справа или снизу.</p>
+<ol>
+<li><strong>Выберите поле</strong> во вкладках вверху раздела. «+ Поле» добавляет новое, «Переименовать» и «Удалить поле» работают с текущим.</li>
+<li><strong>Отметьте экраны</strong> галочками в списке. Новый экран встаёт вплотную справа от уже стоящих. Быстро: «Все на поле», «В ряд», «В столбик», «Убрать все».</li>
+<li><strong>Расставьте экраны</strong> на холсте мышью или пальцем. С галочкой «Магнит» края притягиваются к соседним (стык и выравнивание), место показывает пунктир. Alt — двигать без магнита. Точно — стрелками (1 px, с Shift 10 px) или числами X / Y.</li>
+<li><strong>Поверните</strong>, если нужно: выберите экран и нажмите «⟲ 45°» или «⟳ 45°»; «0°» вернёт как было.</li>
+<li><strong>Настройте надпись поля</strong>: разрешение и название поля по центру. Галочки «Надпись» и «Метраж» (по умолчанию выключен), размер текста с − / +. Надпись двигается мышью, у центра притягивается; «В центр» вернёт на место.</li>
+<li><strong>Сохраните</strong> «Сохранить PNG поля» или перейдите к «Формирование ТЗ →».</li>
+</ol>
+<p>В панели видно размер поля в пикселях и метрах. Метры считаются, только если у всех экранов на поле одинаковый шаг пикселя. Пересечения экранов подсвечиваются красным; пустые места в PNG чёрные. Двойной клик по экрану открывает его на вкладке «Маска».</p>
+<h2 id="help-s4">Вкладка «Формирование ТЗ»</h2>
+<p>ТЗ сохраняется одним ZIP: PPTX по шаблону, такой же PDF и PNG каждой маски и поля. На холсте — предпросмотр всех слайдов.</p>
+<ol>
+<li><strong>Отметьте, что войдёт.</strong> По умолчанию отмечены общие поля целиком и маски, которые не стоят на полях. Маски с полей по отдельности можно добавить галочкой под полем. «По умолчанию» возвращает этот выбор.</li>
+<li><strong>Общий план</strong> (необязательно). «Выбрать картинку…» — фото или рендер сцены, он станет вторым слайдом с подписью «Общий план». Нет картинки или снята галочка — слайд не добавляется. Картинка живёт только пока открыта страница и очищается при «Сброс» и открытии другого проекта.</li>
+<li><strong>Выберите тип ТЗ</strong> в списке и нажмите «Сохранить ТЗ».</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Тип ТЗ</th>
+<th>Для чего</th>
+<th>Кодек в шаблоне</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Resolume</td>
+<td>Плейбек в Resolume</td>
+<td>DXV3</td>
+</tr>
+<tr>
+<td>D3</td>
+<td>Медиасервер disguise (d3)</td>
+<td>HAP / NOTCH LC</td>
+</tr>
+<tr>
+<td>Медиаплееры (MP4)</td>
+<td>Простые медиаплееры</td>
+<td>MPEG-4</td>
+</tr>
+</tbody>
+</table>
+<p>Устройство ТЗ: первый слайд — требования из шаблона, дальше маски: горизонтальные до трёх на слайд, вертикальные до двух. Над каждой маской вплотную подпись «разрешение | название | размер в метрах». PDF — точная копия PPTX, ссылки на кодеки в нём кликаются.</p>
+<h2 id="help-s5">Проект</h2>
+<p>Проект — это все экраны, общие поля и выбор для ТЗ сразу. Браузер запоминает его сам, но только на этом устройстве.</p>
+<ul>
+<li><strong>Сохранить проект</strong> — файл .ledmask (в Claude — .ledmask.json). Его можно передать коллеге или открыть на другом устройстве.</li>
+<li><strong>Открыть проект</strong> — читает файлы .ledmask из веб-версии, Mac и Windows.</li>
+<li><strong>Сброс</strong> — новый пустой проект (перед этим спросит подтверждение).</li>
+<li><strong>↶ Отменить / ↷ Вернуть</strong> — кнопки над холстом. Отменяется любое изменение маски, поля или выбора ТЗ, до 100 шагов; перетаскивание — один шаг. Выделение и масштаб не отменяются.</li>
+</ul>
+<p>Если проект с общими полями открыть и пересохранить на Mac или Windows, поля пропадут — там их пока нет.</p>
+<h2 id="help-s6">Имена файлов</h2>
+<p>Маски называются «разрешение-название», общие поля — «разрешение-scr» и номера экранов на поле.</p>
+<table>
+<thead>
+<tr>
+<th>Что</th>
+<th>Пример</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Маска</td>
+<td>3072x1728-screen 1.png</td>
+</tr>
+<tr>
+<td>Общее поле из экранов 2, 3 и 5</td>
+<td>2304x1728-scr2-3-5.png</td>
+</tr>
+<tr>
+<td>Архив ТЗ</td>
+<td>Проект ТЗ_Resolume.zip</td>
+</tr>
+<tr>
+<td>Внутри архива</td>
+<td>Проект_ТЗ_Resolume.pptx, Проект_ТЗ_Resolume.pdf и PNG всего, что вошло в ТЗ</td>
+</tr>
+</tbody>
+</table>
+<p>Номера экранов — из списка проекта («1. screen 1»). Если у двух масок совпадают и разрешение, и название, вторая получит « (2)».</p>
+<h2 id="help-s7">Клавиши и жесты</h2>
+<table>
+<thead>
+<tr>
+<th>Действие</th>
+<th>Компьютер</th>
+<th>Телефон / планшет</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Добавить / убрать кабинет из выделения</td>
+<td>Ctrl / ⌘ + клик</td>
+<td>Инструмент «Выбор», касание</td>
+</tr>
+<tr>
+<td>Выделить прямоугольник</td>
+<td>Shift + протяжка</td>
+<td>«Диапазон», протянуть пальцем</td>
+</tr>
+<tr>
+<td>Погасить кабинеты</td>
+<td>Alt + клик / протяжка</td>
+<td>«Гашение»</td>
+</tr>
+<tr>
+<td>Снять выделение</td>
+<td>Esc</td>
+<td>«Снять выделение»</td>
+</tr>
+<tr>
+<td>Отменить шаг</td>
+<td>Ctrl / ⌘ + Z</td>
+<td>↶</td>
+</tr>
+<tr>
+<td>Вернуть шаг</td>
+<td>Ctrl / ⌘ + Shift + Z, Ctrl + Y</td>
+<td>↷</td>
+</tr>
+<tr>
+<td>Масштаб</td>
+<td>Ctrl + колесо (на общем поле — просто колесо)</td>
+<td>Щипок двумя пальцами</td>
+</tr>
+<tr>
+<td>Сдвинуть экран на поле точно</td>
+<td>Стрелки (1 px), Shift + стрелки (10 px)</td>
+<td>Поля X / Y</td>
+</tr>
+<tr>
+<td>Двигать без магнита</td>
+<td>Alt при перетаскивании</td>
+<td>Снять галочку «Магнит»</td>
+</tr>
+</tbody>
+</table>
+<p>В текстовом поле Ctrl + Z отменяет набор текста, а не шаг в маске. Сочетания работают и в русской раскладке.</p>
+<h2 id="help-s8">Авторы и связь</h2>
+<p>Вопросы, идеи и ошибки — в Telegram. В программе кнопка «Авторы · Telegram» внизу левой панели открывает карточки и QR-коды.</p>
+<ul>
+<li>Khokhryakov Viatcheslav (Вячеслав Хохряков) — <a target="_blank" rel="noopener" href="https://t.me/slavahoh">@slavahoh</a></li>
+<li>Nikonov Konstantin (Константин Никонов) — <a target="_blank" rel="noopener" href="https://t.me/NKNVOFFICIAL">@NKNVOFFICIAL</a></li>
+</ul>
+<p>© 2026 Khokhryakov Viatcheslav, Nikonov Konstantin · LED Pixel Mask Generator, версия 2.0.5 · Web</p></div>
   </div>
 </div>
 <div class="busy" id="busy" hidden><div id="busyText">Экспорт…</div></div>
@@ -1508,6 +1764,15 @@ $("btnPNG").onclick = exportCurrentPNG;
 $("btnAllPNG").onclick = exportAllPNG;
 $("btnTZgo").onclick = () => setPage("tz");
 $("fTZgo").onclick = () => setPage("tz");
+// инструкция «Как пользоваться»
+function openHelp(id) { $("help").hidden = false; document.body.style.overflow = "hidden"; if (id) $(id).scrollIntoView(); else $("helpBody").scrollTop = 0; $("helpClose").focus({ preventScroll: true }); }
+function closeHelp() { $("help").hidden = true; document.body.style.overflow = ""; }
+$("btnHelp").onclick = () => openHelp();
+$("btnHelpTop").onclick = () => openHelp();
+$("helpClose").onclick = closeHelp;
+$("help").addEventListener("click", e => { if (e.target === $("help")) closeHelp(); });
+document.querySelectorAll(".help-toc a").forEach(a => a.onclick = e => { e.preventDefault(); $(a.dataset.h).scrollIntoView({ behavior: "smooth", block: "start" }); });
+window.addEventListener("keydown", e => { if (e.key === "Escape" && !$("help").hidden) { e.stopImmediatePropagation(); closeHelp(); } }, true);
 $("btnAuthors").onclick = () => { setPage("about"); window.scrollTo({ top: 0, behavior: "smooth" }); };
 $("btnSaveProj").onclick = () => STANDALONE
   ? save(`${safeName(project.name, "Проект")}.ledmask`, toPlist(ledmaskData()))
@@ -2123,7 +2388,10 @@ function renderStrip() {
 
 // на телефоне лента масок не должна висеть в закреплённой зоне — переносим её в начало панели
 function placeStrip() {
-  const strip = $("mStrip"), narrow = window.matchMedia("(max-width: 820px)").matches;
+  const strip = $("mStrip"), narrow = window.matchMedia("(max-width: 820px)").matches, q = $("btnHelpTop");
+  // «?» на телефоне — в строке вкладок, чтобы ↶ ↷ не уезжали на новую строку
+  if (narrow && q.parentElement.classList.contains("undo")) document.querySelector(".seg.pages").after(q);
+  if (!narrow && !q.parentElement.classList.contains("undo")) document.querySelector(".undo").appendChild(q);
   if (narrow && strip.parentElement !== $("panel")) $("panel").insertBefore(strip, $("panel").firstChild);
   if (!narrow && strip.parentElement === $("panel")) document.querySelector(".stage").appendChild(strip);
 }
