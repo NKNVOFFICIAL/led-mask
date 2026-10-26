@@ -232,6 +232,7 @@ html[data-page="about"] #pv { visibility: hidden; }
       <div class="btns"><button class="b" id="fAll">Все на поле</button><button class="b" id="fRow">В ряд</button><button class="b" id="fCol">В столбик</button><button class="b" id="fClear">Убрать все</button></div>
       <div class="row"><span class="lbl">Магнит</span><div class="ctl"><label class="chk"><input type="checkbox" id="fMagnet" checked> притягивать края</label></div></div>
       <div class="row"><span class="lbl">Надпись</span><div class="ctl"><label class="chk"><input type="checkbox" id="fTitle" checked> название и разрешение</label><button class="b" id="fTitleCenter">В центр</button></div></div>
+      <div class="row"><span class="lbl">Метраж</span><div class="ctl"><label class="chk"><input type="checkbox" id="fMeters"> показывать размер в метрах</label></div></div>
       <div class="row"><label for="fTitleSize">Размер текста</label><div class="ctl"><select id="fTitleSize"></select><button class="b sq" id="fTitleMinus">−</button><button class="b sq" id="fTitlePlus">+</button></div></div>
       <div id="fSelBox">
         <div class="row"><span class="lbl" id="fSelName">Выбран экран</span><div class="ctl"><span class="unit">X</span><input type="number" id="fX" inputmode="numeric"><span class="unit">Y</span><input type="number" id="fY" inputmode="numeric"><span class="unit">px</span></div></div>
@@ -1506,7 +1507,7 @@ $("fileProj").addEventListener("change", async e => {
    в пикселях (Y вниз, левый верхний угол габарита) и поворотом, кратным 45°.
    Размер поля всегда чётный: габарит округляется вверх до чётного числа. */
 ui.page = "mask"; ui.magnet = true;
-function freshField(k) { return { id: newUid(), name: k ? `Общее поле ${k + 1}` : "Общее поле", items: [], title: { on: true, x: 0, y: 0, size: 0 } }; }
+function freshField(k) { return { id: newUid(), name: k ? `Общее поле ${k + 1}` : "Общее поле", items: [], title: { on: true, x: 0, y: 0, size: 0, meters: false } }; }
 function freshFieldState() { return { fields: [freshField(0)], fieldCur: 0, tz: { fields: {}, masks: {}, overview: true } }; }
 function loadFieldState(d, raw) {
   const seen = new Set(); project.screens.forEach(s => { if (seen.has(s.uid)) s.uid = newUid(); seen.add(s.uid); });
@@ -1523,7 +1524,7 @@ function loadFieldState(d, raw) {
       if (!project.screens.some(s => s.uid === uid)) { const si = parseInt(it && it.si, 10); uid = project.screens[si] ? project.screens[si].uid : ""; }
       return { uid, x: Math.round(+it.x || 0), y: Math.round(+it.y || 0), rot: ((Math.round((+it.rot || 0) / 45) * 45) % 360 + 360) % 360 };
     }).filter(it => it.uid && !used.has(it.uid) && used.add(it.uid));
-    return { id: typeof f.id === "string" && f.id ? f.id : newUid(), name: String(f.name || (k ? `Общее поле ${k + 1}` : "Общее поле")), items, title: { on: t.on == null ? true : !!t.on, x: Math.round(+t.x || 0), y: Math.round(+t.y || 0), size: clampI(t.size, INSC.length) } };
+    return { id: typeof f.id === "string" && f.id ? f.id : newUid(), name: String(f.name || (k ? `Общее поле ${k + 1}` : "Общее поле")), items, title: { on: t.on == null ? true : !!t.on, x: Math.round(+t.x || 0), y: Math.round(+t.y || 0), size: clampI(t.size, INSC.length), meters: !!t.meters } };
   });
   if (!project.fields.length) project.fields = [freshField(0)];
   project.fieldCur = clampI(d.fieldCur, project.fields.length);
@@ -1570,7 +1571,7 @@ function fieldTitleLines(f, rs, b, s) {
   const size = si ? Math.max(6, Math.min(900, pfloat(INSC[si]))) : autoSize(b.w, b.h, name);
   const s1 = Math.max(10, size) * s, s2 = Math.max(8, size * 0.55) * s, s3 = Math.max(4, Math.max(8, size * 0.55) * 0.5) * s;
   const lines = [[`${b.w}×${b.h}`, s1], [name, s2]];
-  if (ph) lines.push([`${compactM(ph.w)}х${compactM(ph.h)} м`, s3]);
+  if (ph && f.title.meters) lines.push([`${compactM(ph.w)}х${compactM(ph.h)} м`, s3]);
   return lines;
 }
 // рисует поле целиком в ctx в масштабе s (левый верх габарита — в 0,0)
@@ -1851,7 +1852,7 @@ function refreshFieldPanel() {
     row.onclick = () => { if (it) { fld.sel = st.uid; refreshFieldPanel(); requestDraw(); } };
     list.appendChild(row);
   });
-  $("fMagnet").checked = ui.magnet; $("fTitle").checked = f.title.on;
+  $("fMagnet").checked = ui.magnet; $("fTitle").checked = f.title.on; $("fMeters").checked = !!f.title.meters;
   if (!$("fTitleSize").options.length) fillSelect($("fTitleSize"), INSC);
   $("fTitleSize").value = clampI(f.title.size, INSC.length);
   $("fDelete").disabled = project.fields.length <= 1;
@@ -1899,6 +1900,7 @@ $("fCol").onclick = () => arrange(false);
 $("fClear").onclick = () => { CF().items = []; fld.sel = null; fieldChanged(true); };
 $("fMagnet").onchange = e => { ui.magnet = e.target.checked; };
 $("fTitle").onchange = e => { CF().title.on = e.target.checked; fieldChanged(false); };
+$("fMeters").onchange = e => { CF().title.meters = e.target.checked; fieldChanged(false); };
 $("fTitleSize").addEventListener("change", e => { CF().title.size = +e.target.value; fieldChanged(false); });
 function fieldTitleStep(delta) {
   const f = CF(), rs = fieldRects(f), b = fieldBBox(rs); if (!b) return;
@@ -1942,7 +1944,7 @@ ui.overview = null; // { name, jpeg, w, h, url } — картинка общег
 function fieldInfo(f) {
   const rs = fieldRects(f), b = fieldBBox(rs); if (!b) return null;
   const ph = fieldPhys(rs, b);
-  return { w: b.w, h: b.h, label: `${b.w}×${b.h}  |  ${f.name}${ph ? `  |  ${compactM(ph.w)}х${compactM(ph.h)} м` : ""}` };
+  return { w: b.w, h: b.h, label: `${b.w}×${b.h}  |  ${f.name}${ph && f.title.meters ? `  |  ${compactM(ph.w)}х${compactM(ph.h)} м` : ""}` };
 }
 // что идёт в ТЗ: сначала отмеченные общие поля, затем отмеченные маски (порядок проекта)
 // по умолчанию: общие поля целиком — да; маски, стоящие на каком-нибудь поле, — нет; остальные маски — да
