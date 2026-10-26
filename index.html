@@ -1406,6 +1406,14 @@ async function buildPdf(label, masks, overview) {
 /* ======================= ЭКСПОРТ ======================= */
 const safeName = (n, fb = "LED_Mask") => { let s = String(n || "").trim().replace(/[\/:\\*?"<>|\x00-\x1f]/g, "_").replace(/[. ]+$/, ""); return s || fb; };
 const pad2 = n => String(n).padStart(2, "0");
+// имена файлов: «разрешение-название»; у общего поля — список экранов на нём
+const maskFileBase = st => { const [W, H] = dims(st); return `${W}x${H}-${safeName(st.name || "screen")}`; };
+function fieldFileBase(f) {
+  const rs = fieldRects(f), b = fieldBBox(rs), list = rs.map(r => r.st.name || "screen").join("-");
+  return safeName(`${b.w}x${b.h}-${f.name || "Общее поле"}${list ? `-${list}` : ""}`, "Общее_поле").slice(0, 180);
+}
+// одинаковые имена в одном архиве: вторая и далее получают « (2)», « (3)»…
+function uniqueNamer() { const used = new Map(); return base => { const k = base.toLowerCase(), n = (used.get(k) || 0) + 1; used.set(k, n); return n === 1 ? base : `${base} (${n})`; }; }
 const tick = () => new Promise(r => setTimeout(r, 0));
 function busy(msg) { $("busyText").textContent = msg; $("busy").hidden = !msg; }
 const MIME = { png: "image/png", zip: "application/zip", pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation", json: "application/json", ledmask: "application/xml" };
@@ -1452,16 +1460,16 @@ async function save(filename, data) {
 async function exportCurrentPNG() {
   const st = S(), [W, H] = dims(st);
   busy(`Рендер ${W}×${H}…`); await tick();
-  try { const r = await renderPNG(st, async p => { busy(`Рендер ${W}×${H}… ${Math.round(p * 100)}%`); await tick(); }); busy(""); await save(`${W}x${H}_${safeName(st.name)}.png`, new Blob([r.png], { type: "image/png" })); }
+  try { const r = await renderPNG(st, async p => { busy(`Рендер ${W}×${H}… ${Math.round(p * 100)}%`); await tick(); }); busy(""); await save(`${maskFileBase(st)}.png`, new Blob([r.png], { type: "image/png" })); }
   catch (e) { busy(""); status("Ошибка рендера: " + e.message, true); }
 }
 async function renderAll(prefix) {
-  const out = [];
+  const out = [], uniq = uniqueNamer();
   for (let i = 0; i < project.screens.length; i++) {
     const st = project.screens[i], [W, H] = dims(st), name = safeName(st.name || `Экран_${i + 1}`);
     busy(`Экран ${i + 1} из ${project.screens.length}: ${W}×${H}…`); await tick();
     const r = await renderPNG(st);
-    out.push({ ...r, file: `${prefix}${pad2(i + 1)}_${W}x${H}_${name}.png`, label: `${W}×${H}  |  ${name}  |  ${physText(st)}` });
+    out.push({ ...r, file: `${prefix}${uniq(maskFileBase(st))}.png`, label: `${W}×${H}  |  ${name}  |  ${physText(st)}` });
   }
   return out;
 }
@@ -1477,12 +1485,12 @@ async function exportTZ(label) {
   const items = tzItems();
   if (!items.length) { status("В ТЗ ничего не отмечено", true); return; }
   try {
-    const project_ = safeName(project.name, "Проект"), folder = `${project_} ТЗ_${label}/`, pngs = [];
+    const project_ = safeName(project.name, "Проект"), folder = `${project_} ТЗ_${label}/`, pngs = [], uniq = uniqueNamer();
     for (let n = 0; n < items.length; n++) {
       const it = items[n];
       busy(`Рендер ${n + 1} из ${items.length}: ${it.w}×${it.h}…`); await tick();
       const r = it.kind === "field" ? await renderFieldPNG(it.f) : await renderPNG(it.st);
-      pngs.push({ ...r, file: `${folder}${pad2(n + 1)}_${r.w}x${r.h}_${safeName(it.name)}.png`, label: it.label });
+      pngs.push({ ...r, file: `${folder}${uniq(it.kind === "field" ? fieldFileBase(it.f) : maskFileBase(it.st))}.png`, label: it.label });
     }
     const ov = tzOverview();
     busy("Сборка PPTX…"); await tick();
@@ -1948,7 +1956,7 @@ $("fPNG").onclick = async () => {
   busy(`Рендер поля ${b.w}×${b.h}…`); await tick();
   try {
     const r = await renderFieldPNG(f, async p => { busy(`Рендер поля ${b.w}×${b.h}… ${Math.round(p * 100)}%`); await tick(); });
-    busy(""); await save(`${b.w}x${b.h}_${safeName(f.name, "Общее_поле")}.png`, new Blob([r.png], { type: "image/png" }));
+    busy(""); await save(`${fieldFileBase(f)}.png`, new Blob([r.png], { type: "image/png" }));
   } catch (e) { busy(""); status("Ошибка рендера: " + e.message, true); }
 };
 
