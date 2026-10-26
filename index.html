@@ -137,7 +137,10 @@ html:not([data-page="mask"]) .mstrip { display: none; }
 .mthumb .cap { font-size: 11px; line-height: 1.25; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 198px; text-align: left; }
 .mthumb .cap b { color: var(--fg); font-weight: 600; }
 .mthumb.add { justify-content: center; align-items: center; min-width: 70px; font-size: 22px; color: var(--muted); }
-.ver .copy { color: var(--fg); opacity: .7; margin-bottom: 2px; }
+.brand-copy { margin: 3px 0 0; font-size: 10.5px; color: var(--muted); letter-spacing: .02em; }
+.authors-btn { display: flex; width: fit-content; align-items: center; gap: 6px; margin: 0 0 8px; font-size: 12px; padding: 6px 10px; }
+.authors-btn::before { content: ""; width: 14px; height: 14px; border-radius: 50%; background: #2AABEE; }
+html[data-page="about"] .authors-btn { border-color: var(--accent); }
 html[data-page="about"] .panel > details.sec:not(.asec):not(.psec) { display: none; }
 html:not([data-page="about"]) .asec { display: none !important; }
 .about { position: absolute; inset: 0; display: none; overflow: auto; background: var(--stage); }
@@ -218,6 +221,7 @@ html[data-page="about"] #pv { visibility: hidden; }
     <div>
       <div class="brand"><img id="appicon" alt=""><h1>LED Pixel Mask Generator</h1></div>
       <p class="brand-sub">LED DISPLAY WORKSPACE • ПРОЕКТИРОВАНИЕ МАСОК</p>
+      <p class="brand-copy">© 2026 Khokhryakov Viatcheslav, Nikonov Konstantin</p>
     </div>
 
     <details class="sec psec" open><summary>ПРОЕКТ</summary><div class="sec-body">
@@ -351,7 +355,7 @@ html[data-page="about"] #pv { visibility: hidden; }
       <div class="btns"><button class="x" id="btnTZgo">Формирование ТЗ →</button></div>
       <p class="hint" id="exportNote">PNG — в точном разрешении экрана, без потерь. ТЗ — ZIP с папкой: PPTX по шаблону, такой же PDF и PNG каждой маски.</p>
     </div></details>
-    <div class="ver"><div class="copy">© 2026 Khokhryakov Viatcheslav, Nikonov Konstantin</div>Версия 12.43.27 · Web · ТЕСТ: общее поле</div>
+    <div class="ver"><button class="b authors-btn" id="btnAuthors">Авторы · Telegram</button>Версия 12.43.27 · Web · ТЕСТ: общее поле</div>
   </aside>
 
   <main class="stage">
@@ -360,7 +364,6 @@ html[data-page="about"] #pv { visibility: hidden; }
         <button data-page="mask" aria-pressed="true">Маска</button>
         <button data-page="field" aria-pressed="false">Общее поле</button>
         <button data-page="tz" aria-pressed="false">Формирование ТЗ</button>
-        <button data-page="about" aria-pressed="false">Авторы</button>
       </div>
       <div class="seg tools" role="group" aria-label="Инструмент">
         <button data-tool="select" aria-pressed="true">Выбор</button>
@@ -1494,6 +1497,7 @@ $("btnPNG").onclick = exportCurrentPNG;
 $("btnAllPNG").onclick = exportAllPNG;
 $("btnTZgo").onclick = () => setPage("tz");
 $("fTZgo").onclick = () => setPage("tz");
+$("btnAuthors").onclick = () => { setPage("about"); window.scrollTo({ top: 0, behavior: "smooth" }); };
 $("btnSaveProj").onclick = () => STANDALONE
   ? save(`${safeName(project.name, "Проект")}.ledmask`, toPlist(ledmaskData()))
   : save(`${safeName(project.name, "Проект")}.ledmask.json`, JSON.stringify(projectData(), null, 1));
