@@ -1225,8 +1225,8 @@ html[data-page=about] #pv {
       <div class="btns"><button class="b" id="btnCorner">Сделать угловыми</button><button class="b" id="btnCornerDel">Убрать угловые</button></div>
       <div class="row"><span class="lbl">Фигурные модули</span><div class="ctl">
         <div class="seg shaped" role="group" aria-label="Тип фигурного модуля">
-          <button data-w="48" aria-pressed="true" title="Модуль на угол 90°: 48 px">90° · 48</button>
-          <button data-w="96" aria-pressed="false" title="Модуль на угол 60°: 96 px">60° · 96</button>
+          <button data-w="48" aria-pressed="true" title="Модуль на угол 90°: 48×192">90° · 48×192</button>
+          <button data-w="96" aria-pressed="false" title="Модуль на угол 60°: 96×192">60° · 96×192</button>
         </div>
         <div class="seg shapedDir" role="group" aria-label="Что сузить">
           <button data-dir="col" aria-pressed="true" title="Узким станет весь столбец выделенного модуля (48×192)">Столбец</button>
@@ -1400,7 +1400,7 @@ html[data-page=about] #pv {
 <li><strong>Выключить все / Включить все</strong> — гасят или включают сразу все кабинеты.</li>
 <li><strong>Покрасить выделенные</strong> — выделенные кабинеты заливаются цветом из квадратика слева.</li>
 <li><strong>Угловые модули</strong> — выделите кабинеты, выберите, какая половина светится (◣ ◤ ◥ ◢), и нажмите «Сделать угловыми». Вторая половина станет чёрной. «Убрать угловые» возвращает выделенные (или все, если ничего не выделено).</li>
-<li><strong>Фигурные модули</strong> — узкие модули для углов: 48 px (угол 90°) или 96 px (угол 60°). Выделите любой модуль, выберите тип и «Столбец» или «Ряд», нажмите «Сделать фигурными» — весь столбец (ряд) станет узким, без чёрных полей. Разрешение экрана и общего поля пересчитывается само. «Убрать фигурные» возвращает выделенные линии (или все).</li>
+<li><strong>Фигурные модули</strong> — узкие модули для углов: 90° — 48×192, 60° — 96×192. Выделите любой модуль, выберите тип и «Столбец» или «Ряд», нажмите «Сделать фигурными» — весь столбец (ряд) станет узким, без чёрных полей. Разрешение экрана и общего поля пересчитывается само. «Убрать фигурные» возвращает выделенные линии (или все).</li>
 <li><strong>Контур участка</strong> — выделите кабинеты и нажмите «Создать контур»: вокруг участка появится белая рамка 2 px. Её можно скрыть или убрать.</li>
 </ul>
 <h3>Текст на маске</h3>
@@ -1891,7 +1891,7 @@ const pfloat = (v) => {
   const m = String(v != null ? v : "").match(/^\s*([-+]?\d+(?:[.,]\d+)?)/);
   return m ? parseFloat(m[1].replace(",", ".")) : 0;
 };
-const SHAPED = [[48, "90°"], [96, "60°"]];
+const SHAPED = [[48, "90° 48×192"], [96, "60° 96×192"]];
 function grid(st) {
   const cols = Math.max(1, st.cabCols), rows = Math.max(1, st.cabRows), sc = st.shapedCols || {}, sr = st.shapedRows || {};
   const xs = [0], ys = [0];
@@ -2803,7 +2803,7 @@ $("btnShaped").onclick = () => {
   for (const i of lines) st[f][i] = ui.shapedW;
   changed({ forcePhys: true });
   const [W, H] = dims(st), name = (SHAPED.find((t) => t[0] === ui.shapedW) || [0, ""])[1];
-  status("Фигурные ".concat(name, " (").concat(ui.shapedW, " px): ").concat(isCol ? "столбцов" : "рядов", " ").concat(lines.length, " · разрешение ").concat(W, "×").concat(H), true);
+  status("Фигурные ".concat(name, ": ").concat(isCol ? "столбцов" : "рядов", " ").concat(lines.length, " · разрешение ").concat(W, "×").concat(H), true);
 };
 $("btnShapedDel").onclick = () => {
   const st = S(), { cols, rows } = selectedLines(st);
