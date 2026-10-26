@@ -1223,16 +1223,15 @@ html[data-page=about] #pv {
           <button data-corner="3" aria-pressed="false" title="Светится нижняя правая половина">◢</button>
         </div></div></div>
       <div class="btns"><button class="b" id="btnCorner">Сделать угловыми</button><button class="b" id="btnCornerDel">Убрать угловые</button></div>
-      <div class="row"><span class="lbl">Фигурные модули</span><div class="ctl">
-        <div class="seg shaped" role="group" aria-label="Тип фигурного модуля">
+      <div class="row" style="grid-template-columns:1fr"><span class="lbl">Фигурные модули</span><div class="ctl">
+        <div class="seg shaped" style="white-space:nowrap" role="group" aria-label="Тип фигурного модуля">
           <button data-w="48" aria-pressed="true" title="Модуль на угол 90°: 48×192">90° · 48×192</button>
           <button data-w="96" aria-pressed="false" title="Модуль на угол 60°: 96×192">60° · 96×192</button>
+          <button data-w="custom" aria-pressed="false" title="Своя ширина модуля в пикселях">Свой</button>
         </div>
-        <div class="seg shapedDir" role="group" aria-label="Что сузить">
-          <button data-dir="col" aria-pressed="true" title="Узким станет весь столбец выделенного модуля (48×192)">Столбец</button>
-          <button data-dir="row" aria-pressed="false" title="Узким станет весь ряд выделенного модуля (192×48)">Ряд</button>
-        </div></div></div>
-      <p class="hint">Выделите любой модуль — узким станет весь его столбец (или ряд), без чёрных полей. Разрешение и общее поле пересчитываются.</p>
+        <span id="shapedCustomBox" hidden><input id="shapedCustom" type="number" min="1" max="20000" step="1" value="128" style="width:72px" aria-label="Ширина своего фигурного модуля"> <span class="unit" id="shapedCustomH">×192 px</span></span>
+        </div></div>
+      <p class="hint">Выделите любой модуль — узким станет весь его столбец, без чёрных полей. Разрешение и общее поле пересчитываются.</p>
       <div class="btns"><button class="b" id="btnShaped">Сделать фигурными</button><button class="b" id="btnShapedDel">Убрать фигурные</button></div>
     </div></details>
 
@@ -1400,7 +1399,7 @@ html[data-page=about] #pv {
 <li><strong>Выключить все / Включить все</strong> — гасят или включают сразу все кабинеты.</li>
 <li><strong>Покрасить выделенные</strong> — выделенные кабинеты заливаются цветом из квадратика слева.</li>
 <li><strong>Угловые модули</strong> — выделите кабинеты, выберите, какая половина светится (◣ ◤ ◥ ◢), и нажмите «Сделать угловыми». Вторая половина станет чёрной. «Убрать угловые» возвращает выделенные (или все, если ничего не выделено).</li>
-<li><strong>Фигурные модули</strong> — узкие модули для углов: 90° — 48×192, 60° — 96×192. Выделите любой модуль, выберите тип и «Столбец» или «Ряд», нажмите «Сделать фигурными» — весь столбец (ряд) станет узким, без чёрных полей. Разрешение экрана и общего поля пересчитывается само. «Убрать фигурные» возвращает выделенные линии (или все).</li>
+<li><strong>Фигурные модули</strong> — узкие модули для углов: 90° — 48×192, 60° — 96×192 или «Свой» — впишите ширину в пикселях (например 128). Выделите любой модуль, выберите тип и нажмите «Сделать фигурными» — весь его столбец станет узким, без чёрных полей. Разрешение экрана и общего поля пересчитывается само. «Убрать фигурные» возвращает выделенные столбцы (или все).</li>
 <li><strong>Контур участка</strong> — выделите кабинеты и нажмите «Создать контур»: вокруг участка появится белая рамка 2 px. Её можно скрыть или убрать.</li>
 </ul>
 <h3>Текст на маске</h3>
@@ -2274,7 +2273,7 @@ function updateInfo(forcePhys) {
   $("infoRes").textContent = "Разрешение: ".concat(W, "×").concat(H, " px");
   $("infoPhys").textContent = "".concat(known ? "Физический размер" : "Размер (условно 50 см)", ": ").concat(compactM(pw), "х").concat(compactM(ph), " м");
   const total = st.cabCols * st.cabRows, nb = st.blackCabinets.length, nc = cornerList(st, new Set(st.blackCabinets)).length, ns = shapedCount(st);
-  $("infoCab").textContent = "Кабинеты: ".concat(total, " • Чёрные: ").concat(nb).concat(nc ? " • Угловые: ".concat(nc) : "").concat(ns ? " • Фигурных линий: ".concat(ns) : "", " • Выделено: ").concat(ui.selected.size);
+  $("infoCab").textContent = "Кабинеты: ".concat(total, " • Чёрные: ").concat(nb).concat(nc ? " • Угловые: ".concat(nc) : "").concat(ns ? " • Фигурных столбцов: ".concat(ns) : "", " • Выделено: ").concat(ui.selected.size);
   $("zLabel").textContent = Math.round(ui.zoom * 100) + "%";
 }
 function changed(opts = {}) {
@@ -2773,14 +2772,20 @@ $("btnCorner").onclick = () => {
   status("Угловых модулей ".concat(CORNER_GLYPH[ui.corner], ": ").concat(ui.selected.size), true);
 };
 ui.shapedW = 48;
-ui.shapedDir = "col";
+ui.shapedCustom = false;
+const customW = () => Math.max(1, Math.min(2e4, pint($("shapedCustom").value, 128)));
 document.querySelectorAll(".seg.shaped button").forEach((b) => b.onclick = () => {
-  ui.shapedW = +b.dataset.w;
+  ui.shapedCustom = b.dataset.w === "custom";
+  ui.shapedW = ui.shapedCustom ? customW() : +b.dataset.w;
+  $("shapedCustomBox").hidden = !ui.shapedCustom;
+  if (ui.shapedCustom) {
+    $("shapedCustomH").textContent = "×".concat(S().cabHpx, " px");
+    $("shapedCustom").focus();
+  }
   document.querySelectorAll(".seg.shaped button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
 });
-document.querySelectorAll(".seg.shapedDir button").forEach((b) => b.onclick = () => {
-  ui.shapedDir = b.dataset.dir;
-  document.querySelectorAll(".seg.shapedDir button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+$("shapedCustom").addEventListener("input", () => {
+  if (ui.shapedCustom) ui.shapedW = customW();
 });
 function selectedLines(st) {
   const cols = /* @__PURE__ */ new Set(), rows = /* @__PURE__ */ new Set();
@@ -2795,14 +2800,15 @@ function selectedLines(st) {
 $("btnShaped").onclick = () => {
   const st = S();
   if (!ui.selected.size) {
-    status("Сначала выделите модуль в нужном столбце (или ряду)", true);
+    status("Сначала выделите модуль в нужном столбце", true);
     return;
   }
-  const isCol = ui.shapedDir !== "row", f = isCol ? "shapedCols" : "shapedRows", lines = selectedLines(st)[isCol ? "cols" : "rows"];
+  const isCol = true, f = "shapedCols", lines = selectedLines(st).cols;
   st[f] = st[f] || {};
   for (const i of lines) st[f][i] = ui.shapedW;
   changed({ forcePhys: true });
-  const [W, H] = dims(st), name = (SHAPED.find((t) => t[0] === ui.shapedW) || [0, ""])[1];
+  if (ui.shapedCustom) ui.shapedW = customW();
+  const [W, H] = dims(st), name = ui.shapedCustom ? "".concat(ui.shapedW, "×").concat(st.cabHpx) : (SHAPED.find((t) => t[0] === ui.shapedW) || [0, ""])[1];
   status("Фигурные ".concat(name, ": ").concat(isCol ? "столбцов" : "рядов", " ").concat(lines.length, " · разрешение ").concat(W, "×").concat(H), true);
 };
 $("btnShapedDel").onclick = () => {
@@ -2823,7 +2829,7 @@ $("btnShapedDel").onclick = () => {
     st.shapedRows = {};
   }
   changed({ forcePhys: true });
-  status(ui.selected.size ? "Обычными стали линий: ".concat(n) : "Все фигурные модули экрана убраны: ".concat(n), true);
+  status(ui.selected.size ? "Обычными стали столбцов: ".concat(n) : "Все фигурные модули экрана убраны: ".concat(n), true);
 };
 $("btnCornerDel").onclick = () => {
   const st = S(), cc = st.cornerCabinets || {};
