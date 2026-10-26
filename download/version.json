@@ -1,13 +1,13 @@
 {
- "version": "2.0.8",
- "notes": "Фигурные модули 1/4 и 1/2 от ширины модуля; свой текст, цвет и перемещение текста в ТЗ; маски для проекции; поля ширина × высота.",
+ "version": "2.0.9",
+ "notes": "Исправлено: левая панель больше не прыгает наверх при клике (Mac). Плюс всё из 2.0.8: фигурные 1/4 и 1/2, свой текст в ТЗ, проекция.",
  "mac": {
   "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Mac.zip",
-  "sha256": "709fc156d1f99d3bf1e86454981d7f74cfdfcc8d53b1752e270b3dfb867d57c6"
+  "sha256": "2d52f1c0b1e88ca74afa1a7d5907c396b97fb4d0d20b2d130be49b3fac40cc84"
  },
  "windows": {
   "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Windows.exe",
-  "sha256": "160536e8fc35caefe5fa456bbdd5cdc9280abcfbacc2c3493a2040c0d2e93117"
+  "sha256": "4a17932ae9308f89ef009f19770abf18af38f5f8b8b6308424abb50fa98edac5"
  },
  "android": {
   "url": "https://github.com/NKNVOFFICIAL/led-mask/releases/download/android-latest/LED-Mask-Android.apk"
