@@ -1,13 +1,13 @@
 {
- "version": "2.0.6",
- "notes": "Фигурные модули (48 px — 90°, 96 px — 60°), исправлен запуск на macOS Mojave.",
+ "version": "2.0.7",
+ "notes": "Фигурные модули: 90° 48×192, 60° 96×192. Исправлен запуск на macOS Mojave.",
  "mac": {
   "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Mac.zip",
-  "sha256": "d8b17d9282f318e5c0fa2d8136812b8c4d01a33d12a6f7718ad77af33df8d215"
+  "sha256": "c0f74d4145e5529113f3512c3d8329edcad0d5ff6a554048f2e3bc008b1597b2"
  },
  "windows": {
   "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Windows.exe",
-  "sha256": "a2ef8126e2a8802c86f75a441dfa1e2bfaf53798c57ae6d946f8eb97d2d22bec"
+  "sha256": "1d83d2a608f0017dcebe1695582f0d862bd5d9f6ef06fb14066a7ecbc3401601"
  },
  "android": {
   "url": "https://github.com/NKNVOFFICIAL/led-mask/releases/download/android-latest/LED-Mask-Android.apk"
