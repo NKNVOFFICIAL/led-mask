@@ -1,0 +1,15 @@
+{
+ "version": "2.0.5",
+ "notes": "Общее поле, вкладка ТЗ (Resolume / D3 / MP4), новый шаблон D3, справка внутри программы, обновление изнутри программы.",
+ "mac": {
+  "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Mac.zip",
+  "sha256": "e543d87ab4471e1d849a150693fff6beb051cef7182aa0812ff9f922f03000ab"
+ },
+ "windows": {
+  "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Windows.exe",
+  "sha256": "f84b804f1f577f537d3d4ecdc2102ef21c1f670430d68589c03eb678dae6c39a"
+ },
+ "android": {
+  "url": "https://github.com/NKNVOFFICIAL/led-mask/releases/download/android-latest/LED-Mask-Android.apk"
+ }
+}

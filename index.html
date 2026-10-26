@@ -659,6 +659,7 @@ html[data-page="about"] #pv { visibility: hidden; }
 </div>
 <div class="busy" id="busy" hidden><div id="busyText">Экспорт…</div></div>
 
+<script>window.__errs = []; window.addEventListener("error", e => { try { window.__errs.push(String(e.message) + " @" + e.lineno); } catch (x) { } }); window.addEventListener("unhandledrejection", e => { try { window.__errs.push("promise: " + (e.reason && e.reason.message || e.reason)); } catch (x) { } });</script>
 <script>
 "use strict";
 /* ======================= ДАННЫЕ ======================= */
@@ -670,14 +671,22 @@ const STANDALONE = true;
 const APP_VERSION = "2.0.5";
 const UPDATE_URL = "https://nknvofficial.github.io/led-mask/download/version.json";
 const QS = new URLSearchParams(location.search);
-const PLATFORM = window.AndroidBridge ? "android" : (window.LEDMASK_PLATFORM || QS.get("platform") || "web");
-const PLATFORM_LABEL = { web: "Web", mac: "Mac", windows: "Windows", android: "Android" }[PLATFORM] || "Web";
-const DESKTOP = PLATFORM === "mac" || PLATFORM === "windows";
-const SELFTEST = !!(window.LEDMASK_SELFTEST || QS.get("selftest"));
+// на Windows программа (pywebview) появляется чуть позже загрузки страницы — см. pywebviewready ниже
+let PLATFORM = window.AndroidBridge ? "android" : (window.LEDMASK_PLATFORM || QS.get("platform") || (window.pywebview ? "windows" : "web"));
+let PLATFORM_LABEL = "Web", DESKTOP = false;
+let SELFTEST = !!(window.LEDMASK_SELFTEST || QS.get("selftest"));
+function setPlatform(p) { PLATFORM = p; PLATFORM_LABEL = { web: "Web", mac: "Mac", windows: "Windows", android: "Android" }[p] || "Web"; DESKTOP = p === "mac" || p === "windows"; }
+setPlatform(PLATFORM);
 const HAS_CS = typeof CompressionStream !== "undefined" && typeof DecompressionStream !== "undefined";
 const nativeCalls = new Map(); let nativeSeq = 0;
 window.__ledmaskReply = (id, ok, value) => { const c = nativeCalls.get(id); if (!c) return; nativeCalls.delete(id); ok ? c.res(value) : c.rej(new Error(value || "ошибка программы")); };
-const pywebviewReady = new Promise(res => { if (window.pywebview && window.pywebview.api) res(); else window.addEventListener("pywebviewready", () => res()); });
+// Windows-программа (pywebview) добавляет window.pywebview.api.call не сразу — ждём событие и на всякий случай проверяем по таймеру
+const pywebviewReady = new Promise(res => {
+  const ok = () => window.pywebview && window.pywebview.api && typeof window.pywebview.api.call === "function";
+  if (ok()) return res();
+  window.addEventListener("pywebviewready", () => { const t = setInterval(() => { if (ok()) { clearInterval(t); res(); } }, 50); });
+  let n = 0; const t2 = setInterval(() => { if (ok()) { clearInterval(t2); res(); } else if (++n > 300) clearInterval(t2); }, 100);
+});
 // вызов программы-оболочки: команда + аргументы → результат (Promise)
 async function desk(cmd, args = {}) {
   if (PLATFORM === "mac") return new Promise((res, rej) => { const id = ++nativeSeq; nativeCalls.set(id, { res, rej }); window.webkit.messageHandlers.ledmask.postMessage({ id, cmd, args }); });
@@ -2494,6 +2503,7 @@ async function checkUpdate(manual) {
 async function runSelfTest() {
   const log = [`version=${APP_VERSION} platform=${PLATFORM} compressionStream=${HAS_CS}`];
   const L = s => { log.push(s); };
+  window.__stlog = log;
   try {
     if (DESKTOP) { const z = await nativeZ("inflate", "raw", await nativeZ("deflate", "raw", enc.encode("LED mask selftest ".repeat(200)))); L("native zlib roundtrip " + (dec.decode(z).length === 3600 ? "OK" : "FAIL")); }
     const a = project.screens[0]; Object.assign(a, { name: "Центр", cabCols: 8, cabRows: 4 }); a.cornerCabinets = { "1,0": 2 }; a.blackCabinets = ["0,0"];
@@ -2523,9 +2533,22 @@ try { const saved = localStorage.getItem("ledmask.project"); if (saved) loadData
 document.documentElement.dataset.page = "mask";
 syncUI(); requestDraw(); histCommit(); renderStrip();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { autoCache.clear(); requestDraw(); });
-$("verText").textContent = `Версия ${APP_VERSION} · ${PLATFORM_LABEL}`;
-if (PLATFORM !== "web") { $("btnUpdate").hidden = false; $("btnUpdate").onclick = () => checkUpdate(true); setTimeout(() => checkUpdate(false), 4000); }
-if (SELFTEST) setTimeout(() => runSelfTest(), 1500);
+let platformStarted = false;
+function startPlatform() {
+  if (platformStarted) return; platformStarted = true;
+  $("verText").textContent = `Версия ${APP_VERSION} · ${PLATFORM_LABEL}`;
+  if (PLATFORM !== "web") { $("btnUpdate").hidden = false; $("btnUpdate").onclick = () => checkUpdate(true); setTimeout(() => checkUpdate(false), 4000); }
+  if (SELFTEST) setTimeout(() => runSelfTest(), 1500);
+}
+if (PLATFORM !== "web") startPlatform();
+else if (STANDALONE) {
+  // страница в Windows-программе узнаёт о ней по событию pywebviewready; в обычном браузере его просто нет
+  pywebviewReady.then(async () => {
+    setPlatform("windows");
+    try { const info = await desk("info"); SELFTEST = !!(info && info.selftest); window.__info = info; } catch (e) { window.__info = "ERR " + e.message; }
+    startPlatform();
+  });
+}
 if (!HAS_CS && !DESKTOP && typeof CompressionStream === "undefined") { $("exportNote").textContent = "Этот браузер слишком старый для экспорта: нужен Safari 16.4+ или свежий Chrome."; }
 if (STANDALONE) document.documentElement.classList.add("standalone");
 if (!STANDALONE) (async () => {
