@@ -1,13 +1,13 @@
 {
- "version": "2.0.9",
- "notes": "Исправлено: левая панель больше не прыгает наверх при клике (Mac). Плюс всё из 2.0.8: фигурные 1/4 и 1/2, свой текст в ТЗ, проекция.",
+ "version": "2.0.10",
+ "notes": "Исправлено: на Mac левая панель не прыгает наверх при клике по холсту. Проекция по умолчанию — один проектор 1920×1200.",
  "mac": {
   "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Mac.zip",
-  "sha256": "2d52f1c0b1e88ca74afa1a7d5907c396b97fb4d0d20b2d130be49b3fac40cc84"
+  "sha256": "53871de83e191316b50aba676511e550a73bb7d680b5881bb6e5e03e49a20e2c"
  },
  "windows": {
   "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Windows.exe",
-  "sha256": "4a17932ae9308f89ef009f19770abf18af38f5f8b8b6308424abb50fa98edac5"
+  "sha256": "6fd8857ad373c997717dd5912cbc999bb31a3fc4cb4056845acd254c6bf14f42"
  },
  "android": {
   "url": "https://github.com/NKNVOFFICIAL/led-mask/releases/download/android-latest/LED-Mask-Android.apk"
