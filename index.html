@@ -123,7 +123,13 @@ html:not([data-page="field"]) .fsec, html:not([data-page="field"]) .ftools, html
 .fitem.sub { padding-left: 26px; }
 .fitem.head .nm { font-weight: 700; }
 button.x:disabled { background: var(--raise); border-color: var(--line); color: var(--muted); cursor: default; }
-.ovthumb { max-width: 100%; max-height: 120px; border-radius: 6px; border: 1px solid var(--line); display: block; }
+.dd { position: relative; display: inline-block; }
+.dd-menu { position: absolute; left: 0; top: calc(100% + 6px); z-index: 30; min-width: 250px; background: var(--raise); border: 1px solid var(--line); border-radius: 10px; padding: 5px; box-shadow: 0 10px 30px rgba(0,0,0,.45); display: flex; flex-direction: column; gap: 2px; }
+.dd-menu button { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; background: transparent; border: 0; border-radius: 7px; padding: 9px 11px; cursor: pointer; }
+.dd-menu button:hover:not(:disabled), .dd-menu button:focus-visible { background: var(--panel); }
+.dd-menu button b { font-size: 14px; } .dd-menu button span { font-size: 11.5px; color: var(--muted); }
+.dd-menu button:disabled { opacity: .45; cursor: default; }
+.ovthumb { align-self: flex-start; width: auto; height: auto; max-width: 100%; max-height: 160px; object-fit: contain; border-radius: 6px; border: 1px solid var(--line); display: block; }
 .ftools { display: inline-flex; align-items: center; gap: 4px; margin-left: auto; }
 .ftools .num { font-size: 12px; color: var(--muted); min-width: 46px; text-align: center; }
 .flist { display: flex; flex-direction: column; gap: 2px; }
@@ -210,7 +216,14 @@ button.x:disabled { background: var(--raise); border-color: var(--line); color: 
       <p class="hint" id="tOvInfo">Картинка не выбрана — слайд не добавится.</p>
       <img id="tOvImg" class="ovthumb" alt="" hidden>
       <div class="tgroup">СОХРАНИТЬ ТЗ</div>
-      <div class="btns"><button class="x" id="tSaveR">ТЗ Resolume</button><button class="x" id="tSaveD">ТЗ D3</button><button class="x" id="tSaveM" disabled>ТЗ медиаплееры (MP4)</button></div>
+      <div class="dd">
+        <button class="x" id="tSaveBtn" aria-haspopup="menu" aria-expanded="false">Сохранить ТЗ ▾</button>
+        <div class="dd-menu" id="tSaveMenu" role="menu" hidden>
+          <button role="menuitem" data-tpl="Resolume"><b>Resolume</b><span>кодек DXV3</span></button>
+          <button role="menuitem" data-tpl="D3"><b>D3</b><span>кодек HAP</span></button>
+          <button role="menuitem" data-tpl="MP4" id="tSaveM"><b>Медиаплееры (MP4)</b><span>шаблон будет позже</span></button>
+        </div>
+      </div>
       <p class="hint" id="tNote">ZIP с папкой: PPTX по шаблону, такой же PDF и PNG каждой маски и поля. Для MP4 шаблон будет добавлен позже.</p>
     </div></details>
 
@@ -1882,7 +1895,6 @@ function refreshTZPanel() {
   const ov = ui.overview;
   $("tOvInfo").textContent = ov ? `${ov.name} · ${ov.w}×${ov.h}${tz.overview ? " — будет 2-м слайдом" : " — галочка снята, слайд не добавится"}` : "Картинка не выбрана — слайд не добавится.";
   $("tOvImg").hidden = !ov; if (ov) $("tOvImg").src = ov.url;
-  $("tSaveM").disabled = !TPL.MP4;
   updateTZSummary();
 }
 function tzSlides(items, withOv) {
@@ -1914,9 +1926,26 @@ $("tOvFile").addEventListener("change", async e => {
     project.tz.overview = true; busy(""); tzChanged();
   } catch (err) { busy(""); status("Не удалось открыть картинку: " + err.message, true); }
 });
-$("tSaveR").onclick = () => exportTZ("Resolume");
-$("tSaveD").onclick = () => exportTZ("D3");
-$("tSaveM").onclick = () => exportTZ("MP4");
+// выпадающее меню «Сохранить ТЗ»
+function tzMenu(open) {
+  $("tSaveMenu").hidden = !open; $("tSaveBtn").setAttribute("aria-expanded", String(open));
+  if (open) { $("tSaveM").disabled = !TPL.MP4; $("tSaveM").querySelector("span").textContent = TPL.MP4 ? "MP4 H.264" : "шаблон будет позже"; const f = $("tSaveMenu").querySelector("button:not(:disabled)"); if (f) f.focus({ preventScroll: true }); $("tSaveMenu").scrollIntoView({ block: "nearest", behavior: "smooth" }); }
+}
+$("tSaveBtn").onclick = e => { e.stopPropagation(); tzMenu($("tSaveMenu").hidden); };
+$("tSaveMenu").querySelectorAll("button").forEach(b => {
+  b.onclick = e => { e.stopPropagation(); tzMenu(false); exportTZ(b.dataset.tpl); };
+  b.addEventListener("pointerenter", () => { if (b.dataset.tpl !== "MP4") { ui.tzTpl = b.dataset.tpl; requestDraw(); } });
+  b.addEventListener("focus", () => { if (b.dataset.tpl !== "MP4") { ui.tzTpl = b.dataset.tpl; requestDraw(); } });
+});
+document.addEventListener("pointerdown", e => { if (!$("tSaveMenu").hidden && !e.target.closest(".dd")) tzMenu(false); }, true);
+window.addEventListener("keydown", e => {
+  if ($("tSaveMenu").hidden) return;
+  if (e.key === "Escape") { tzMenu(false); $("tSaveBtn").focus(); }
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+    e.preventDefault(); const bs = [...$("tSaveMenu").querySelectorAll("button:not(:disabled)")], i = bs.indexOf(document.activeElement);
+    bs[(i + (e.key === "ArrowDown" ? 1 : -1) + bs.length) % bs.length].focus();
+  }
+});
 // предпросмотр слайдов: фон шаблона, подписи и маски по тем же правилам, что в PPTX/PDF
 const bgImgs = {};
 function bgImg(key) {
@@ -1960,8 +1989,7 @@ function drawTZ() {
   });
   if (!items.length) { c.fillStyle = "#ffb020"; c.font = `13px ${FONT}`; c.fillText("В ТЗ ничего не отмечено", pad, R.height - 10); }
 }
-$("tSaveR").addEventListener("pointerenter", () => { ui.tzTpl = "Resolume"; requestDraw(); });
-$("tSaveD").addEventListener("pointerenter", () => { ui.tzTpl = "D3"; requestDraw(); });
+
 
 /* ======================= СТАРТ ======================= */
 $("appicon").src = "data:image/png;base64," + ICON_B64;
