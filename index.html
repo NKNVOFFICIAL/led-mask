@@ -1281,7 +1281,7 @@ html[data-page=about] #pv {
       <div class="row"><label for="pjWm">Размер</label><div class="ctl"><input type="number" id="pjWm" min="0" step="0.01" class="w-md" inputmode="decimal" aria-label="Ширина изображения, м"><span class="unit">×</span><input type="number" id="pjHm" min="0" step="0.01" class="w-md" inputmode="decimal" aria-label="Высота изображения, м"><span class="unit">м</span></div></div>
       <div class="row"><label for="pjOx">Перекрытие гориз. / верт.</label><div class="ctl"><input type="number" id="pjOx" min="0" max="50" step="0.5" class="w-sm" inputmode="decimal"><span class="unit">%</span><input type="number" id="pjOy" min="0" max="50" step="0.5" class="w-sm" inputmode="decimal"><span class="unit">%</span></div></div>
       <div class="row"><label for="pjGrid">Шаг сетки</label><div class="ctl"><input type="number" id="pjGrid" min="8" inputmode="numeric"><span class="unit">px</span></div></div>
-      <div class="row"><label for="pjBg">Фон / линии</label><div class="ctl"><input type="color" id="pjBg"><input type="color" id="pjLine"></div></div>
+      <div class="row"><label for="pjBg">Фон / линии / текст</label><div class="ctl"><input type="color" id="pjBg" title="Фон"><input type="color" id="pjLine" title="Линии"><input type="color" id="pjText" title="Текст"></div></div>
       <div class="ctl" style="row-gap:6px">
         <label class="chk"><input type="checkbox" id="pjZones"> Зоны перекрытия</label>
         <label class="chk"><input type="checkbox" id="pjFrames"> Рамки и номера проекторов</label>
@@ -1998,7 +1998,7 @@ const dims = (st) => {
 };
 const PJ_PRESETS = [["Full HD 1920×1080", 1920, 1080], ["WUXGA 1920×1200", 1920, 1200], ["4K UHD 3840×2160", 3840, 2160], ["WQXGA 2560×1600", 2560, 1600], ["HD 1280×720", 1280, 720], ["WXGA 1280×800", 1280, 800], ["XGA 1024×768", 1024, 768], ["SXGA+ 1400×1050", 1400, 1050]];
 const PJ_COLORS = ["#FF3B30", "#34C759", "#0A84FF", "#FFCC00", "#FF2D92", "#32D7E6", "#FF9500", "#AF52DE"];
-const defProj = () => ({ pw: 1920, ph: 1080, nx: 2, ny: 1, ox: 15, oy: 15, grid: 120, wm: 0, bg: "#101010", line: "#FFFFFF", zones: true, frames: true, circles: true, cells: true, hatch: false, bar: true, invert: false });
+const defProj = () => ({ pw: 1920, ph: 1080, nx: 2, ny: 1, ox: 15, oy: 15, grid: 120, wm: 0, bg: "#101010", line: "#FFFFFF", text: "#FFFFFF", zones: true, frames: true, circles: true, cells: true, hatch: false, bar: true, invert: false });
 function projGeom(st) {
   const P = st.proj || defProj(), pw = Math.max(16, P.pw | 0), ph = Math.max(16, P.ph | 0), nx = Math.max(1, P.nx | 0), ny = Math.max(1, P.ny | 0);
   const ovx = nx > 1 ? Math.round(pw * Math.max(0, Math.min(50, +P.ox || 0)) / 100) : 0, ovy = ny > 1 ? Math.round(ph * Math.max(0, Math.min(50, +P.oy || 0)) / 100) : 0;
@@ -2009,6 +2009,7 @@ function projGeom(st) {
 function drawProj(ctx, st, s, guides) {
   const g = projGeom(st), P = g.P, W = g.W, H = g.H, Wp = Math.max(1, Math.round(W * s)), Hp = Math.max(1, Math.round(H * s));
   const bg = P.invert ? "#FFFFFF" : P.bg || "#101010", fg = P.invert ? "#000000" : P.line || "#FFFFFF";
+  const tc = P.invert ? "#000000" : P.text || "#FFFFFF";
   const X = (v) => v * s, lw = (px) => Math.max(1, px * s);
   ctx.save();
   ctx.fillStyle = bg;
@@ -2067,7 +2068,7 @@ function drawProj(ctx, st, s, guides) {
     const fs = Math.max(5, Math.min(gs * 0.16, 28) * s);
     if (fs >= 5) {
       ctx.save();
-      ctx.fillStyle = fg;
+      ctx.fillStyle = tc;
       ctx.globalAlpha = 0.6;
       ctx.font = "".concat(fs, "px ").concat(FONT);
       ctx.textBaseline = "top";
@@ -2136,7 +2137,7 @@ function drawProj(ctx, st, s, guides) {
       ctx.fillText(t2, lx, ly + fs * 1.12);
     }
     if (g.ovx || g.ovy) {
-      ctx.fillStyle = fg;
+      ctx.fillStyle = tc;
       ctx.globalAlpha = 0.85;
       ctx.font = "".concat(fs * 0.5, "px ").concat(FONT);
       ctx.textAlign = "center";
@@ -2196,7 +2197,7 @@ function drawProj(ctx, st, s, guides) {
   const lines = titleLines(st, s), b = blockSize(lines, TITLE_GAP * s), tx = W * s / 2 + (st.titleOffsetX || 0) * s, ty = H * s / 2 - (st.titleOffsetY || 0) * s;
   ctx.fillStyle = P.invert ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.6)";
   if (ROT_DEG[clampI(st.rotationIndex, 4)] % 180 === 0) ctx.fillRect(tx - b.w / 2 - 14 * s, ty - b.h / 2 - 8 * s, b.w + 28 * s, b.h + 16 * s);
-  ctx.fillStyle = fg;
+  ctx.fillStyle = tc;
   drawBlock(ctx, lines, TITLE_GAP * s, tx, ty, ROT_DEG[clampI(st.rotationIndex, 4)]);
   for (const it of st.extraLabels || []) {
     const fs2 = Math.min(900, Math.max(6, +it.size || 120)) * s;
@@ -2515,7 +2516,7 @@ function normalizeScreen(d) {
     const P = defProj(), q = d.proj && typeof d.proj === "object" ? d.proj : {};
     for (const k of ["pw", "ph", "nx", "ny", "grid"]) if (q[k] != null) P[k] = Math.max(1, pint(q[k], P[k]));
     for (const k of ["ox", "oy", "wm"]) if (q[k] != null && isFinite(+q[k])) P[k] = Math.max(0, +q[k]);
-    for (const k of ["bg", "line"]) if (typeof q[k] === "string" && /^#[0-9a-f]{6}$/i.test(q[k])) P[k] = q[k].toUpperCase();
+    for (const k of ["bg", "line", "text"]) if (typeof q[k] === "string" && /^#[0-9a-f]{6}$/i.test(q[k])) P[k] = q[k].toUpperCase();
     for (const k of ["zones", "frames", "circles", "cells", "hatch", "bar", "invert"]) if (q[k] != null) P[k] = !!q[k];
     st.proj = P;
   }
@@ -2982,6 +2983,7 @@ function syncProjUI() {
   set("pjWm", P.wm || 0);
   $("pjBg").value = (P.bg || "#101010").toLowerCase();
   $("pjLine").value = (P.line || "#FFFFFF").toLowerCase();
+  $("pjText").value = (P.text || "#FFFFFF").toLowerCase();
   for (const [id, k] of [["pjZones", "zones"], ["pjFrames", "frames"], ["pjCircles", "circles"], ["pjCells", "cells"], ["pjHatch", "hatch"], ["pjBar", "bar"], ["pjInvert", "invert"]]) $(id).checked = !!P[k];
 }
 document.querySelectorAll(".seg.kind button").forEach((b) => b.onclick = () => {
@@ -3033,6 +3035,10 @@ $("pjBg").addEventListener("input", (e) => {
 });
 $("pjLine").addEventListener("input", (e) => {
   S().proj.line = e.target.value.toUpperCase();
+  changed();
+});
+$("pjText").addEventListener("input", (e) => {
+  S().proj.text = e.target.value.toUpperCase();
   changed();
 });
 for (const [id, k] of [["pjZones", "zones"], ["pjFrames", "frames"], ["pjCircles", "circles"], ["pjCells", "cells"], ["pjHatch", "hatch"], ["pjBar", "bar"], ["pjInvert", "invert"]]) $(id).addEventListener("change", (e) => {
