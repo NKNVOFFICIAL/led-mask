@@ -2992,8 +2992,8 @@ document.querySelectorAll(".seg.kind button").forEach((b) => b.onclick = () => {
   if (!st.proj) st.proj = defProj();
   if (st.kind !== was) {
     const nm = String(st.name || "").trim();
-    if (st.kind === "proj" && (!nm || /^screen \d+$/i.test(nm))) st.name = "projector ".concat(project.screens.filter((x) => x.kind === "proj").length);
-    if (st.kind === "led" && /^projector \d+$/i.test(nm)) st.name = "screen ".concat(project.cur + 1);
+    if (st.kind === "proj" && (!nm || /^screen \d+$/i.test(nm))) st.name = "projection ".concat(project.screens.filter((x) => x.kind === "proj").length);
+    if (st.kind === "led" && /^project(?:or|ion) \d+$/i.test(nm)) st.name = "screen ".concat(project.cur + 1);
     $("scrName").value = st.name;
     $("screens").options[project.cur].textContent = "".concat(project.cur + 1, ". ").concat(st.name);
   }
@@ -3395,7 +3395,7 @@ $("screens").addEventListener("change", (e) => {
 });
 $("btnAddScreen").onclick = () => {
   const base = JSON.parse(JSON.stringify(S()));
-  Object.assign(base, { name: base.kind === "proj" ? "projector ".concat(project.screens.filter((x) => x.kind === "proj").length + 1) : "screen ".concat(project.screens.length + 1), blackCabinets: [], cabinetColors: {}, persistentContours: [], showPersistentContour: true, extraLabels: [], cornerCabinets: {}, shapedCols: {}, shapedRows: {} });
+  Object.assign(base, { name: base.kind === "proj" ? "projection ".concat(project.screens.filter((x) => x.kind === "proj").length + 1) : "screen ".concat(project.screens.length + 1), blackCabinets: [], cabinetColors: {}, persistentContours: [], showPersistentContour: true, extraLabels: [], cornerCabinets: {}, shapedCols: {}, shapedRows: {} });
   delete base.field;
   base.uid = newUid();
   project.screens.push(base);
