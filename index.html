@@ -464,6 +464,23 @@ textarea.tzt.req {
   color: var(--fg);
   font-weight: 600;
 }
+.tzbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+}
+.tzbar .b {
+  padding: 3px 9px;
+  font-size: 12.5px;
+  min-height: 0;
+}
+.tzbar input[type=color] {
+  width: 34px;
+  height: 26px;
+  padding: 1px;
+}
 .tgroup {
   font-size: 11px;
   font-weight: 700;
@@ -1219,10 +1236,10 @@ html[data-page=about] #pv {
       <p class="hint" id="tOvInfo">Картинка не выбрана — слайд не добавится.</p>
       <img id="tOvImg" class="ovthumb" alt="" hidden>
       <div class="tgroup">ТЕКСТ В ТЗ</div>
-      <p class="hint">Текст любого слайда можно поменять или дополнить. **жирный** — между двумя звёздочками. Строки, которые вы не трогали, сохраняют оформление шаблона (цвет, ссылки). Тип шаблона выбирается ниже, в «Сохранить ТЗ».</p>
+      <p class="hint">Текст любого слайда можно поменять или дополнить. Выделите слова и нажмите <b>Ж</b> — жирный, или выберите цвет и нажмите «Цвет» (в тексте это **…** и [#цвет]…[/]). Текст двигается мышью или пальцем прямо на слайде справа. Строки, которые вы не трогали, сохраняют оформление шаблона. Тип шаблона — ниже, в «Сохранить ТЗ».</p>
       <div class="tzt-lbl" id="tReqLbl">Слайд 1 — требования шаблона</div>
       <textarea class="tzt req" id="tReq" spellcheck="false" aria-label="Текст первого слайда"></textarea>
-      <div class="btns"><button class="b" id="tReqReset">Вернуть текст шаблона</button></div>
+      <div class="btns"><button class="b" id="tReqReset">Вернуть текст шаблона</button><button class="b" id="tReqPos">Вернуть на место</button></div>
       <div id="tNotes"></div>
       <div class="tgroup">СОХРАНИТЬ ТЗ</div>
       <div class="row"><label for="tTpl">Тип ТЗ</label><div class="ctl"><select id="tTpl" class="grow">
@@ -3385,14 +3402,52 @@ function groupMasks(masks) {
 }
 const PT = 12700, RT_FONT = 'Arial, "Liberation Sans", Helvetica, sans-serif', RT_LH = 1.2;
 const xmlUn = (s) => String(s).replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&#(\d+);/g, (_, d) => String.fromCharCode(+d)).replace(/&amp;/g, "&");
-const runsMd = (runs) => runs.map((r) => r.t ? r.b ? "**" + r.t + "**" : r.t : "").join("").replace(/\*\*\*\*/g, "");
+const hexU = (c) => c ? String(c).toUpperCase() : null;
+function runsMd(runs) {
+  let out = "", col2 = null, bold = false;
+  for (const r of runs) {
+    if (!r.t) continue;
+    const c = r.link ? null : hexU(r.color);
+    if (c !== col2) {
+      if (bold) {
+        out += "**";
+        bold = false;
+      }
+      if (col2) out += "[/]";
+      if (c) out += "[" + c + "]";
+      col2 = c;
+    }
+    if (!!r.b !== bold) {
+      out += "**";
+      bold = !!r.b;
+    }
+    out += r.t;
+  }
+  if (bold) out += "**";
+  if (col2) out += "[/]";
+  return out;
+}
 function mdRuns(line, base = {}) {
-  const out = [], parts = String(line).split("**");
-  parts.forEach((t, i) => {
-    if (t) t.split(/(https?:\/\/[^\s]+)/).forEach((u, k) => {
-      if (u) out.push({ ...base, t: u, b: i % 2 === 1, link: k % 2 === 1 ? u : null });
+  const out = [];
+  let bold = false, col2 = null;
+  for (const tok of String(line).split(/(\*\*|\[#[0-9A-Fa-f]{6}\]|\[\/\])/)) {
+    if (!tok) continue;
+    if (tok === "**") {
+      bold = !bold;
+      continue;
+    }
+    if (tok === "[/]") {
+      col2 = null;
+      continue;
+    }
+    if (/^\[#[0-9A-Fa-f]{6}\]$/.test(tok)) {
+      col2 = tok.slice(1, 8).toUpperCase();
+      continue;
+    }
+    tok.split(/(https?:\/\/[^\s\[*]+)/).forEach((u, k) => {
+      if (u) out.push({ ...base, t: u, b: bold, color: k % 2 ? null : col2, link: k % 2 === 1 ? u : null });
     });
-  });
+  }
   return out;
 }
 const mdParas = (text) => String(text || "").replace(/\r/g, "").split("\n").map((l) => mdRuns(l));
@@ -3461,10 +3516,19 @@ function reqText(label) {
   const v = project.tz.req && project.tz.req[label];
   return typeof v === "string" ? v : null;
 }
+const tzPos = (k) => project.tz.pos && project.tz.pos[k] || null;
 function reqEdited(info) {
   const v = reqText(info.label);
-  return v != null && v.replace(/\r/g, "") !== info.md;
+  return v != null && v.replace(/\r/g, "") !== info.md || !!tzPos("req:" + info.label);
 }
+function reqRect(info) {
+  const p = tzPos("req:" + info.label);
+  return p ? { ...info.rect, x: p.x, y: p.y } : info.rect;
+}
+const reqTextOr = (info) => {
+  const v = reqText(info.label);
+  return v != null ? v : info.md;
+};
 function reqMatch(info, text) {
   const a = info.lines.map((l) => l.md), b = String(text).replace(/\r/g, "").split("\n"), n = a.length, m = b.length;
   const L2 = Array.from({ length: n + 1 }, () => new Int32Array(m + 1));
@@ -3487,8 +3551,12 @@ function reqParas(info, text) {
 }
 function reqXml(info, text) {
   const { lines, map } = reqMatch(info, text), out = [], rels = [];
-  const newRun = (t, b, link) => {
+  const newRun = (t, b, link, color) => {
     let rp = b ? info.baseRpr.replace("<a:rPr", '<a:rPr b="1"') : info.baseRpr;
+    if (color) {
+      const fill = '<a:solidFill><a:srgbClr val="'.concat(color.slice(1), '"/></a:solidFill>');
+      rp = rp.endsWith("/>") ? rp.replace(/\/>$/, ">".concat(fill, "</a:rPr>")) : rp.replace(/^(<a:rPr\b[^>]*>)/, "$1" + fill);
+    }
     if (link) {
       const id = "rIdT" + (rels.length + 1);
       rels.push({ id, url: link });
@@ -3512,7 +3580,7 @@ function reqXml(info, text) {
       continue;
     }
     const runs = mdRuns(lines[j]);
-    out.push("<a:p>".concat(runs.map((r) => newRun(r.t, r.b, r.link)).join("")).concat(endP, "</a:p>"));
+    out.push("<a:p>".concat(runs.map((r) => newRun(r.t, r.b, r.link, r.color)).join("")).concat(endP, "</a:p>"));
     j++;
   }
   return { xml: out.join(""), rels };
@@ -3569,42 +3637,45 @@ function rtPaint(ctx, paras, x0, y0, wPt, k, defSz = 10, color = "#000") {
 }
 const mctxRT = document.createElement("canvas").getContext("2d");
 const NOTE_SZ = 12;
-function noteLayout(text) {
+function noteLayout(text, key2) {
   const t = String(text || "").replace(/\s+$/, "");
   if (!t.trim()) return { box: BOX, note: null };
-  const paras = mdParas(t), wPt = BOX.w / PT;
+  const paras = mdParas(t), wPt = BOX.w / PT, pos = key2 ? tzPos("note:" + key2) : null;
   let sz = NOTE_SZ, h = rtLayout(mctxRT, paras, wPt, sz).h;
   while (h * PT > BOX.h * 0.45 && sz > 6) {
     sz -= 0.5;
     h = rtLayout(mctxRT, paras, wPt, sz).h;
   }
   const hE = Math.ceil(h * PT), dy = hE + GAP;
+  if (pos) return { box: BOX, note: { paras, sz, rect: [pos.x, pos.y, BOX.w, hE] } };
   return { box: { x: BOX.x, y: BOX.y + dy, w: BOX.w, h: BOX.h - dy }, note: { paras, sz, rect: [BOX.x, BOX.y, BOX.w, hE] } };
 }
 const noteKey = (items) => items.length ? items[0].key || "" : "";
 const noteText = (key2) => project.tz.notes && project.tz.notes[key2] || "";
 function noteShapeXml(id, note) {
   const [x, y, w, h] = note.rect, sz = Math.round(note.sz * 100);
-  const rp = (b) => '<a:rPr lang="ru-RU" sz="'.concat(sz, '"').concat(b ? ' b="1"' : "", ' dirty="0"><a:solidFill><a:srgbClr val="222222"/></a:solidFill><a:latin typeface="Arial"/><a:cs typeface="Arial"/></a:rPr>');
-  const ps = note.paras.map((runs) => "<a:p>".concat(runs.map((r) => "<a:r>".concat(rp(r.b), "<a:t>").concat(xmlEsc(r.t), "</a:t></a:r>")).join(""), '<a:endParaRPr lang="ru-RU" sz="').concat(sz, '" dirty="0"/></a:p>')).join("");
+  const rp = (b, c) => '<a:rPr lang="ru-RU" sz="'.concat(sz, '"').concat(b ? ' b="1"' : "", ' dirty="0"><a:solidFill><a:srgbClr val="').concat((c || "#222222").slice(1), '"/></a:solidFill><a:latin typeface="Arial"/><a:cs typeface="Arial"/></a:rPr>');
+  const ps = note.paras.map((runs) => "<a:p>".concat(runs.map((r) => "<a:r>".concat(rp(r.b, r.link ? "#0563C1" : r.color), "<a:t>").concat(xmlEsc(r.t), "</a:t></a:r>")).join(""), '<a:endParaRPr lang="ru-RU" sz="').concat(sz, '" dirty="0"/></a:p>')).join("");
   return '<p:sp><p:nvSpPr><p:cNvPr id="'.concat(id, '" name="Свой текст"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="').concat(x, '" y="').concat(y, '"/><a:ext cx="').concat(w, '" cy="').concat(h, '"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/></p:spPr><p:txBody><a:bodyPr wrap="square" lIns="0" tIns="0" rIns="0" bIns="0" rtlCol="0"><a:noAutofit/></a:bodyPr><a:lstStyle/>').concat(ps, "</p:txBody></p:sp>");
 }
-async function rtImage(paras, wPt, hPt, defSz, k = 4) {
+async function rtImage(paras, wPt, hPt, defSz, defColor = "#000", k = 4) {
   const W = Math.max(1, Math.round(wPt * k)), H = Math.max(1, Math.round(hPt * k));
   const cv = document.createElement("canvas");
   cv.width = W;
   cv.height = H;
-  const c = cv.getContext("2d", { willReadFrequently: true, alpha: false });
-  c.fillStyle = "#fff";
-  c.fillRect(0, 0, W, H);
-  const r = rtPaint(c, paras, 0, 0, wPt, k, defSz, "#000");
-  const px = c.getImageData(0, 0, W, H).data, rgb = new Uint8Array(W * H * 3);
-  for (let i = 0, j = 0; i < px.length; i += 4, j += 3) {
-    rgb[j] = px[i];
-    rgb[j + 1] = px[i + 1];
-    rgb[j + 2] = px[i + 2];
+  const c = cv.getContext("2d", { willReadFrequently: true });
+  const r = rtPaint(c, paras, 0, 0, wPt, k, defSz, defColor);
+  const px = c.getImageData(0, 0, W, H).data, rgb = new Uint8Array(W * H * 3), al = new Uint8Array(W * H);
+  for (let i = 0, j = 0, q = 0; i < px.length; i += 4, j += 3, q++) {
+    const a = px[i + 3];
+    al[q] = a;
+    if (a) {
+      rgb[j] = px[i];
+      rgb[j + 1] = px[i + 1];
+      rgb[j + 2] = px[i + 2];
+    }
   }
-  return { w: W, h: H, data: await zlibDeflate(rgb), links: r.links };
+  return { w: W, h: H, data: await zlibDeflate(rgb), alpha: await zlibDeflate(al), links: r.links };
 }
 async function buildPptx(tplB64, masks, overview, label) {
   const files = await unzip(b64ToBytes(tplB64)), map = new Map(files.map((f) => [f.name, f.data]));
@@ -3614,7 +3685,8 @@ async function buildPptx(tplB64, masks, overview, label) {
   const info = label ? await tplInfo(label) : null;
   if (info && reqEdited(info)) {
     const s1 = txt("ppt/slides/slide1.xml"), body = info.sp.slice(info.sp.indexOf("<a:lstStyle/>") + 13, info.sp.lastIndexOf("</p:txBody>"));
-    const rx = reqXml(info, reqText(label)), sp2 = info.sp.replace(body, rx.xml);
+    const rx = reqXml(info, reqTextOr(info)), rr = reqRect(info);
+    const sp2 = info.sp.replace(body, rx.xml).replace(/<a:off x="\d+" y="\d+"\/>/, '<a:off x="'.concat(rr.x, '" y="').concat(rr.y, '"/>'));
     map.set("ppt/slides/slide1.xml", enc.encode(s1.replace(info.sp, sp2)));
     if (rx.rels.length) {
       const rn = "ppt/slides/_rels/slide1.xml.rels";
@@ -3648,8 +3720,7 @@ async function buildPptx(tplB64, masks, overview, label) {
     let rid = maxId(/Id="rId(\d+)"/g, base.join(""), 1);
     const shapes = [], rels = [];
     const items = groups[gi].kind === "overview" ? [{ png: overview.jpeg, w: overview.w, h: overview.h, label: "Общий план", ext: "jpeg", key: "ov" }] : g.map((mi) => masks[mi]);
-    const NL = noteLayout(noteText(noteKey(items)));
-    if (NL.note) shapes.push(noteShapeXml(90, NL.note));
+    const NL = noteLayout(noteText(noteKey(items)), noteKey(items));
     items.forEach((m, j) => {
       const lay = maskCellLayout(hz, items.length, j, m.w, m.h, NL.box), [cx0, cy0, cw] = lay.label;
       shapes.push('<p:sp><p:nvSpPr><p:cNvPr id="'.concat(100 + j, '" name="Mask info ').concat(j + 1, '"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="').concat(cx0, '" y="').concat(cy0, '"/><a:ext cx="').concat(cw, '" cy="').concat(LABEL_H, '"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></p:spPr><p:txBody><a:bodyPr wrap="none" lIns="0" rIns="0" tIns="0" bIns="0" anchor="ctr"/><a:lstStyle/><a:p><a:pPr algn="ctr"/><a:r><a:rPr lang="ru-RU" sz="1000"><a:solidFill><a:srgbClr val="222222"/></a:solidFill><a:latin typeface="Arial"/><a:ea typeface="Arial"/><a:cs typeface="Arial"/></a:rPr><a:t>').concat(xmlEsc(m.label), '</a:t></a:r><a:endParaRPr lang="ru-RU" sz="1100"/></a:p></p:txBody></p:sp>'));
@@ -3660,6 +3731,7 @@ async function buildPptx(tplB64, masks, overview, label) {
       shapes.push('<p:pic><p:nvPicPr><p:cNvPr id="'.concat(j + 2, '" name="Mask ').concat(j + 1, '" descr="').concat(img, '"/><p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="').concat(r, '"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm><a:off x="').concat(x, '" y="').concat(y, '"/><a:ext cx="').concat(ew, '" cy="').concat(eh, '"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic>'));
       rels.push('<Relationship Id="'.concat(r, '" Type="').concat(REL_IMAGE, '" Target="../media/').concat(img, '"/>'));
     });
+    if (NL.note) shapes.push(noteShapeXml(90, NL.note));
     let sx = slideTpl.replace("</p:spTree>", shapes.join("") + "</p:spTree>");
     if (gi > 0) sx = sx.replace(/(<p14:creationId\b[^>]*val=")\d+(")/, (_, a, b) => a + (1e8 + Math.floor(Math.random() * 2e9)) + b);
     put("ppt/slides/" + sname, enc.encode(sx));
@@ -3762,38 +3834,42 @@ async function buildPdf(label, masks, overview) {
     const cs = stream("", str(content));
     pages.push(add(str("<< /Type /Page /Parent ".concat(pagesId, " 0 R /MediaBox [0 0 ").concat(f(PDF_W), " ").concat(f(PDF_H), "] /Resources << /XObject << ").concat(xobj.map(([n, id]) => "/".concat(n, " ").concat(id, " 0 R")).join(" "), " >> >> /Contents ").concat(cs, " 0 R").concat(annots2, " >>"))));
   };
+  const textImg = (img) => {
+    const sm = stream("/Type /XObject /Subtype /Image /Width ".concat(img.w, " /Height ").concat(img.h, " /ColorSpace /DeviceGray /BitsPerComponent 8 /Filter /FlateDecode"), img.alpha);
+    return stream("/Type /XObject /Subtype /Image /Width ".concat(img.w, " /Height ").concat(img.h, " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /FlateDecode /SMask ").concat(sm, " 0 R"), img.data);
+  };
   const linkAnn = ([x0, y0, x1, y1], uri) => add(str("<< /Type /Annot /Subtype /Link /Rect [".concat(x0, " ").concat(y0, " ").concat(x1, " ").concat(y1, "] /Border [0 0 0] /A << /S /URI /URI (").concat(uri.replace(/[()\\]/g, (m) => "\\" + m), ") >> >>")));
   const annots = (a) => a.length ? " /Annots [".concat(a.map((x) => x + " 0 R").join(" "), "]") : "";
   if (!edited) {
     const ann = (PDF_LINKS[label] || []).map(([r, uri]) => linkAnn(r, uri));
     page([["BG", bg1]], full, annots(ann));
   } else {
-    const r = info.rect, tx = (r.x + info.ins.l) / EMU_PT, ty = (r.y + info.ins.t) / EMU_PT, tw = (r.w - 2 * info.ins.l) / EMU_PT;
-    const paras = reqParas(info, reqText(label)), th = Math.min(PDF_H - ty - 60, Math.max(20, rtLayout(mctxRT, paras, tw, info.baseSz).h + 4));
-    const img = await rtImage(paras, tw, th, info.baseSz);
-    const tid = stream("/Type /XObject /Subtype /Image /Width ".concat(img.w, " /Height ").concat(img.h, " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /FlateDecode"), img.data);
+    const r = reqRect(info), tx = (r.x + info.ins.l) / EMU_PT, ty = (r.y + info.ins.t) / EMU_PT, tw = (r.w - 2 * info.ins.l) / EMU_PT;
+    const paras = reqParas(info, reqTextOr(info)), th = Math.max(4, Math.min(PDF_H - ty - 2, rtLayout(mctxRT, paras, tw, info.baseSz).h + 4));
+    const img = await rtImage(paras, tw, th, info.baseSz), tid = textImg(img);
     const ann = img.links.filter((l) => l.y < th).map((l) => linkAnn([f(tx + l.x), f(PDF_H - ty - l.y - l.h), f(tx + l.x + l.w), f(PDF_H - ty - l.y)], l.url));
     page([["BG", bg2], ["T0", tid]], full + "q ".concat(f(tw), " 0 0 ").concat(f(th), " ").concat(f(tx), " ").concat(f(PDF_H - ty - th), " cm /T0 Do Q\n"), annots(ann));
   }
   const notePdf = async (NL, xo, name) => {
     if (!NL.note) return "";
-    const [x, y, w, h] = toPdf(NL.note.rect), img = await rtImage(NL.note.paras, w, h, NL.note.sz);
-    xo.push([name, stream("/Type /XObject /Subtype /Image /Width ".concat(img.w, " /Height ").concat(img.h, " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /FlateDecode"), img.data)]);
+    const [x, y, w, h] = toPdf(NL.note.rect), img = await rtImage(NL.note.paras, w, h, NL.note.sz, "#222222");
+    xo.push([name, textImg(img)]);
     return "q ".concat(f(w), " 0 0 ").concat(f(h), " ").concat(f(x), " ").concat(f(y), " cm /").concat(name, " Do Q\n");
   };
   const toPdf = ([x, y, w, h]) => [x / EMU_PT, PDF_H - (y + h) / EMU_PT, w / EMU_PT, h / EMU_PT];
   if (overview) {
-    const NL = noteLayout(noteText("ov")), xo = [];
+    const NL = noteLayout(noteText("ov"), "ov"), xo = [];
     const nc = await notePdf(NL, xo, "N0");
     const lay = maskCellLayout(true, 1, 0, overview.w, overview.h, NL.box), [lx, ly, lw, lh] = toPdf(lay.label), [ix, iy, iw, ih] = toPdf(lay.image);
     const lab = await labelImage("Общий план", lw, lh);
     const lid = stream("/Type /XObject /Subtype /Image /Width ".concat(lab.w, " /Height ").concat(lab.h, " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /FlateDecode"), lab.data);
     const oid = stream("/Type /XObject /Subtype /Image /Width ".concat(overview.w, " /Height ").concat(overview.h, " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode"), overview.jpeg);
-    page([["BG", bg2], ["L0", lid], ["O0", oid], ...xo], full + nc + "q ".concat(f(lw), " 0 0 ").concat(f(lh), " ").concat(f(lx), " ").concat(f(ly), " cm /L0 Do Q\nq ").concat(f(iw), " 0 0 ").concat(f(ih), " ").concat(f(ix), " ").concat(f(iy), " cm /O0 Do Q\n"));
+    page([["BG", bg2], ["L0", lid], ["O0", oid], ...xo], full + "q ".concat(f(lw), " 0 0 ").concat(f(lh), " ").concat(f(lx), " ").concat(f(ly), " cm /L0 Do Q\nq ").concat(f(iw), " 0 0 ").concat(f(ih), " ").concat(f(ix), " ").concat(f(iy), " cm /O0 Do Q\n") + nc);
   }
   for (const { hz, g } of groupMasks(masks)) {
-    const xo = [["BG", bg2]], NL = noteLayout(noteText(noteKey(g.map((i) => masks[i]))));
-    let content = full + await notePdf(NL, xo, "N0");
+    const xo = [["BG", bg2]], NL = noteLayout(noteText(noteKey(g.map((i) => masks[i]))), noteKey(g.map((i) => masks[i])));
+    let content = full;
+    const nc = await notePdf(NL, xo, "N0");
     for (let j = 0; j < g.length; j++) {
       const m = masks[g[j]], lay = maskCellLayout(hz, g.length, j, m.w, m.h, NL.box);
       const [lx, ly, lw, lh] = toPdf(lay.label), [ix, iy, iw, ih] = toPdf(lay.image);
@@ -3804,7 +3880,7 @@ async function buildPdf(label, masks, overview) {
       xo.push(["L" + j, lid], ["M" + j, mid]);
       content += "q ".concat(f(lw), " 0 0 ").concat(f(lh), " ").concat(f(lx), " ").concat(f(ly), " cm /L").concat(j, " Do Q\nq ").concat(f(iw), " 0 0 ").concat(f(ih), " ").concat(f(ix), " ").concat(f(iy), " cm /M").concat(j, " Do Q\n");
     }
-    page(xo, content);
+    page(xo, content + nc);
   }
   objs[catalog - 1] = str("<< /Type /Catalog /Pages ".concat(pagesId, " 0 R >>"));
   objs[pagesId - 1] = str("<< /Type /Pages /Kids [".concat(pages.map((p) => p + " 0 R").join(" "), "] /Count ").concat(pages.length, " >>"));
@@ -4086,7 +4162,7 @@ function freshField(k) {
   return { id: newUid(), name: k ? "Общее поле ".concat(k + 1) : "Общее поле", items: [], title: { on: true, x: 0, y: 0, size: 0, meters: false } };
 }
 function freshFieldState() {
-  return { fields: [freshField(0)], fieldCur: 0, tz: { fields: {}, masks: {}, overview: true, req: {}, notes: {} } };
+  return { fields: [freshField(0)], fieldCur: 0, tz: { fields: {}, masks: {}, overview: true, req: {}, notes: {}, pos: {} } };
 }
 function loadFieldState(d, raw) {
   const seen = /* @__PURE__ */ new Set();
@@ -4122,6 +4198,13 @@ function loadFieldState(d, raw) {
     if (m && typeof m === "object" && !Array.isArray(m)) for (const [k, v] of Object.entries(m)) o[k] = !!v;
     return o;
   };
+  const posMap = (m) => {
+    const o = {};
+    if (m && typeof m === "object" && !Array.isArray(m)) {
+      for (const [k, v] of Object.entries(m)) if (v && isFinite(+v.x) && isFinite(+v.y)) o[k] = { x: Math.round(+v.x), y: Math.round(+v.y) };
+    }
+    return o;
+  };
   const strMap = (m) => {
     const o = {};
     if (m && typeof m === "object" && !Array.isArray(m)) {
@@ -4129,7 +4212,7 @@ function loadFieldState(d, raw) {
     }
     return o;
   };
-  project.tz = { fields: boolMap(tz.fields), masks: boolMap(tz.masks), overview: tz.overview == null ? true : !!tz.overview, req: strMap(tz.req), notes: strMap(tz.notes) };
+  project.tz = { fields: boolMap(tz.fields), masks: boolMap(tz.masks), overview: tz.overview == null ? true : !!tz.overview, req: strMap(tz.req), notes: strMap(tz.notes), pos: posMap(tz.pos) };
 }
 const CF = () => project.fields[Math.max(0, Math.min(project.fields.length - 1, project.fieldCur || 0))];
 const evenUp = (v) => {
@@ -4429,6 +4512,7 @@ const selItem = () => CF().items.find((it) => it.uid === fld.sel) || null;
 pv.addEventListener("pointerdown", (e) => {
   if (ui.page === "mask") return;
   e.stopImmediatePropagation();
+  if (ui.page === "tz") return tzPointer(e, "down");
   if (ui.page !== "field") return;
   pv.setPointerCapture(e.pointerId);
   const p = local(e);
@@ -4457,6 +4541,7 @@ pv.addEventListener("pointerdown", (e) => {
 pv.addEventListener("pointermove", (e) => {
   if (ui.page === "mask") return;
   e.stopImmediatePropagation();
+  if (ui.page === "tz") return tzPointer(e, "move");
   if (ui.page !== "field") return;
   const p = local(e);
   if (fld.pointers.has(e.pointerId)) fld.pointers.set(e.pointerId, p);
@@ -4526,6 +4611,7 @@ pv.addEventListener("pointermove", (e) => {
 function fieldUp(e) {
   if (ui.page === "mask") return;
   e.stopImmediatePropagation();
+  if (ui.page === "tz") return tzPointer(e, "up");
   fld.pointers.delete(e.pointerId);
   if (fld.pointers.size < 2) fld.pinch = null;
   if (fld.pointers.size === 0) {
@@ -4953,6 +5039,80 @@ function refreshTZPanel() {
   refreshTZText();
   updateTZSummary();
 }
+let tzColor = "#E53935";
+function tzBar(ta, opts = {}) {
+  const bar = document.createElement("div");
+  bar.className = "tzbar";
+  const btn = (txt, title, fn) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "b";
+    b.innerHTML = txt;
+    b.title = title;
+    b.onmousedown = (e) => e.preventDefault();
+    b.onclick = fn;
+    bar.appendChild(b);
+    return b;
+  };
+  const wrap = (a, z, whole) => {
+    let s0 = ta.selectionStart, s1 = ta.selectionEnd;
+    if (s0 === s1) {
+      if (!whole) {
+        status("Сначала выделите текст", true);
+        return;
+      }
+      s0 = 0;
+      s1 = ta.value.length;
+    }
+    const v = ta.value, sel = v.slice(s0, s1);
+    const out = sel.split("\n").map((l) => l ? a + l + z : l).join("\n");
+    ta.value = v.slice(0, s0) + out + v.slice(s1);
+    ta.focus();
+    ta.setSelectionRange(s0, s0 + out.length);
+    ta.dispatchEvent(new Event("input"));
+  };
+  btn("<b>Ж</b>", "Жирный: **текст**", () => wrap("**", "**", false));
+  const ci = document.createElement("input");
+  ci.type = "color";
+  ci.value = tzColor.toLowerCase();
+  ci.title = "Цвет текста";
+  ci.oninput = () => {
+    tzColor = ci.value.toUpperCase();
+    document.querySelectorAll(".tzbar input[type=color]").forEach((x) => {
+      if (x !== ci) x.value = ci.value;
+    });
+  };
+  bar.appendChild(ci);
+  btn("Цвет", "Покрасить выделенный текст", () => wrap("[" + tzColor.toUpperCase() + "]", "[/]", !!opts.whole));
+  btn("Без цвета", "Убрать цвет у выделенного текста", () => {
+    let s0 = ta.selectionStart, s1 = ta.selectionEnd;
+    if (s0 === s1) {
+      if (!opts.whole) {
+        status("Сначала выделите текст", true);
+        return;
+      }
+      s0 = 0;
+      s1 = ta.value.length;
+    }
+    const v = ta.value, out = v.slice(s0, s1).replace(/\[#[0-9A-Fa-f]{6}\]|\[\/\]/g, "");
+    ta.value = v.slice(0, s0) + out + v.slice(s1);
+    ta.focus();
+    ta.setSelectionRange(s0, s0 + out.length);
+    ta.dispatchEvent(new Event("input"));
+  });
+  if (opts.pos) {
+    const pb = btn("Над масками", "Вернуть текст на место над масками", () => {
+      delete project.tz.pos[opts.pos];
+      requestDraw();
+      scheduleAutosave();
+      scheduleHistory();
+      refreshTZText();
+    });
+    pb.hidden = !tzPos(opts.pos);
+    pb.dataset.pos = opts.pos;
+  }
+  return bar;
+}
 function refreshTZText() {
   const label = ui.tzTpl, ta = $("tReq");
   $("tReqLbl").innerHTML = "<b>Слайд 1</b> — требования шаблона ".concat(xmlEsc(label));
@@ -4960,7 +5120,8 @@ function refreshTZText() {
     if (ui.tzTpl !== label || document.activeElement === ta) return;
     const v = reqText(label);
     ta.value = v != null ? v : info.md;
-    $("tReqReset").disabled = !reqEdited(info);
+    $("tReqReset").disabled = reqText(label) == null;
+    $("tReqPos").hidden = !tzPos("req:" + label);
   }).catch((e) => {
     ta.value = "";
     status("Шаблон не прочитан: " + e.message, true);
@@ -4995,7 +5156,7 @@ function refreshTZText() {
       });
     }
     if (document.activeElement !== t) t.value = noteText(sl.key);
-    frag.append(lbl, t);
+    frag.append(lbl, t, tzBar(t, { whole: true, pos: "note:" + sl.key }));
   });
   box.innerHTML = "";
   box.appendChild(frag);
@@ -5006,11 +5167,19 @@ $("tReq").addEventListener("input", () => {
   const v = $("tReq").value;
   if (v.replace(/\r/g, "") === info.md) delete project.tz.req[label];
   else project.tz.req[label] = v;
-  $("tReqReset").disabled = !reqEdited(info);
+  $("tReqReset").disabled = reqText(label) == null;
   requestDraw();
   scheduleAutosave();
   scheduleHistory();
 });
+$("tReq").after(tzBar($("tReq")));
+$("tReqPos").onclick = () => {
+  delete project.tz.pos["req:" + ui.tzTpl];
+  $("tReqPos").hidden = true;
+  requestDraw();
+  scheduleAutosave();
+  scheduleHistory();
+};
 $("tReqReset").onclick = () => {
   delete project.tz.req[ui.tzTpl];
   const info = tplCache[ui.tzTpl];
@@ -5134,6 +5303,7 @@ function fieldThumb(f) {
 }
 function drawTZ() {
   const R = prepCanvas([16, 9]), c = pctx, items = tzItems(), ov = tzOverview();
+  ui.tzHits = [];
   const slides = [{ kind: "title" }];
   if (ov) slides.push({ kind: "ov" });
   for (const g of groupMasks(items)) slides.push({ kind: "g", ...g });
@@ -5154,22 +5324,34 @@ function drawTZ() {
     c.fillRect(x, y, sw, sh);
     if (bg) c.drawImage(bg, x, y, sw, sh);
     const kp = k * PT;
-    if (editedTitle) {
-      const r = info.rect;
+    if (sl.kind === "title" && info) {
+      const r = reqRect(info), tx = x + (r.x + info.ins.l) * k, ty = y + (r.y + info.ins.t) * k, tw = (r.w - 2 * info.ins.l) / PT;
+      let th = rtLayout(mctxRT, reqParas(info, reqTextOr(info)), tw, info.baseSz).h * kp;
+      if (editedTitle) {
+        c.save();
+        c.beginPath();
+        c.rect(x, y, sw, sh);
+        c.clip();
+        th = rtPaint(c, reqParas(info, reqTextOr(info)), tx, ty, tw, kp, info.baseSz, "#000").h * kp;
+        c.restore();
+      }
+      ui.tzHits.push({ pk: "req:" + ui.tzTpl, x: tx, y: ty, w: tw * kp, h: th, k, ex: r.x, ey: r.y, sx: x, sy: y, sw, sh });
+    }
+    let NL = { box: BOX, note: null };
+    if (sl.kind === "ov") NL = noteLayout(noteText("ov"), "ov");
+    if (sl.kind === "g") NL = noteLayout(noteText(noteKey(sl.g.map((i) => items[i]))), noteKey(sl.g.map((i) => items[i])));
+    const drawNote = () => {
+      if (!NL.note) return;
+      const [nx, ny, nw, nh] = NL.note.rect;
       c.save();
       c.beginPath();
       c.rect(x, y, sw, sh);
       c.clip();
-      rtPaint(c, reqParas(info, reqText(ui.tzTpl)), x + (r.x + info.ins.l) * k, y + (r.y + info.ins.t) * k, (r.w - 2 * info.ins.l) / PT, kp, info.baseSz, "#000");
-      c.restore();
-    }
-    let NL = { box: BOX, note: null };
-    if (sl.kind === "ov") NL = noteLayout(noteText("ov"));
-    if (sl.kind === "g") NL = noteLayout(noteText(noteKey(sl.g.map((i) => items[i]))));
-    if (NL.note) {
-      const [nx, ny, nw] = NL.note.rect;
       rtPaint(c, NL.note.paras, x + nx * k, y + ny * k, nw / PT, kp, NL.note.sz, "#222");
-    }
+      c.restore();
+      const key2 = sl.kind === "ov" ? "ov" : noteKey(sl.g.map((i) => items[i]));
+      ui.tzHits.push({ pk: "note:" + key2, x: x + nx * k, y: y + ny * k, w: nw * k, h: nh * k, k, ex: nx, ey: ny, sx: x, sy: y, sw, sh });
+    };
     const cell = (lay, img, text) => {
       const [lx, ly, lw, lh] = lay.label, [ix, iy, iw, ih] = lay.image;
       if (img) c.drawImage(img, x + ix * k, y + iy * k, iw * k, ih * k);
@@ -5186,6 +5368,7 @@ function drawTZ() {
       const it = items[mi];
       cell(maskCellLayout(sl.hz, sl.g.length, j, it.w, it.h, NL.box), it.kind === "field" ? fieldThumb(it.f) : thumb({ uid: it.st.uid, st: it.st, w0: it.w, h0: it.h }), it.label);
     });
+    drawNote();
     c.strokeStyle = "#2b3946";
     c.lineWidth = 1;
     c.strokeRect(x + 0.5, y + 0.5, sw - 1, sh - 1);
@@ -5199,6 +5382,67 @@ function drawTZ() {
     c.fillStyle = "#ffb020";
     c.font = "13px ".concat(FONT);
     c.fillText("В ТЗ ничего не отмечено", pad, R.height - 10);
+  }
+  const hv = ui.tzDrag ? ui.tzDrag.hit : ui.tzHover;
+  if (hv) {
+    const h = ui.tzHits.find((q) => q.pk === hv.pk && q.sx === hv.sx && q.sy === hv.sy) || hv;
+    c.save();
+    c.setLineDash([4, 3]);
+    c.strokeStyle = "#1ec8b4";
+    c.lineWidth = 1.2;
+    c.strokeRect(h.x - 3, h.y - 2, h.w + 6, h.h + 4);
+    c.restore();
+  }
+}
+ui.tzHits = [];
+ui.tzHover = null;
+ui.tzDrag = null;
+const tzHitAt = (p) => {
+  for (let i = ui.tzHits.length - 1; i >= 0; i--) {
+    const h = ui.tzHits[i];
+    if (p[0] >= h.x - 4 && p[0] <= h.x + h.w + 4 && p[1] >= h.y - 4 && p[1] <= h.y + h.h + 4) return h;
+  }
+  return null;
+};
+function tzPointer(e, type) {
+  const p = local(e);
+  if (type === "down") {
+    const h = tzHitAt(p);
+    if (!h) return;
+    pv.setPointerCapture(e.pointerId);
+    ui.tzDrag = { hit: h, px: p[0], py: p[1], x0: h.ex, y0: h.ey, moved: false };
+    requestDraw();
+    return;
+  }
+  if (type === "move") {
+    const d = ui.tzDrag;
+    if (!d) {
+      const h = tzHitAt(p);
+      if ((h && h.pk) !== (ui.tzHover && ui.tzHover.pk) || h && ui.tzHover && h.sx !== ui.tzHover.sx) {
+        ui.tzHover = h;
+        requestDraw();
+      }
+      pv.style.cursor = h ? "move" : "default";
+      return;
+    }
+    const k = d.hit.k, nx = Math.round(d.x0 + (p[0] - d.px) / k), ny = Math.round(d.y0 + (p[1] - d.py) / k);
+    if (!d.moved && Math.abs(p[0] - d.px) + Math.abs(p[1] - d.py) < 3) return;
+    d.moved = true;
+    const maxX = 6858e3 - d.hit.w / k, maxY = 9906e3 - d.hit.h / k;
+    project.tz.pos = project.tz.pos || {};
+    project.tz.pos[d.hit.pk] = { x: Math.max(0, Math.min(Math.round(maxX), nx)), y: Math.max(0, Math.min(Math.round(maxY), ny)) };
+    requestDraw();
+    return;
+  }
+  if (ui.tzDrag) {
+    const moved = ui.tzDrag.moved;
+    ui.tzDrag = null;
+    requestDraw();
+    if (moved) {
+      scheduleAutosave();
+      scheduleHistory();
+      refreshTZText();
+    }
   }
 }
 const stripThumbs = /* @__PURE__ */ new Map();
