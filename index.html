@@ -199,6 +199,12 @@ html[data-page="about"] #pv { visibility: hidden; }
   .mthumb .cap { max-width: 130px; font-size: 10.5px; }
   .mthumb { padding: 4px; }
   .qr img, .qr-soon { width: 124px; border-radius: 14px; } .qr-soon { height: 132px; }
+  .toolbar .zoom { display: none !important; }
+  .seg.tools button { padding: 7px 7px; font-size: 12.5px; }
+  .toolbar { gap: 5px; }
+  .undo .b.sq { width: 34px; padding: 6px 0; }
+  .stage { gap: 6px; }
+  .panel > .mstrip { order: 0; margin: 0 0 4px; }
   .seg.pages { max-width: 100%; } .seg.pages button { padding: 8px 7px; font-size: 12.5px; white-space: nowrap; }
   .qrs { gap: 14px; margin-top: 14px; } .about-title { font-size: 18px; } .about-copy { font-size: 11.5px; }
 }
@@ -763,7 +769,7 @@ function fitStage(wh) {
   const wrap = $("wrap");
   if (window.matchMedia("(max-width: 820px)").matches) {
     const [W, H] = wh || dims(S()), w = wrap.clientWidth;
-    const h = Math.round(Math.max(180, Math.min(window.innerHeight * 0.48, (w - 16) * H / W + 16)));
+    const h = Math.round(Math.max(150, Math.min(window.innerHeight * 0.32, (w - 16) * H / W + 16)));
     if (wrap.style.height !== h + "px") wrap.style.height = h + "px";
   } else if (wrap.style.height) wrap.style.height = "";
 }
@@ -2099,6 +2105,15 @@ function renderStrip() {
   const cur = box.children[project.cur];
   if (cur && (cur.offsetLeft < box.scrollLeft || cur.offsetLeft + cur.offsetWidth > box.scrollLeft + box.clientWidth)) box.scrollTo({ left: cur.offsetLeft - 8, behavior: "smooth" });
 }
+
+// на телефоне лента масок не должна висеть в закреплённой зоне — переносим её в начало панели
+function placeStrip() {
+  const strip = $("mStrip"), narrow = window.matchMedia("(max-width: 820px)").matches;
+  if (narrow && strip.parentElement !== $("panel")) $("panel").insertBefore(strip, $("panel").firstChild);
+  if (!narrow && strip.parentElement === $("panel")) document.querySelector(".stage").appendChild(strip);
+}
+window.matchMedia("(max-width: 820px)").addEventListener("change", () => { placeStrip(); requestDraw(); });
+placeStrip();
 
 /* ======================= СТАРТ ======================= */
 $("appicon").src = "data:image/png;base64," + ICON_B64;
