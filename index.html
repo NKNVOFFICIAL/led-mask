@@ -129,6 +129,14 @@ button.x:disabled { background: var(--raise); border-color: var(--line); color: 
 .dd-menu button:hover:not(:disabled), .dd-menu button:focus-visible { background: var(--panel); }
 .dd-menu button b { font-size: 14px; } .dd-menu button span { font-size: 11.5px; color: var(--muted); }
 .dd-menu button:disabled { opacity: .45; cursor: default; }
+.mstrip { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 6px; flex: none; scrollbar-width: thin; }
+html:not([data-page="mask"]) .mstrip { display: none; }
+.mthumb { flex: none; display: flex; flex-direction: column; gap: 4px; align-items: stretch; background: var(--panel); border: 1px solid var(--line); border-radius: 9px; padding: 5px; cursor: pointer; max-width: 210px; }
+.mthumb[aria-current="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.mthumb canvas { display: block; height: 62px; width: auto; max-width: 198px; border-radius: 4px; background: #000; align-self: center; }
+.mthumb .cap { font-size: 11px; line-height: 1.25; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 198px; text-align: left; }
+.mthumb .cap b { color: var(--fg); font-weight: 600; }
+.mthumb.add { justify-content: center; align-items: center; min-width: 70px; font-size: 22px; color: var(--muted); }
 .ovthumb { align-self: flex-start; width: auto; height: auto; max-width: 100%; max-height: 160px; object-fit: contain; border-radius: 6px; border: 1px solid var(--line); display: block; }
 .ftools { display: inline-flex; align-items: center; gap: 4px; margin-left: auto; }
 .ftools .num { font-size: 12px; color: var(--muted); min-width: 46px; text-align: center; }
@@ -166,6 +174,9 @@ button.x:disabled { background: var(--raise); border-color: var(--line); color: 
   .panel { overflow: visible; padding-right: 0; order: 2; }
   .row { grid-template-columns: 1fr; gap: 4px; }
   .seg button { padding: 8px 10px; }
+  .mthumb canvas { height: 42px; max-width: 130px; }
+  .mthumb .cap { max-width: 130px; font-size: 10.5px; }
+  .mthumb { padding: 4px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
@@ -206,9 +217,9 @@ button.x:disabled { background: var(--raise); border-color: var(--line); color: 
     </div></details>
 
     <details class="sec tsec" open><summary>ФОРМИРОВАНИЕ ТЗ</summary><div class="sec-body">
-      <p class="hint">Отметьте, что войдёт в ТЗ. По умолчанию — все маски по отдельности; общие поля добавляются галочкой. На холсте — предпросмотр слайдов.</p>
+      <p class="hint">Отметьте, что войдёт в ТЗ. По умолчанию — общие поля целиком и маски, которые не стоят на полях. Маски из полей можно добавить галочкой. На холсте — предпросмотр слайдов.</p>
       <div class="flist" id="tList"></div>
-      <div class="btns"><button class="b" id="tAllMasks">Все маски</button><button class="b" id="tNoMasks">Без масок</button><button class="b" id="tAllFields">Все поля</button></div>
+      <div class="btns"><button class="b" id="tAllMasks">Все маски</button><button class="b" id="tNoMasks">Без масок</button><button class="b" id="tAllFields">Все поля</button><button class="b" id="tDefault">По умолчанию</button></div>
       <div class="tgroup">ОБЩИЙ ПЛАН (2-Й СЛАЙД)</div>
       <label class="chk"><input type="checkbox" id="tOverview" checked> Добавить картинку общего плана во 2-й слайд</label>
       <div class="btns"><button class="b" id="tOvPick">Выбрать картинку…</button><button class="b" id="tOvClear">Убрать</button></div>
@@ -216,14 +227,12 @@ button.x:disabled { background: var(--raise); border-color: var(--line); color: 
       <p class="hint" id="tOvInfo">Картинка не выбрана — слайд не добавится.</p>
       <img id="tOvImg" class="ovthumb" alt="" hidden>
       <div class="tgroup">СОХРАНИТЬ ТЗ</div>
-      <div class="dd">
-        <button class="x" id="tSaveBtn" aria-haspopup="menu" aria-expanded="false">Сохранить ТЗ ▾</button>
-        <div class="dd-menu" id="tSaveMenu" role="menu" hidden>
-          <button role="menuitem" data-tpl="Resolume"><b>Resolume</b><span>кодек DXV3</span></button>
-          <button role="menuitem" data-tpl="D3"><b>D3</b><span>кодек HAP</span></button>
-          <button role="menuitem" data-tpl="MP4" id="tSaveM"><b>Медиаплееры (MP4)</b><span>шаблон будет позже</span></button>
-        </div>
-      </div>
+      <div class="row"><label for="tTpl">Тип ТЗ</label><div class="ctl"><select id="tTpl" class="grow">
+        <option value="Resolume">Resolume — кодек DXV3</option>
+        <option value="D3">D3 — кодек HAP</option>
+        <option value="MP4" disabled>Медиаплееры (MP4) — шаблон позже</option>
+      </select></div></div>
+      <div class="btns"><button class="x" id="tSave">Сохранить ТЗ Resolume</button></div>
       <p class="hint" id="tNote">ZIP с папкой: PPTX по шаблону, такой же PDF и PNG каждой маски и поля. Для MP4 шаблон будет добавлен позже.</p>
     </div></details>
 
@@ -317,6 +326,7 @@ button.x:disabled { background: var(--raise); border-color: var(--line); color: 
       <div class="zoom"><button class="b sq" id="zMinus" aria-label="Уменьшить">−</button><span class="num" id="zLabel">100%</span><button class="b sq" id="zPlus" aria-label="Увеличить">+</button><button class="b" id="zAuto">Авто</button></div>
     </div>
     <div class="canvas-wrap" id="wrap"><canvas id="pv"></canvas><div class="toast" id="toast" hidden></div></div>
+    <div class="mstrip" id="mStrip" aria-label="Маски проекта"></div>
   </main>
 </div>
 
@@ -650,7 +660,7 @@ function updateInfo(forcePhys) {
   $("infoCab").textContent = `Кабинеты: ${total} • Чёрные: ${nb}${nc ? ` • Угловые: ${nc}` : ""} • Выделено: ${ui.selected.size}`;
   $("zLabel").textContent = Math.round(ui.zoom * 100) + "%";
 }
-function changed(opts = {}) { updateInfo(opts.forcePhys); requestDraw(); scheduleAutosave(); if (opts.list) { $("screens").options[project.cur].textContent = `${project.cur + 1}. ${S().name || "screen"}`; } }
+function changed(opts = {}) { updateInfo(opts.forcePhys); requestDraw(); scheduleAutosave(); scheduleStrip(); if (opts.list) { $("screens").options[project.cur].textContent = `${project.cur + 1}. ${S().name || "screen"}`; } }
 
 function refreshTextList() {
   const st = S();
@@ -970,6 +980,7 @@ $("btnDelScreen").onclick = async () => {
 $("btnReset").onclick = async () => {
   const ok = await ask("Сбросить всё?", "Все экраны и настройки вернутся к значениям по умолчанию.", "", "Сбросить", false); if (!ok) return;
   project = { name: "Проект", screens: [defaultScreen()], cur: 0, guides: { circle: true, diag: true }, ...freshFieldState() };
+  clearOverview();
   Object.assign(ui, { selected: new Set(), anchor: null, textMode: -1, selLabel: -1, zoom: 1, panX: 0, panY: 0, paint: { ...DEF_PAINT } });
   syncUI(); changed();
 };
@@ -1039,6 +1050,7 @@ function loadData(d) {
   const screens = raw.filter(x => x && typeof x === "object").map(normalizeScreen);
   project = { name: typeof d.projectName === "string" ? d.projectName : project.name, screens: screens.length ? screens : [defaultScreen()], cur: 0, guides: { circle: true, diag: true, ...(d.guides || {}) } };
   loadFieldState(d, raw.filter(x => x && typeof x === "object"));
+  clearOverview();
   project.cur = clampI(d.activeScreen, project.screens.length);
   ui.selected.clear(); ui.anchor = null; ui.textMode = -1;
 }
@@ -1440,7 +1452,7 @@ $("fileProj").addEventListener("change", async e => {
    Размер поля всегда чётный: габарит округляется вверх до чётного числа. */
 ui.page = "mask"; ui.magnet = true;
 function freshField(k) { return { id: newUid(), name: k ? `Общее поле ${k + 1}` : "Общее поле", items: [], title: { on: true, x: 0, y: 0 } }; }
-function freshFieldState() { return { fields: [freshField(0)], fieldCur: 0, tz: { fieldsOn: [], masksOff: [], overview: true } }; }
+function freshFieldState() { return { fields: [freshField(0)], fieldCur: 0, tz: { fields: {}, masks: {}, overview: true } }; }
 function loadFieldState(d, raw) {
   const seen = new Set(); project.screens.forEach(s => { if (seen.has(s.uid)) s.uid = newUid(); seen.add(s.uid); });
   let fields = Array.isArray(d.fields) ? d.fields : null;
@@ -1461,7 +1473,8 @@ function loadFieldState(d, raw) {
   if (!project.fields.length) project.fields = [freshField(0)];
   project.fieldCur = clampI(d.fieldCur, project.fields.length);
   const tz = d.tz && typeof d.tz === "object" ? d.tz : {};
-  project.tz = { fieldsOn: (Array.isArray(tz.fieldsOn) ? tz.fieldsOn : []).map(String), masksOff: (Array.isArray(tz.masksOff) ? tz.masksOff : []).map(String), overview: tz.overview == null ? true : !!tz.overview };
+  const boolMap = m => { const o = {}; if (m && typeof m === "object" && !Array.isArray(m)) for (const [k, v] of Object.entries(m)) o[k] = !!v; return o; };
+  project.tz = { fields: boolMap(tz.fields), masks: boolMap(tz.masks), overview: tz.overview == null ? true : !!tz.overview };
 }
 const CF = () => project.fields[Math.max(0, Math.min(project.fields.length - 1, project.fieldCur || 0))];
 const evenUp = v => { v = Math.ceil(v - 1e-9); return v % 2 ? v + 1 : v; };
@@ -1818,6 +1831,7 @@ function setPage(pg) {
   pv.style.cursor = "";
   if (pg === "field") { FV.fitted = false; refreshFieldPanel(); }
   if (pg === "tz") refreshTZPanel();
+  if (pg === "mask") scheduleStrip();
   requestDraw();
 }
 document.querySelectorAll(".seg.pages button").forEach(b => b.onclick = () => setPage(b.dataset.page));
@@ -1863,10 +1877,14 @@ function fieldInfo(f) {
   return { w: b.w, h: b.h, label: `${b.w}×${b.h}  |  ${f.name}${ph ? `  |  ${compactM(ph.w)}х${compactM(ph.h)} м` : ""}` };
 }
 // что идёт в ТЗ: сначала отмеченные общие поля, затем отмеченные маски (порядок проекта)
+// по умолчанию: общие поля целиком — да; маски, стоящие на каком-нибудь поле, — нет; остальные маски — да
+const inAnyField = uid => project.fields.some(f => f.items.some(it => it.uid === uid));
+const tzFieldOn = f => project.tz.fields[f.id] ?? true;
+const tzMaskOn = st => project.tz.masks[st.uid] ?? !inAnyField(st.uid);
 function tzItems() {
-  const out = [], tz = project.tz;
-  for (const f of project.fields) if (tz.fieldsOn.includes(f.id)) { const fi = fieldInfo(f); if (fi) out.push({ kind: "field", f, name: f.name, ...fi }); }
-  for (const st of project.screens) if (!tz.masksOff.includes(st.uid)) { const [w, h] = dims(st); out.push({ kind: "mask", st, name: st.name || "screen", w, h, label: `${w}×${h}  |  ${st.name || "screen"}  |  ${physText(st)}` }); }
+  const out = [];
+  for (const f of project.fields) if (tzFieldOn(f)) { const fi = fieldInfo(f); if (fi) out.push({ kind: "field", f, name: f.name, ...fi }); }
+  for (const st of project.screens) if (tzMaskOn(st)) { const [w, h] = dims(st); out.push({ kind: "mask", st, name: st.name || "screen", w, h, label: `${w}×${h}  |  ${st.name || "screen"}  |  ${physText(st)}` }); }
   return out;
 }
 const tzOverview = () => project.tz.overview && ui.overview ? ui.overview : null;
@@ -1880,13 +1898,13 @@ function refreshTZPanel() {
     const sz = document.createElement("span"); sz.className = "sz"; sz.textContent = size;
     r.append(cb, nm, sz); list.appendChild(r);
   };
-  const maskRow = st => { const [w, h] = dims(st), i = project.screens.indexOf(st); row(`${i + 1}. ${st.name || "screen"}`, `${w}×${h}`, !tz.masksOff.includes(st.uid), on => { tz.masksOff = tz.masksOff.filter(u => u !== st.uid); if (!on) tz.masksOff.push(st.uid); }, "sub"); };
+  const maskRow = st => { const [w, h] = dims(st), i = project.screens.indexOf(st); row(`${i + 1}. ${st.name || "screen"}`, `${w}×${h}`, tzMaskOn(st), on => { tz.masks[st.uid] = on; }, "sub"); };
   const inField = new Set();
   for (const f of project.fields) {
     const rs = fieldRects(f), fi = fieldInfo(f);
     const head = document.createElement("div"); head.className = "tgroup"; head.textContent = f.name.toUpperCase(); list.appendChild(head);
     if (!fi) { const p = document.createElement("p"); p.className = "hint"; p.textContent = "На этом поле нет экранов"; list.appendChild(p); continue; }
-    row(`Общее поле целиком`, `${fi.w}×${fi.h}`, tz.fieldsOn.includes(f.id), on => { tz.fieldsOn = tz.fieldsOn.filter(x => x !== f.id); if (on) tz.fieldsOn.push(f.id); }, "head");
+    row(`Общее поле целиком`, `${fi.w}×${fi.h}`, tzFieldOn(f), on => { tz.fields[f.id] = on; }, "head");
     for (const r of rs) { maskRow(r.st); inField.add(r.uid); }
   }
   const rest = project.screens.filter(st => !inField.has(st.uid));
@@ -1895,6 +1913,8 @@ function refreshTZPanel() {
   const ov = ui.overview;
   $("tOvInfo").textContent = ov ? `${ov.name} · ${ov.w}×${ov.h}${tz.overview ? " — будет 2-м слайдом" : " — галочка снята, слайд не добавится"}` : "Картинка не выбрана — слайд не добавится.";
   $("tOvImg").hidden = !ov; if (ov) $("tOvImg").src = ov.url;
+  const mp4 = $("tTpl").querySelector('option[value="MP4"]'); mp4.disabled = !TPL.MP4; mp4.textContent = TPL.MP4 ? "Медиаплееры (MP4)" : "Медиаплееры (MP4) — шаблон позже";
+  $("tTpl").value = ui.tzTpl; $("tSave").textContent = `Сохранить ТЗ ${ui.tzTpl}`;
   updateTZSummary();
 }
 function tzSlides(items, withOv) {
@@ -1906,12 +1926,14 @@ function updateTZSummary() {
   $("tSummary").textContent = `Слайдов: ${tzSlides(items, !!tzOverview())} · масок: ${items.length - nf} · полей: ${nf}`;
 }
 function tzChanged() { refreshTZPanel(); requestDraw(); scheduleAutosave(); }
-$("tAllMasks").onclick = () => { project.tz.masksOff = []; tzChanged(); };
-$("tNoMasks").onclick = () => { project.tz.masksOff = project.screens.map(s => s.uid); tzChanged(); };
-$("tAllFields").onclick = () => { project.tz.fieldsOn = project.fields.filter(f => fieldInfo(f)).map(f => f.id); tzChanged(); };
+$("tAllMasks").onclick = () => { project.screens.forEach(s => project.tz.masks[s.uid] = true); tzChanged(); };
+$("tNoMasks").onclick = () => { project.screens.forEach(s => project.tz.masks[s.uid] = false); tzChanged(); };
+$("tAllFields").onclick = () => { project.fields.forEach(f => project.tz.fields[f.id] = true); tzChanged(); };
+$("tDefault").onclick = () => { project.tz.fields = {}; project.tz.masks = {}; tzChanged(); status("Выбор ТЗ — по умолчанию"); };
 $("tOverview").onchange = e => { project.tz.overview = e.target.checked; tzChanged(); };
 $("tOvPick").onclick = () => $("tOvFile").click();
-$("tOvClear").onclick = () => { if (ui.overview) URL.revokeObjectURL(ui.overview.url); ui.overview = null; tzChanged(); };
+function clearOverview() { if (ui.overview) URL.revokeObjectURL(ui.overview.url); ui.overview = null; $("tOvImg").hidden = true; $("tOvImg").removeAttribute("src"); }
+$("tOvClear").onclick = () => { clearOverview(); tzChanged(); };
 $("tOvFile").addEventListener("change", async e => {
   const file = e.target.files[0]; e.target.value = ""; if (!file) return;
   busy("Подготовка картинки…"); await tick();
@@ -1926,26 +1948,9 @@ $("tOvFile").addEventListener("change", async e => {
     project.tz.overview = true; busy(""); tzChanged();
   } catch (err) { busy(""); status("Не удалось открыть картинку: " + err.message, true); }
 });
-// выпадающее меню «Сохранить ТЗ»
-function tzMenu(open) {
-  $("tSaveMenu").hidden = !open; $("tSaveBtn").setAttribute("aria-expanded", String(open));
-  if (open) { $("tSaveM").disabled = !TPL.MP4; $("tSaveM").querySelector("span").textContent = TPL.MP4 ? "MP4 H.264" : "шаблон будет позже"; const f = $("tSaveMenu").querySelector("button:not(:disabled)"); if (f) f.focus({ preventScroll: true }); $("tSaveMenu").scrollIntoView({ block: "nearest", behavior: "smooth" }); }
-}
-$("tSaveBtn").onclick = e => { e.stopPropagation(); tzMenu($("tSaveMenu").hidden); };
-$("tSaveMenu").querySelectorAll("button").forEach(b => {
-  b.onclick = e => { e.stopPropagation(); tzMenu(false); exportTZ(b.dataset.tpl); };
-  b.addEventListener("pointerenter", () => { if (b.dataset.tpl !== "MP4") { ui.tzTpl = b.dataset.tpl; requestDraw(); } });
-  b.addEventListener("focus", () => { if (b.dataset.tpl !== "MP4") { ui.tzTpl = b.dataset.tpl; requestDraw(); } });
-});
-document.addEventListener("pointerdown", e => { if (!$("tSaveMenu").hidden && !e.target.closest(".dd")) tzMenu(false); }, true);
-window.addEventListener("keydown", e => {
-  if ($("tSaveMenu").hidden) return;
-  if (e.key === "Escape") { tzMenu(false); $("tSaveBtn").focus(); }
-  if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-    e.preventDefault(); const bs = [...$("tSaveMenu").querySelectorAll("button:not(:disabled)")], i = bs.indexOf(document.activeElement);
-    bs[(i + (e.key === "ArrowDown" ? 1 : -1) + bs.length) % bs.length].focus();
-  }
-});
+// тип ТЗ выбирается в списке, сохраняется отдельной кнопкой
+$("tTpl").addEventListener("change", e => { ui.tzTpl = e.target.value; $("tSave").textContent = `Сохранить ТЗ ${ui.tzTpl}`; requestDraw(); });
+$("tSave").onclick = () => exportTZ($("tTpl").value);
 // предпросмотр слайдов: фон шаблона, подписи и маски по тем же правилам, что в PPTX/PDF
 const bgImgs = {};
 function bgImg(key) {
@@ -1991,6 +1996,44 @@ function drawTZ() {
 }
 
 
+
+/* ======================= ЛЕНТА ПРЕВЬЮ МАСОК (вкладка «Маска») ======================= */
+const stripThumbs = new Map();
+let stripTimer = 0;
+function scheduleStrip() { clearTimeout(stripTimer); stripTimer = setTimeout(renderStrip, 160); }
+function renderStrip() {
+  if (ui.page !== "mask") return;
+  const box = $("mStrip"), keep = new Set();
+  const tiles = [...box.querySelectorAll(".mthumb:not(.add)")];
+  project.screens.forEach((st, i) => {
+    const [W, H] = dims(st), k = JSON.stringify(st) + JSON.stringify(project.guides);
+    let tile = tiles[i];
+    if (!tile) {
+      tile = document.createElement("button"); tile.className = "mthumb"; tile.type = "button";
+      tile.append(document.createElement("canvas"), document.createElement("span")); tile.lastChild.className = "cap";
+      box.insertBefore(tile, box.querySelector(".mthumb.add"));
+    }
+    tile.onclick = () => { if (project.cur === i) return; project.cur = i; ui.selected.clear(); ui.anchor = null; ui.textMode = -1; syncUI(); changed({ forcePhys: true }); };
+    tile.setAttribute("aria-current", String(i === project.cur));
+    tile.title = `${i + 1}. ${st.name || "screen"} — ${W}×${H}`;
+    tile.lastChild.innerHTML = `<b>${i + 1}. ${xmlEsc(st.name || "screen")}</b> · ${W}×${H}`;
+    const cv = tile.firstChild;
+    if (cv.dataset.k !== k) { // перерисовываем только изменившиеся маски
+      const s = Math.min(1, 200 / W, 124 / H) * Math.min(2, window.devicePixelRatio || 1);
+      cv.width = Math.max(1, Math.round(W * s)); cv.height = Math.max(1, Math.round(H * s));
+      drawMask(cv.getContext("2d"), st, s, project.guides); cv.dataset.k = k;
+    }
+    keep.add(tile);
+  });
+  tiles.forEach(t => { if (!keep.has(t)) t.remove(); });
+  if (!box.querySelector(".mthumb.add")) {
+    const add = document.createElement("button"); add.className = "mthumb add"; add.type = "button"; add.textContent = "+"; add.title = "Новый экран";
+    add.onclick = () => $("btnAddScreen").click(); box.appendChild(add);
+  }
+  const cur = box.children[project.cur];
+  if (cur && (cur.offsetLeft < box.scrollLeft || cur.offsetLeft + cur.offsetWidth > box.scrollLeft + box.clientWidth)) box.scrollTo({ left: cur.offsetLeft - 8, behavior: "smooth" });
+}
+
 /* ======================= СТАРТ ======================= */
 $("appicon").src = "data:image/png;base64," + ICON_B64;
 fillSelect($("cabType"), TYPES.map(t => t[0]));
@@ -1999,7 +2042,7 @@ fillSelect($("rot"), ROTS); fillSelect($("exRot"), ROTS);
 fillSelect($("numFmt"), NUM_FORMATS); fillSelect($("numOrigin"), NUM_ORIGINS); fillSelect($("numPos"), NUM_POS);
 try { const saved = localStorage.getItem("ledmask.project"); if (saved) loadData(JSON.parse(saved)); } catch (e) { }
 document.documentElement.dataset.page = "mask";
-syncUI(); requestDraw(); histCommit();
+syncUI(); requestDraw(); histCommit(); renderStrip();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { autoCache.clear(); requestDraw(); });
 if (typeof CompressionStream === "undefined") { $("exportNote").textContent = "Этот браузер слишком старый для экспорта: нужен Safari 16.4+ или свежий Chrome."; }
 if (STANDALONE) document.documentElement.classList.add("standalone");
