@@ -2836,8 +2836,25 @@ $("btnCorner").onclick = () => {
 };
 ui.shapedW = "1/4";
 ui.shapedCustom = false;
+function currentColW(st) {
+  const g = grid(st);
+  for (const k of ui.selected) {
+    const p = parseKey(k);
+    if (p && p[0] < st.cabCols && p[1] < st.cabRows) return g.xs[p[0] + 1] - g.xs[p[0]];
+  }
+  return Math.max(1, st.cabWpx);
+}
+let shapedSelKey = "";
+function syncCustomW(force) {
+  const st = S(), k = project.cur + "|" + [...ui.selected].sort().join(";") + "|" + st.cabWpx + "|" + JSON.stringify(st.shapedCols || {});
+  if (!force && k === shapedSelKey) return;
+  shapedSelKey = k;
+  $("shapedCustom").value = currentColW(st);
+  if (ui.shapedCustom) ui.shapedW = customW();
+}
 function shapedLabels() {
   const st = S();
+  syncCustomW(false);
   document.querySelectorAll(".shp-px").forEach((e) => {
     e.textContent = "· " + shapedPx(st, e.dataset.f) + "×" + st.cabHpx;
   });
@@ -2849,8 +2866,11 @@ document.querySelectorAll(".seg.shaped button").forEach((b) => b.onclick = () =>
   ui.shapedW = ui.shapedCustom ? customW() : b.dataset.w;
   $("shapedCustomBox").hidden = !ui.shapedCustom;
   if (ui.shapedCustom) {
+    syncCustomW(true);
+    ui.shapedW = customW();
     $("shapedCustomH").textContent = "×".concat(S().cabHpx, " px");
     $("shapedCustom").focus();
+    $("shapedCustom").select();
   }
   document.querySelectorAll(".seg.shaped button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
 });
