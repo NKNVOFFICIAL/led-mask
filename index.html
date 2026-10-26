@@ -330,6 +330,17 @@ html[data-page="about"] #pv { visibility: hidden; }
           <button data-corner="3" aria-pressed="false" title="Светится нижняя правая половина">◢</button>
         </div></div></div>
       <div class="btns"><button class="b" id="btnCorner">Сделать угловыми</button><button class="b" id="btnCornerDel">Убрать угловые</button></div>
+      <div class="row"><span class="lbl">Фигурные модули</span><div class="ctl">
+        <div class="seg shaped" role="group" aria-label="Тип фигурного модуля">
+          <button data-w="48" aria-pressed="true" title="Модуль на угол 90°: 48 px">90° · 48</button>
+          <button data-w="96" aria-pressed="false" title="Модуль на угол 60°: 96 px">60° · 96</button>
+        </div>
+        <div class="seg shapedDir" role="group" aria-label="Что сузить">
+          <button data-dir="col" aria-pressed="true" title="Узким станет весь столбец выделенного модуля (48×192)">Столбец</button>
+          <button data-dir="row" aria-pressed="false" title="Узким станет весь ряд выделенного модуля (192×48)">Ряд</button>
+        </div></div></div>
+      <p class="hint">Выделите любой модуль — узким станет весь его столбец (или ряд), без чёрных полей. Разрешение и общее поле пересчитываются.</p>
+      <div class="btns"><button class="b" id="btnShaped">Сделать фигурными</button><button class="b" id="btnShapedDel">Убрать фигурные</button></div>
     </div></details>
 
     <details class="sec"><summary>КОНТУР УЧАСТКА</summary><div class="sec-body">
@@ -496,6 +507,7 @@ html[data-page="about"] #pv { visibility: hidden; }
 <li><strong>Выключить все / Включить все</strong> — гасят или включают сразу все кабинеты.</li>
 <li><strong>Покрасить выделенные</strong> — выделенные кабинеты заливаются цветом из квадратика слева.</li>
 <li><strong>Угловые модули</strong> — выделите кабинеты, выберите, какая половина светится (◣ ◤ ◥ ◢), и нажмите «Сделать угловыми». Вторая половина станет чёрной. «Убрать угловые» возвращает выделенные (или все, если ничего не выделено).</li>
+<li><strong>Фигурные модули</strong> — узкие модули для углов: 48 px (угол 90°) или 96 px (угол 60°). Выделите любой модуль, выберите тип и «Столбец» или «Ряд», нажмите «Сделать фигурными» — весь столбец (ряд) станет узким, без чёрных полей. Разрешение экрана и общего поля пересчитывается само. «Убрать фигурные» возвращает выделенные линии (или все).</li>
 <li><strong>Контур участка</strong> — выделите кабинеты и нажмите «Создать контур»: вокруг участка появится белая рамка 2 px. Её можно скрыть или убрать.</li>
 </ul>
 <h3>Текст на маске</h3>
@@ -755,7 +767,7 @@ function defaultScreen(name = "screen 1") {
     pixelColor: fromRGB(t[5]), numberColor: { ...DEF_NUM_COLOR },
     inscriptionIndex: 0, rotationIndex: 0, numberFormatIndex: 0, numberOriginIndex: 0,
     blackCabinets: [], cabinetColors: {}, extraLabels: [], titleOffsetX: 0, titleOffsetY: 0,
-    persistentContours: [], showPersistentContour: true, cornerCabinets: {}, uid: newUid(),
+    persistentContours: [], showPersistentContour: true, cornerCabinets: {}, shapedCols: {}, shapedRows: {}, uid: newUid(),
   };
 }
 
@@ -763,7 +775,17 @@ function defaultScreen(name = "screen 1") {
 const clampI = (v, n) => Math.max(0, Math.min(n - 1, parseInt(v, 10) || 0));
 const pint = (v, d = 1) => { const m = String(v ?? "").match(/^\s*([-+]?\d+)/); return m ? parseInt(m[1], 10) : d; };
 const pfloat = v => { const m = String(v ?? "").match(/^\s*([-+]?\d+(?:[.,]\d+)?)/); return m ? parseFloat(m[1].replace(",", ".")) : 0; };
-const dims = st => [Math.max(1, st.cabWpx) * Math.max(1, st.cabCols), Math.max(1, st.cabHpx) * Math.max(1, st.cabRows)];
+// фигурные модули: у столбца (или ряда) своя ширина (высота) в px, например 48 (90°) или 96 (60°)
+const SHAPED = [[48, "90°"], [96, "60°"]];
+function grid(st) {
+  const cols = Math.max(1, st.cabCols), rows = Math.max(1, st.cabRows), sc = st.shapedCols || {}, sr = st.shapedRows || {};
+  const xs = [0], ys = [0];
+  for (let c = 0; c < cols; c++) xs.push(xs[c] + (sc[c] > 0 ? sc[c] : Math.max(1, st.cabWpx)));
+  for (let r = 0; r < rows; r++) ys.push(ys[r] + (sr[r] > 0 ? sr[r] : Math.max(1, st.cabHpx)));
+  return { xs, ys };
+}
+const dims = st => { const g = grid(st); return [g.xs[g.xs.length - 1], g.ys[g.ys.length - 1]]; };
+const shapedCount = st => Object.keys(st.shapedCols || {}).filter(c => +c < st.cabCols).length + Object.keys(st.shapedRows || {}).filter(r => +r < st.cabRows).length;
 const key = (c, r) => c + "," + r;
 const parseKey = k => { const p = String(k).split(","); if (p.length !== 2) return null; const c = parseInt(p[0], 10), r = parseInt(p[1], 10); return isNaN(c) || isNaN(r) ? null : [c, r]; };
 const to255 = c => [c.r, c.g, c.b].map(v => Math.max(0, Math.min(255, Math.round((+v || 0) * 255))));
@@ -775,7 +797,7 @@ function typeMM(st) {
   const t = TYPES.find(t => t[0] === st.cabinetTypeName);
   return t ? [t[3], t[4], true] : [500, 500, false];
 }
-function physM(st) { const [w, h, k] = typeMM(st); return [w * st.cabCols / 1000, h * st.cabRows / 1000, k]; }
+function physM(st) { const [w, h, k] = typeMM(st), [W, H] = dims(st); return [w / Math.max(1, st.cabWpx) * W / 1000, h / Math.max(1, st.cabHpx) * H / 1000, k]; }
 function compactM(v) { let s = (+v).toFixed(3); if (s.includes(".")) s = s.replace(/0+$/, "").replace(/\.$/, ""); return s; }
 const physText = st => { const [w, h] = physM(st); return `${compactM(w)}х${compactM(h)} м`; };
 const titleText = st => { const [W, H] = dims(st); return `${W}×${H}`; };
@@ -838,10 +860,10 @@ const numberFont = st => Math.min(35, Math.max(12.5, Math.min(st.cabWpx, st.cabH
    Координаты маски: Y вверх, ряд 0 — нижний (как в macOS-версии). Холст: Y вниз.
    s — пикселей холста на пиксель маски. */
 function drawMask(ctx, st, s, guides) {
-  const [W, H] = dims(st), cw = st.cabWpx, ch = st.cabHpx, cols = st.cabCols, rows = st.cabRows;
+  const [W, H] = dims(st), cols = st.cabCols, rows = st.cabRows, { xs, ys } = grid(st);
   const Wp = Math.max(1, Math.round(W * s)), Hp = Math.max(1, Math.round(H * s));
   const fx = x => Math.round(x * s), fy = y => Math.round((H - y) * s);
-  const cell = (c, r) => { const x0 = fx(c * cw), x1 = fx((c + 1) * cw), y0 = fy((r + 1) * ch), y1 = fy(r * ch); return [x0, y0, x1 - x0, y1 - y0]; };
+  const cell = (c, r) => { const x0 = fx(xs[c]), x1 = fx(xs[c + 1]), y0 = fy(ys[r + 1]), y1 = fy(ys[r]); return [x0, y0, x1 - x0, y1 - y0]; };
   ctx.save();
   ctx.fillStyle = css(st.pixelColor); ctx.fillRect(0, 0, Wp, Hp);
   for (const [k, c] of Object.entries(st.cabinetColors || {})) {
@@ -866,8 +888,8 @@ function drawMask(ctx, st, s, guides) {
   // швы между кабинетами: 2 px (по 1 px каждому кабинету), серые
   ctx.fillStyle = "rgb(64,64,64)";
   const bw = Math.max(1, Math.round(2 * s));
-  for (let c = 1; c < cols; c++) ctx.fillRect(fx(c * cw) - Math.floor(bw / 2), 0, bw, Hp);
-  for (let r = 1; r < rows; r++) ctx.fillRect(0, fy(r * ch) - Math.floor(bw / 2), Wp, bw);
+  for (let c = 1; c < cols; c++) ctx.fillRect(fx(xs[c]) - Math.floor(bw / 2), 0, bw, Hp);
+  for (let r = 1; r < rows; r++) ctx.fillRect(0, fy(ys[r]) - Math.floor(bw / 2), Wp, bw);
   // внешняя рамка 1 px
   ctx.fillStyle = "#fff";
   const ow = Math.max(1, Math.round(s));
@@ -877,7 +899,8 @@ function drawMask(ctx, st, s, guides) {
     const lw = Math.max(1, Math.round(2 * s));
     for (const ct of st.persistentContours || []) {
       if (!(ct.cols > 0 && ct.rows > 0)) continue;
-      const x0 = fx(ct.col * cw), x1 = fx((ct.col + ct.cols) * cw), y0 = fy((ct.row + ct.rows) * ch), y1 = fy(ct.row * ch);
+      const ci = v => xs[Math.max(0, Math.min(cols, v))], ri = v => ys[Math.max(0, Math.min(rows, v))];
+      const x0 = fx(ci(ct.col)), x1 = fx(ci(ct.col + ct.cols)), y0 = fy(ri(ct.row + ct.rows)), y1 = fy(ri(ct.row));
       ctx.fillRect(x0, y0, x1 - x0, lw); ctx.fillRect(x0, y1 - lw, x1 - x0, lw);
       ctx.fillRect(x0, y0, lw, y1 - y0); ctx.fillRect(x1 - lw, y0, lw, y1 - y0);
     }
@@ -892,12 +915,17 @@ function drawMask(ctx, st, s, guides) {
   // номера кабинетов
   const nsize = Math.max(6, numberFont(st) * s);
   ctx.font = `${nsize}px ${FONT}`; ctx.fillStyle = css(st.numberColor || DEF_NUM_COLOR); ctx.textBaseline = "alphabetic";
-  const pos = clampI(st.numberPositionIndex, NUM_POS.length), cW = cw * s, cH = ch * s, pad = Math.min(8 * s, Math.min(cW, cH) * 0.12);
-  const nm = measure("0", nsize), cornerAt = new Map(corners.map(([c, r, o]) => [key(c, r), o]));
+  const pos = clampI(st.numberPositionIndex, NUM_POS.length);
+  const nm0 = measure("0", nsize), cornerAt = new Map(corners.map(([c, r, o]) => [key(c, r), o]));
   for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
     if (black.has(key(c, r))) continue;
-    const label = cabLabel(st, c, r), tw = ctx.measureText(label).width;
-    const left = c * cw * s, top = (H - (r + 1) * ch) * s;
+    const cW = (xs[c + 1] - xs[c]) * s, cH = (ys[r + 1] - ys[r]) * s, pad = Math.min(8 * s, Math.min(cW, cH) * 0.12);
+    const label = cabLabel(st, c, r);
+    // в узком (фигурном) модуле номер уменьшается, чтобы влезть
+    let tw = ctx.measureText(label).width, nm = nm0, fsz = nsize;
+    const fit = Math.min(cW * 0.86 / tw, cH * 0.86 / nm0.h, 1);
+    if (fit < 1) { fsz = Math.max(3, nsize * fit); ctx.font = `${fsz}px ${FONT}`; tw = ctx.measureText(label).width; nm = measure("0", fsz); }
+    const left = xs[c] * s, top = (H - ys[r + 1]) * s;
     let x = left + (cW - tw) / 2, y = top + (cH - nm.h) / 2;
     const o = cornerAt.get(key(c, r));
     let p = pos;
@@ -909,7 +937,9 @@ function drawMask(ctx, st, s, guides) {
     }
     if (p === 1 || p === 2) x = left + pad; else if (p === 3 || p === 4) x = left + cW - tw - pad;
     if (p === 1 || p === 3) y = top + cH - nm.h - pad; else if (p === 2 || p === 4) y = top + pad;
+    if (fit < 1) { x = Math.max(left + (cW - tw) / 2, Math.min(x, left + cW - tw)); }
     ctx.fillText(label, x, y + nm.asc);
+    if (fsz !== nsize) ctx.font = `${nsize}px ${FONT}`;
   }
   // основной текст и дополнительные надписи
   ctx.fillStyle = "#fff";
@@ -975,6 +1005,10 @@ function normalizeScreen(d) {
   st.uid = typeof d.uid === "string" && d.uid ? d.uid : newUid();
   st.cornerCabinets = {};
   if (d.cornerCabinets && typeof d.cornerCabinets === "object") for (const [k, v] of Object.entries(d.cornerCabinets)) { const o = pint(v, -1); if (parseKey(k) && o >= 0 && o <= 3) st.cornerCabinets[k] = o; }
+  for (const f of ["shapedCols", "shapedRows"]) {
+    st[f] = {};
+    if (d[f] && typeof d[f] === "object") for (const [k, v] of Object.entries(d[f])) { const i = pint(k, -1), w = pint(v, 0); if (i >= 0 && String(i) === String(k).trim() && w > 0 && w <= 20000) st[f][i] = w; }
+  }
   return st;
 }
 
@@ -1015,8 +1049,8 @@ function updateInfo(forcePhys) {
   $("numRGB").textContent = "RGB " + to255(st.numberColor).join(",");
   $("infoRes").textContent = `Разрешение: ${W}×${H} px`;
   $("infoPhys").textContent = `${known ? "Физический размер" : "Размер (условно 50 см)"}: ${compactM(pw)}х${compactM(ph)} м`;
-  const total = st.cabCols * st.cabRows, nb = st.blackCabinets.length, nc = cornerList(st, new Set(st.blackCabinets)).length;
-  $("infoCab").textContent = `Кабинеты: ${total} • Чёрные: ${nb}${nc ? ` • Угловые: ${nc}` : ""} • Выделено: ${ui.selected.size}`;
+  const total = st.cabCols * st.cabRows, nb = st.blackCabinets.length, nc = cornerList(st, new Set(st.blackCabinets)).length, ns = shapedCount(st);
+  $("infoCab").textContent = `Кабинеты: ${total} • Чёрные: ${nb}${nc ? ` • Угловые: ${nc}` : ""}${ns ? ` • Фигурных линий: ${ns}` : ""} • Выделено: ${ui.selected.size}`;
   $("zLabel").textContent = Math.round(ui.zoom * 100) + "%";
 }
 function changed(opts = {}) { updateInfo(opts.forcePhys); requestDraw(); scheduleAutosave(); scheduleStrip(); if (opts.list) { $("screens").options[project.cur].textContent = `${project.cur + 1}. ${S().name || "screen"}`; } }
@@ -1061,7 +1095,7 @@ function layout() {
   const scale = Math.min((cw - padX) / W, (chh - padY) / H) * ui.zoom;
   if (!(scale > 0)) return null;
   const gw = W * scale, gh = H * scale;
-  return { st, W, H, scale, cw, ch: chh, ox: (cw - gw) / 2 + ui.panX, oy: (chh - gh) / 2 + ui.panY, gw, gh };
+  return { st, W, H, scale, cw, ch: chh, ox: (cw - gw) / 2 + ui.panX, oy: (chh - gh) / 2 + ui.panY, gw, gh, G: grid(st) };
 }
 function fitStage(wh) {
   // на телефоне высота холста следует пропорциям экрана, без пустых полей
@@ -1098,7 +1132,7 @@ function draw() {
   if (ui.textMode === 0) { const f = titleFrame(); pctx.strokeRect(f.cx - f.w / 2 - 8, f.cy - f.h / 2 - 6, f.w + 16, f.h + 12); }
   if (ui.selLabel >= 0 && st.extraLabels[ui.selLabel]) { const f = labelFrame(ui.selLabel); pctx.lineWidth = 1.5; pctx.strokeRect(f.cx - f.w / 2 - 4, f.cy - f.h / 2 - 3, f.w + 8, f.h + 6); }
 }
-function cellRect(c, r) { const st = L.st, s = L.scale; return [L.ox + c * st.cabWpx * s, L.oy + (L.H - (r + 1) * st.cabHpx) * s, st.cabWpx * s, st.cabHpx * s]; }
+function cellRect(c, r) { const s = L.scale, { xs, ys } = L.G; return [L.ox + xs[c] * s, L.oy + (L.H - ys[r + 1]) * s, (xs[c + 1] - xs[c]) * s, (ys[r + 1] - ys[r]) * s]; }
 function titleFrame() {
   const st = L.st, s = L.scale, b = blockSize(titleLines(st, s), TITLE_GAP * s);
   let w = b.w, h = b.h; if (Math.abs(ROT_DEG[st.rotationIndex]) % 180 === 90) [w, h] = [h, w];
@@ -1113,7 +1147,8 @@ function pointToCell(x, y) {
   if (!L) return null;
   const st = L.st, s = L.scale;
   if (x < L.ox || x >= L.ox + L.gw || y < L.oy || y >= L.oy + L.gh) return null;
-  const c = Math.floor((x - L.ox) / (st.cabWpx * s)), r = Math.floor((L.oy + L.gh - y) / (st.cabHpx * s));
+  const px = (x - L.ox) / s, py = (L.oy + L.gh - y) / s, { xs, ys } = L.G;
+  let c = 0, r = 0; while (c < st.cabCols - 1 && px >= xs[c + 1]) c++; while (r < st.cabRows - 1 && py >= ys[r + 1]) r++;
   return c >= 0 && r >= 0 && c < st.cabCols && r < st.cabRows ? [c, r] : null;
 }
 
@@ -1201,7 +1236,8 @@ function applyBlack(k, target) {
 }
 function hoverStatus(cell) {
   const st = S(), [c, r] = cell;
-  status(`Кабинет ${cabLabel(st, c, r)} • ${st.cabWpx}×${st.cabHpx} px • X:${c * st.cabWpx} Y:${r * st.cabHpx} • ${st.blackCabinets.includes(key(c, r)) ? "ЧЁРНЫЙ" : (st.cornerCabinets || {})[key(c, r)] != null ? "УГЛОВОЙ " + CORNER_GLYPH[st.cornerCabinets[key(c, r)]] : "АКТИВЕН"}`);
+  const { xs, ys } = grid(st), fig = (st.shapedCols || {})[c] > 0 || (st.shapedRows || {})[r] > 0;
+  status(`Кабинет ${cabLabel(st, c, r)} • ${xs[c + 1] - xs[c]}×${ys[r + 1] - ys[r]} px${fig ? " (фигурный)" : ""} • X:${xs[c]} Y:${ys[r]} • ${st.blackCabinets.includes(key(c, r)) ? "ЧЁРНЫЙ" : (st.cornerCabinets || {})[key(c, r)] != null ? "УГЛОВОЙ " + CORNER_GLYPH[st.cornerCabinets[key(c, r)]] : "АКТИВЕН"}`);
 }
 window.addEventListener("keydown", e => {
   if (e.key === "Escape" && $("modal").hidden && ui.selected.size) { clearSelection(); }
@@ -1283,6 +1319,38 @@ $("btnCorner").onclick = () => {
   st.blackCabinets = [...black];
   changed(); status(`Угловых модулей ${CORNER_GLYPH[ui.corner]}: ${ui.selected.size}`, true);
 };
+ui.shapedW = 48; ui.shapedDir = "col";
+document.querySelectorAll(".seg.shaped button").forEach(b => b.onclick = () => {
+  ui.shapedW = +b.dataset.w;
+  document.querySelectorAll(".seg.shaped button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+});
+document.querySelectorAll(".seg.shapedDir button").forEach(b => b.onclick = () => {
+  ui.shapedDir = b.dataset.dir;
+  document.querySelectorAll(".seg.shapedDir button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+});
+function selectedLines(st) {
+  const cols = new Set(), rows = new Set();
+  for (const k of ui.selected) { const p = parseKey(k); if (!p || p[0] >= st.cabCols || p[1] >= st.cabRows) continue; cols.add(p[0]); rows.add(p[1]); }
+  return { cols: [...cols].sort((a, b) => a - b), rows: [...rows].sort((a, b) => a - b) };
+}
+$("btnShaped").onclick = () => {
+  const st = S();
+  if (!ui.selected.size) { status("Сначала выделите модуль в нужном столбце (или ряду)", true); return; }
+  const isCol = ui.shapedDir !== "row", f = isCol ? "shapedCols" : "shapedRows", lines = selectedLines(st)[isCol ? "cols" : "rows"];
+  st[f] = st[f] || {};
+  for (const i of lines) st[f][i] = ui.shapedW;
+  changed({ forcePhys: true });
+  const [W, H] = dims(st), name = (SHAPED.find(t => t[0] === ui.shapedW) || [0, ""])[1];
+  status(`Фигурные ${name} (${ui.shapedW} px): ${isCol ? "столбцов" : "рядов"} ${lines.length} · разрешение ${W}×${H}`, true);
+};
+$("btnShapedDel").onclick = () => {
+  const st = S(), { cols, rows } = selectedLines(st);
+  let n = 0;
+  if (ui.selected.size) { for (const c of cols) if (st.shapedCols && c in st.shapedCols) { delete st.shapedCols[c]; n++; } for (const r of rows) if (st.shapedRows && r in st.shapedRows) { delete st.shapedRows[r]; n++; } }
+  else { n = shapedCount(st); st.shapedCols = {}; st.shapedRows = {}; }
+  changed({ forcePhys: true });
+  status(ui.selected.size ? `Обычными стали линий: ${n}` : `Все фигурные модули экрана убраны: ${n}`, true);
+};
 $("btnCornerDel").onclick = () => {
   const st = S(), cc = st.cornerCabinets || {};
   const keys = ui.selected.size ? [...ui.selected] : Object.keys(cc);
@@ -1329,7 +1397,7 @@ $("exRot").addEventListener("change", e => { const it = S().extraLabels[ui.selLa
 $("screens").addEventListener("change", e => { project.cur = +e.target.value; ui.selected.clear(); ui.anchor = null; ui.textMode = -1; syncUI(); changed({ forcePhys: true }); });
 $("btnAddScreen").onclick = () => {
   const base = JSON.parse(JSON.stringify(S()));
-  Object.assign(base, { name: `screen ${project.screens.length + 1}`, blackCabinets: [], cabinetColors: {}, persistentContours: [], showPersistentContour: true, extraLabels: [], cornerCabinets: {} });
+  Object.assign(base, { name: `screen ${project.screens.length + 1}`, blackCabinets: [], cabinetColors: {}, persistentContours: [], showPersistentContour: true, extraLabels: [], cornerCabinets: {}, shapedCols: {}, shapedRows: {} });
   delete base.field; base.uid = newUid();
   project.screens.push(base); project.cur = project.screens.length - 1; ui.selected.clear(); ui.textMode = -1; syncUI(); changed();
 };
