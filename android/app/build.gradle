@@ -13,7 +13,7 @@ android {
         minSdk 29
         targetSdk 34
         versionCode runNumber
-        versionName "12.43.27." + runNumber
+        versionName "2.0.5." + runNumber
     }
 
     signingConfigs {

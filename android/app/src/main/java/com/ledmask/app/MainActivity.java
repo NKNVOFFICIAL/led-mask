@@ -1,6 +1,11 @@
 package com.ledmask.app;
 
 import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.pm.PackageInstaller;
+import android.provider.Settings;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -36,6 +41,7 @@ import java.util.UUID;
  * через мост AndroidBridge в «Загрузки/LED Mask».
  */
 public class MainActivity extends Activity {
+    private static final String ACTION_INSTALL_STATUS = "com.ledmask.app.INSTALL_STATUS";
     private static final int REQ_OPEN_FILE = 41;
     private static final String START_URL = "https://appassets.androidplatform.net/assets/index.html";
 
@@ -98,6 +104,80 @@ public class MainActivity extends Activity {
         else web.loadUrl(START_URL);
     }
 
+    /** Результат установки обновления (PackageInstaller): подтверждение пользователя или ошибка. */
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (intent == null || !ACTION_INSTALL_STATUS.equals(intent.getAction())) return;
+        int status = intent.getIntExtra(PackageInstaller.EXTRA_STATUS, PackageInstaller.STATUS_FAILURE);
+        if (status == PackageInstaller.STATUS_PENDING_USER_ACTION) {
+            Intent confirm = intent.getParcelableExtra(Intent.EXTRA_INTENT);
+            if (confirm != null) {
+                confirm.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                try { startActivity(confirm); } catch (Exception e) { jsFail("не удалось открыть установку"); }
+            }
+        } else if (status != PackageInstaller.STATUS_SUCCESS) {
+            String msg = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE);
+            jsFail(status == PackageInstaller.STATUS_FAILURE_ABORTED ? "установка отменена" : (msg != null ? msg : "установка не удалась"));
+        }
+    }
+
+    private void js(final String code) {
+        runOnUiThread(() -> web.evaluateJavascript(code, null));
+    }
+
+    private void jsFail(String msg) {
+        js("window.__updateFailed && window.__updateFailed(" + org.json.JSONObject.quote(msg) + ")");
+    }
+
+    /** Скачивает APK и передаёт его системному установщику (Android спросит подтверждение). */
+    private void downloadAndInstall(String url) {
+        HttpURLConnection c = null;
+        try {
+            URL u = new URL(url);
+            for (int hop = 0; hop < 6; hop++) { // переходы GitHub → хранилище файлов
+                c = (HttpURLConnection) u.openConnection();
+                c.setInstanceFollowRedirects(false);
+                c.setConnectTimeout(20000); c.setReadTimeout(60000);
+                c.setRequestProperty("User-Agent", "LED-Mask-Android");
+                int code = c.getResponseCode();
+                if (code >= 300 && code < 400 && c.getHeaderField("Location") != null) {
+                    u = new URL(u, c.getHeaderField("Location")); c.disconnect(); continue;
+                }
+                if (code != 200) throw new Exception("сайт ответил " + code);
+                break;
+            }
+            long total = c.getContentLengthLong();
+            PackageInstaller pi = getPackageManager().getPackageInstaller();
+            PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL);
+            params.setAppPackageName(getPackageName());
+            int sid = pi.createSession(params);
+            try (PackageInstaller.Session session = pi.openSession(sid)) {
+                try (OutputStream out = session.openWrite("update.apk", 0, total > 0 ? total : -1);
+                     InputStream in = c.getInputStream()) {
+                    byte[] buf = new byte[1 << 16];
+                    long done = 0; double last = -1;
+                    int n;
+                    while ((n = in.read(buf)) > 0) {
+                        out.write(buf, 0, n); done += n;
+                        if (total > 0 && (double) done / total - last >= 0.02) {
+                            last = (double) done / total;
+                            js("window.__updateProgress && window.__updateProgress(" + last + ")");
+                        }
+                    }
+                    session.fsync(out);
+                }
+                Intent status = new Intent(this, MainActivity.class).setAction(ACTION_INSTALL_STATUS);
+                PendingIntent pending = PendingIntent.getActivity(this, 7, status, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+                session.commit(pending.getIntentSender());
+            }
+        } catch (Exception e) {
+            jsFail(e.getMessage() != null ? e.getMessage() : "ошибка загрузки");
+        } finally {
+            if (c != null) c.disconnect();
+        }
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -135,6 +215,20 @@ public class MainActivity extends Activity {
 
     /** Мост для страницы: файл передаётся кусками base64, затем пишется в «Загрузки». */
     private class Bridge {
+        /** Обновление приложения: «ok» — загрузка началась, «err:…» — что мешает. */
+        @JavascriptInterface
+        public String update(final String url) {
+            if (!getPackageManager().canRequestPackageInstalls()) {
+                runOnUiThread(() -> {
+                    try { startActivity(new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:" + getPackageName()))); }
+                    catch (Exception ignored) { }
+                });
+                return "err:разрешите установку из этого приложения в открывшихся настройках, вернитесь и нажмите «Проверить обновления» ещё раз";
+            }
+            new Thread(() -> downloadAndInstall(url)).start();
+            return "ok";
+        }
+
         @JavascriptInterface
         public String begin(String name) {
             try {
