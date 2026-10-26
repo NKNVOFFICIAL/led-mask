@@ -2987,9 +2987,16 @@ function syncProjUI() {
   for (const [id, k] of [["pjZones", "zones"], ["pjFrames", "frames"], ["pjCircles", "circles"], ["pjCells", "cells"], ["pjHatch", "hatch"], ["pjBar", "bar"], ["pjInvert", "invert"]]) $(id).checked = !!P[k];
 }
 document.querySelectorAll(".seg.kind button").forEach((b) => b.onclick = () => {
-  const st = S();
+  const st = S(), was = st.kind === "proj" ? "proj" : "led";
   st.kind = b.dataset.kind;
   if (!st.proj) st.proj = defProj();
+  if (st.kind !== was) {
+    const nm = String(st.name || "").trim();
+    if (st.kind === "proj" && (!nm || /^screen \d+$/i.test(nm))) st.name = "projector ".concat(project.screens.filter((x) => x.kind === "proj").length);
+    if (st.kind === "led" && /^projector \d+$/i.test(nm)) st.name = "screen ".concat(project.cur + 1);
+    $("scrName").value = st.name;
+    $("screens").options[project.cur].textContent = "".concat(project.cur + 1, ". ").concat(st.name);
+  }
   ui.selected.clear();
   syncProjUI();
   changed({ forcePhys: true });
@@ -3388,7 +3395,7 @@ $("screens").addEventListener("change", (e) => {
 });
 $("btnAddScreen").onclick = () => {
   const base = JSON.parse(JSON.stringify(S()));
-  Object.assign(base, { name: "screen ".concat(project.screens.length + 1), blackCabinets: [], cabinetColors: {}, persistentContours: [], showPersistentContour: true, extraLabels: [], cornerCabinets: {}, shapedCols: {}, shapedRows: {} });
+  Object.assign(base, { name: base.kind === "proj" ? "projector ".concat(project.screens.filter((x) => x.kind === "proj").length + 1) : "screen ".concat(project.screens.length + 1), blackCabinets: [], cabinetColors: {}, persistentContours: [], showPersistentContour: true, extraLabels: [], cornerCabinets: {}, shapedCols: {}, shapedRows: {} });
   delete base.field;
   base.uid = newUid();
   project.screens.push(base);
