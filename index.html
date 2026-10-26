@@ -328,7 +328,7 @@ html[data-page="about"] #pv { visibility: hidden; }
     <details class="sec" open><summary>ОСНОВНОЙ ТЕКСТ</summary><div class="sec-body">
       <div class="row"><label for="inscSize">Размер текста</label><div class="ctl"><select id="inscSize"></select><button class="b sq" id="mainMinus">−</button><button class="b sq" id="mainPlus">+</button></div></div>
       <div class="row"><label for="rot">Поворот текста</label><div class="ctl"><select id="rot"></select></div></div>
-      <div class="row"><label for="resText">Разрешение (центр)</label><div class="ctl"><input type="text" id="resText" class="num grow" readonly></div></div>
+      <div class="row"><label for="resText">Разрешение (1-я строка)</label><div class="ctl"><input type="text" id="resText" class="num grow" readonly><label class="chk"><input type="checkbox" id="line1"> показ</label></div></div>
       <div class="row"><label for="scrName">Название (2-я строка)</label><div class="ctl"><input type="text" id="scrName" class="grow"><label class="chk"><input type="checkbox" id="line2"> показ</label></div></div>
       <div class="row"><label for="line3Text">Размеры (3-я строка)</label><div class="ctl"><input type="text" id="line3Text" class="num grow" readonly><label class="chk"><input type="checkbox" id="line3"> показ</label></div></div>
     </div></details>
@@ -457,7 +457,7 @@ function defaultScreen(name = "screen 1") {
   const t = TYPES.find(t => t[0] === DEFAULT_TYPE);
   return {
     cabWpx: t[1], cabHpx: t[2], cabCols: 16, cabRows: 9, name, cabinetTypeName: DEFAULT_TYPE,
-    line2Enabled: true, line3Enabled: true, numberPositionIndex: 0,
+    line1Enabled: true, line2Enabled: true, line3Enabled: false, numberPositionIndex: 0,
     pixelColor: fromRGB(t[5]), numberColor: { ...DEF_NUM_COLOR },
     inscriptionIndex: 0, rotationIndex: 0, numberFormatIndex: 0, numberOriginIndex: 0,
     blackCabinets: [], cabinetColors: {}, extraLabels: [], titleOffsetX: 0, titleOffsetY: 0,
@@ -528,10 +528,11 @@ const TITLE_GAP = 5;
 function titleLines(st, s) {
   const size = inscSize(st);
   const s1 = Math.max(10, size) * s, s2 = Math.max(8, size * 0.55) * s, s3 = Math.max(4, Math.max(8, size * 0.55) * 0.5) * s;
-  const lines = [[titleText(st), s1]];
+  const lines = [];
+  if (st.line1Enabled !== false) lines.push([titleText(st), s1]);
   if (st.line2Enabled && st.name) lines.push([st.name, s2]);
   if (st.line3Enabled) lines.push([physText(st), s3]);
-  return lines;
+  return lines.length ? lines : [["", s1]];
 }
 function blockSize(lines, gap) {
   const ms = lines.map(([t, sz]) => measure(t, sz));
@@ -667,8 +668,9 @@ function normalizeScreen(d) {
   st.numberFormatIndex = clampI(d.numberFormatIndex, NUM_FORMATS.length);
   st.numberOriginIndex = clampI(d.numberOriginIndex, NUM_ORIGINS.length);
   st.numberPositionIndex = clampI(d.numberPositionIndex, NUM_POS.length);
+  st.line1Enabled = d.line1Enabled == null ? true : !!d.line1Enabled;
   st.line2Enabled = d.line2Enabled == null ? true : !!d.line2Enabled;
-  st.line3Enabled = d.line3Enabled == null ? true : !!d.line3Enabled;
+  st.line3Enabled = d.line3Enabled == null ? false : !!d.line3Enabled;
   st.blackCabinets = (Array.isArray(d.blackCabinets) ? d.blackCabinets : []).map(String).filter(parseKey);
   st.cabinetColors = {};
   if (d.cabinetColors && typeof d.cabinetColors === "object") for (const [k, v] of Object.entries(d.cabinetColors)) if (parseKey(k) && v && typeof v === "object") st.cabinetColors[k] = col(+v.r || 0, +v.g || 0, +v.b || 0, v.a == null ? 1 : +v.a);
@@ -702,7 +704,7 @@ function syncUI() {
   $("pixColor").value = hex(st.pixelColor); $("numColor").value = hex(st.numberColor);
   $("paintColor").value = hex(ui.paint);
   $("inscSize").value = st.inscriptionIndex; $("rot").value = st.rotationIndex;
-  $("scrName").value = st.name; $("line2").checked = st.line2Enabled; $("line3").checked = st.line3Enabled;
+  $("scrName").value = st.name; $("line1").checked = st.line1Enabled !== false; $("line2").checked = st.line2Enabled; $("line3").checked = st.line3Enabled;
   $("numFmt").value = st.numberFormatIndex; $("numOrigin").value = st.numberOriginIndex; $("numPos").value = st.numberPositionIndex;
   $("gCircle").checked = project.guides.circle; $("gDiag").checked = project.guides.diag;
   refreshFieldPanel(); refreshTZPanel();
@@ -945,6 +947,7 @@ $("pixColor").addEventListener("input", e => { S().pixelColor = fromHex(e.target
 $("numColor").addEventListener("input", e => { S().numberColor = fromHex(e.target.value); changed(); });
 $("paintColor").addEventListener("input", e => { ui.paint = fromHex(e.target.value); });
 $("scrName").addEventListener("input", e => { S().name = e.target.value; changed({ list: true }); });
+$("line1").addEventListener("change", e => { S().line1Enabled = e.target.checked; changed(); });
 $("line2").addEventListener("change", e => { S().line2Enabled = e.target.checked; changed(); });
 $("line3").addEventListener("change", e => { S().line3Enabled = e.target.checked; changed(); });
 for (const [id, prop] of [["inscSize", "inscriptionIndex"], ["rot", "rotationIndex"], ["numFmt", "numberFormatIndex"], ["numOrigin", "numberOriginIndex"], ["numPos", "numberPositionIndex"]])
