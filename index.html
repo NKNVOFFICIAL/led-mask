@@ -1303,8 +1303,11 @@ html.nogap .imglist > * {
       <div class="flist" id="tList"></div>
       <div class="btns"><button class="b" id="tDefault">По умолчанию</button></div>
       <div class="tgroup">КАРТИНКИ (СЛАЙДЫ ПОСЛЕ ТРЕБОВАНИЙ)</div>
-      <label class="chk"><input type="checkbox" id="tOverview" checked> Добавить картинки в ТЗ — каждая отдельным слайдом</label>
+      <label class="chk"><input type="checkbox" id="tOverview" checked> Добавить картинки в ТЗ</label>
       <div class="btns"><button class="b" id="tOvPick">Добавить картинки…</button><button class="b" id="tOvClear">Убрать все</button></div>
+      <div class="row"><label for="tImgPer">Картинок на слайде</label><div class="ctl"><select id="tImgPer">
+        <option value="0">Авто — как маски</option><option value="1">1</option><option value="2">2</option><option value="3">3</option>
+      </select></div></div>
       <input type="file" id="tOvFile" accept="image/*" multiple hidden>
       <p class="hint" id="tOvInfo">Картинок нет — слайды не добавятся.</p>
       <div class="imglist" id="tImgs"></div>
@@ -1588,7 +1591,7 @@ html.nogap .imglist > * {
 <p>ТЗ сохраняется одним ZIP: PPTX по шаблону, такой же PDF и PNG каждой маски и поля. На холсте — предпросмотр всех слайдов.</p>
 <ol>
 <li><strong>Отметьте, что войдёт.</strong> По умолчанию отмечены общие поля целиком и маски, которые не стоят на полях. Маски с полей по отдельности можно добавить галочкой под полем. «По умолчанию» возвращает этот выбор.</li>
-<li><strong>Картинки</strong> (необязательно). «Добавить картинки…» — можно выбрать сразу несколько (фото, рендеры, схемы). Каждая станет отдельным слайдом после требований, в порядке списка; стрелки ↑ ↓ меняют порядок, × убирает картинку, «Убрать все» — все. Подпись над картинкой правится в её строке (у первой по умолчанию «Общий план», у остальных — имя файла). Снята галочка — картинки в ТЗ не попадут. Картинки живут, пока открыта программа, и очищаются при «Сброс» и открытии другого проекта.</li>
+<li><strong>Картинки</strong> (необязательно). «Добавить картинки…» — можно выбрать сразу несколько (фото, рендеры, схемы). Они встают на слайды после требований, в порядке списка. «Картинок на слайде»: «Авто» — как маски (горизонтальные до трёх столбиком, вертикальные до двух в ряд) или ровно 1, 2, 3 на слайд. Стрелки ↑ ↓ меняют порядок, × убирает картинку, «Убрать все» — все. Подпись над картинкой правится в её строке (у первой по умолчанию «Общий план», у остальных — имя файла). Снята галочка — картинки в ТЗ не попадут. Картинки живут, пока открыта программа, и очищаются при «Сброс» и открытии другого проекта.</li>
 <li><strong>Текст в ТЗ</strong> (необязательно). «Слайд 1» — весь текст требований выбранного шаблона: меняйте, удаляйте, дописывайте строки; «Вернуть текст шаблона» — как было. Для каждого следующего слайда есть своё поле — текст встанет над масками.
 <ul>
 <li>Выделите слова и нажмите <strong>Ж</strong> — жирный; выберите цвет и нажмите <strong>«Цвет»</strong> («Без цвета» убирает). В тексте это видно как **…** и [#цвет]…[/]. Ссылки https://… кликаются сами.</li>
@@ -4171,7 +4174,7 @@ async function buildPptx(tplB64, masks, overview, label) {
   const relsHead = rels2.slice(0, rels2.indexOf("<Relationships")), relsOpen = rels2.match(/<Relationships\b[^>]*>/)[0];
   const groups = groupMasks(masks).map((g) => ({ ...g, kind: "masks" }));
   const imgs = overview || [];
-  groups.unshift(...imgs.map((im) => ({ kind: "img", im, hz: true, g: [] })));
+  groups.unshift(...imgGroups(imgs).map(({ hz, g }) => ({ kind: "img", ims: g.map((j) => imgs[j]), hz, g: [] })));
   if (imgs.length && !/Extension="jpe?g"/i.test(types)) types = types.replace(/<Default\b/, '<Default Extension="jpeg" ContentType="image/jpeg"/><Default');
   const used = new Set(order.filter((n) => /^ppt\/slides\/slide\d+\.xml$/.test(n)));
   const put = (n, data) => {
@@ -4189,8 +4192,7 @@ async function buildPptx(tplB64, masks, overview, label) {
     const base = gi === 0 ? keep : keepClone;
     let rid = maxId(/Id="rId(\d+)"/g, base.join(""), 1);
     const shapes = [], rels = [];
-    const im = groups[gi].im;
-    const items = groups[gi].kind === "img" ? [{ png: im.jpeg, w: im.w, h: im.h, label: im.caption || "", ext: "jpeg", key: imgKey(im) }] : g.map((mi) => masks[mi]);
+    const items = groups[gi].kind === "img" ? groups[gi].ims.map((im) => ({ png: im.jpeg, w: im.w, h: im.h, label: im.caption || "", ext: "jpeg", key: imgKey(im) })) : g.map((mi) => masks[mi]);
     const NL = noteLayout(noteText(noteKey(items)), noteKey(items));
     items.forEach((m, j) => {
       const lay = maskCellLayout(hz, items.length, j, m.w, m.h, NL.box), [cx0, cy0, cw] = lay.label;
@@ -4328,14 +4330,20 @@ async function buildPdf(label, masks, overview_) {
     return "q ".concat(f(w), " 0 0 ").concat(f(h), " ").concat(f(x), " ").concat(f(y), " cm /").concat(name, " Do Q\n");
   };
   const toPdf = ([x, y, w, h]) => [x / EMU_PT, PDF_H - (y + h) / EMU_PT, w / EMU_PT, h / EMU_PT];
-  for (const overview of overview_ || []) {
-    const NL = noteLayout(noteText(imgKey(overview)), imgKey(overview)), xo = [];
+  const imgs_ = overview_ || [];
+  for (const { hz, g } of imgGroups(imgs_)) {
+    const ims = g.map((j) => imgs_[j]), key2 = imgKey(ims[0]);
+    const NL = noteLayout(noteText(key2), key2), xo = [["BG", bg2]];
     const nc = await notePdf(NL, xo, "N0");
-    const lay = maskCellLayout(true, 1, 0, overview.w, overview.h, NL.box), [lx, ly, lw, lh] = toPdf(lay.label), [ix, iy, iw, ih] = toPdf(lay.image);
-    const lab = await labelImage(overview.caption || "", lw, lh);
-    const lid = stream("/Type /XObject /Subtype /Image /Width ".concat(lab.w, " /Height ").concat(lab.h, " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /FlateDecode"), lab.data);
-    const oid = stream("/Type /XObject /Subtype /Image /Width ".concat(overview.w, " /Height ").concat(overview.h, " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode"), overview.jpeg);
-    page([["BG", bg2], ["L0", lid], ["O0", oid], ...xo], full + "q ".concat(f(lw), " 0 0 ").concat(f(lh), " ").concat(f(lx), " ").concat(f(ly), " cm /L0 Do Q\nq ").concat(f(iw), " 0 0 ").concat(f(ih), " ").concat(f(ix), " ").concat(f(iy), " cm /O0 Do Q\n") + nc);
+    let content = full;
+    for (let j = 0; j < ims.length; j++) {
+      const im = ims[j], lay = maskCellLayout(hz, ims.length, j, im.w, im.h, NL.box), [lx, ly, lw, lh] = toPdf(lay.label), [ix, iy, iw, ih] = toPdf(lay.image);
+      const lab = await labelImage(im.caption || "", lw, lh);
+      xo.push(["L" + j, stream("/Type /XObject /Subtype /Image /Width ".concat(lab.w, " /Height ").concat(lab.h, " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /FlateDecode"), lab.data)]);
+      xo.push(["O" + j, stream("/Type /XObject /Subtype /Image /Width ".concat(im.w, " /Height ").concat(im.h, " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode"), im.jpeg)]);
+      content += "q ".concat(f(lw), " 0 0 ").concat(f(lh), " ").concat(f(lx), " ").concat(f(ly), " cm /L").concat(j, " Do Q\nq ").concat(f(iw), " 0 0 ").concat(f(ih), " ").concat(f(ix), " ").concat(f(iy), " cm /O").concat(j, " Do Q\n");
+    }
+    page(xo, content + nc);
   }
   for (const { hz, g } of groupMasks(masks)) {
     const xo = [["BG", bg2]], NL = noteLayout(noteText(noteKey(g.map((i) => masks[i]))), noteKey(g.map((i) => masks[i])));
@@ -4633,7 +4641,7 @@ function freshField(k) {
   return { id: newUid(), name: k ? "Общее поле ".concat(k + 1) : "Общее поле", items: [], title: { on: true, x: 0, y: 0, size: 0, meters: false } };
 }
 function freshFieldState() {
-  return { fields: [freshField(0)], fieldCur: 0, tz: { fields: {}, masks: {}, overview: true, req: {}, notes: {}, pos: {} } };
+  return { fields: [freshField(0)], fieldCur: 0, tz: { fields: {}, masks: {}, overview: true, imgPer: 0, req: {}, notes: {}, pos: {} } };
 }
 function loadFieldState(d, raw) {
   const seen = /* @__PURE__ */ new Set();
@@ -4683,7 +4691,7 @@ function loadFieldState(d, raw) {
     }
     return o;
   };
-  project.tz = { fields: boolMap(tz.fields), masks: boolMap(tz.masks), overview: tz.overview == null ? true : !!tz.overview, req: strMap(tz.req), notes: strMap(tz.notes), pos: posMap(tz.pos) };
+  project.tz = { fields: boolMap(tz.fields), masks: boolMap(tz.masks), overview: tz.overview == null ? true : !!tz.overview, imgPer: Math.max(0, Math.min(3, pint(tz.imgPer, 0))), req: strMap(tz.req), notes: strMap(tz.notes), pos: posMap(tz.pos) };
 }
 const CF = () => project.fields[Math.max(0, Math.min(project.fields.length - 1, project.fieldCur || 0))];
 const evenUp = (v) => {
@@ -5446,6 +5454,17 @@ function tzItems() {
 }
 const tzImages = () => project.tz.overview ? ui.images : [];
 const imgKey = (im) => "img:" + im.id;
+function imgGroups(imgs) {
+  const per = project.tz.imgPer | 0;
+  if (!per) return groupMasks(imgs);
+  const out = [];
+  for (let i = 0; i < imgs.length; i += per) {
+    const g = [];
+    for (let j = i; j < Math.min(imgs.length, i + per); j++) g.push(j);
+    out.push({ hz: g.every((j) => imgs[j].w >= imgs[j].h), g });
+  }
+  return out;
+}
 function refreshTZPanel() {
   if (ui.page !== "tz") return;
   const tz = project.tz, list = $("tList");
@@ -5508,7 +5527,9 @@ function refreshTZPanel() {
   $("tOverview").checked = tz.overview;
   renderImgList();
   const n = ui.images.length;
-  $("tOvInfo").textContent = n ? tz.overview ? "Картинок: ".concat(n, " — слайды ").concat(2).concat(n > 1 ? "–" + (n + 1) : "", ", порядок как в списке") : "Картинок: ".concat(n, " — галочка снята, слайды не добавятся") : "Картинок нет — слайды не добавятся.";
+  const ns = imgGroups(ui.images).length;
+  $("tImgPer").value = String(tz.imgPer | 0);
+  $("tOvInfo").textContent = n ? tz.overview ? "Картинок: ".concat(n, " на ").concat(ns, " ").concat(ns === 1 ? "слайде" : "слайдах", " (").concat(ns === 1 ? "слайд 2" : "слайды 2–" + (ns + 1), "), порядок как в списке") : "Картинок: ".concat(n, " — галочка снята, слайды не добавятся") : "Картинок нет — слайды не добавятся.";
   $("tTpl").value = ui.tzTpl;
   $("tSave").textContent = "Сохранить ТЗ ".concat(ui.tzTpl);
   refreshTZText();
@@ -5602,7 +5623,13 @@ function refreshTZText() {
     status("Шаблон не прочитан: " + e.message, true);
   });
   const box = $("tNotes"), items = tzItems(), slides = [];
-  for (const im of tzImages()) slides.push({ key: imgKey(im), title: im.caption || "картинка", img: im.id });
+  {
+    const imgs = tzImages();
+    for (const { g } of imgGroups(imgs)) {
+      const ims = g.map((j) => imgs[j]);
+      slides.push({ key: imgKey(ims[0]), title: ims.map((im) => im.caption || "картинка").join(", ") });
+    }
+  }
   for (const g of groupMasks(items)) {
     const its = g.g.map((i) => items[i]);
     slides.push({ key: noteKey(its), title: its.map((i) => i.kind === "field" ? i.f.name : i.name).join(", ") });
@@ -5684,8 +5711,7 @@ function renderImgList() {
     cap.addEventListener("input", () => {
       im.caption = cap.value;
       requestDraw();
-      const l = document.querySelector('#tNotes [data-img="'.concat(im.id, '"]'));
-      if (l) l.innerHTML = "<b>Слайд ".concat(i + 2, "</b> — ").concat(xmlEsc(im.caption || "картинка"));
+      refreshTZText();
     });
     const btn = (txt, title, fn, dis) => {
       const b = document.createElement("button");
@@ -5722,7 +5748,7 @@ function tzSlides(items, withOv) {
 }
 function updateTZSummary() {
   const items = tzItems(), nf = items.filter((i) => i.kind === "field").length;
-  $("tSummary").textContent = "Слайдов: ".concat(tzSlides(items, tzImages().length), " · масок: ").concat(items.length - nf, " · полей: ").concat(nf);
+  $("tSummary").textContent = "Слайдов: ".concat(tzSlides(items, imgGroups(tzImages()).length), " · масок: ").concat(items.length - nf, " · полей: ").concat(nf);
 }
 function tzChanged() {
   refreshTZPanel();
@@ -5740,6 +5766,11 @@ $("tOverview").onchange = (e) => {
   tzChanged();
 };
 $("tOvPick").onclick = () => $("tOvFile").click();
+$("tImgPer").addEventListener("change", (e) => {
+  project.tz.imgPer = +e.target.value || 0;
+  tzChanged();
+  scheduleHistory();
+});
 function clearOverview() {
   for (const im of ui.images) URL.revokeObjectURL(im.url);
   ui.images = [];
@@ -5834,7 +5865,7 @@ function drawTZ() {
   const R = prepCanvas([16, 9]), c = pctx, items = tzItems(), imgs = tzImages();
   ui.tzHits = [];
   const slides = [{ kind: "title" }];
-  for (const im of imgs) slides.push({ kind: "ov", im });
+  for (const { hz, g } of imgGroups(imgs)) slides.push({ kind: "ov", hz, ims: g.map((j) => imgs[j]) });
   for (const g of groupMasks(items)) slides.push({ kind: "g", ...g });
   const n = slides.length, ar = PDF_W / PDF_H, gap = 14, pad = 16, aw = R.width - pad * 2, ah = R.height - pad * 2 - 16;
   let best = { h: 0, cols: 1 };
@@ -5867,7 +5898,7 @@ function drawTZ() {
       ui.tzHits.push({ pk: "req:" + ui.tzTpl, x: tx, y: ty, w: tw * kp, h: th, k, ex: r.x, ey: r.y, sx: x, sy: y, sw, sh });
     }
     let NL = { box: BOX, note: null };
-    if (sl.kind === "ov") NL = noteLayout(noteText(imgKey(sl.im)), imgKey(sl.im));
+    if (sl.kind === "ov") NL = noteLayout(noteText(imgKey(sl.ims[0])), imgKey(sl.ims[0]));
     if (sl.kind === "g") NL = noteLayout(noteText(noteKey(sl.g.map((i) => items[i]))), noteKey(sl.g.map((i) => items[i])));
     const drawNote = () => {
       if (!NL.note) return;
@@ -5878,7 +5909,7 @@ function drawTZ() {
       c.clip();
       rtPaint(c, NL.note.paras, x + nx * k, y + ny * k, nw / PT, kp, NL.note.sz, "#222");
       c.restore();
-      const key2 = sl.kind === "ov" ? imgKey(sl.im) : noteKey(sl.g.map((i) => items[i]));
+      const key2 = sl.kind === "ov" ? imgKey(sl.ims[0]) : noteKey(sl.g.map((i) => items[i]));
       ui.tzHits.push({ pk: "note:" + key2, x: x + nx * k, y: y + ny * k, w: nw * k, h: nh * k, k, ex: nx, ey: ny, sx: x, sy: y, sw, sh });
     };
     const cell = (lay, img, text) => {
@@ -5892,7 +5923,7 @@ function drawTZ() {
       c.textAlign = "left";
       c.textBaseline = "alphabetic";
     };
-    if (sl.kind === "ov") cell(maskCellLayout(true, 1, 0, sl.im.w, sl.im.h, NL.box), sl.im.img, sl.im.caption || "");
+    if (sl.kind === "ov") sl.ims.forEach((im, j) => cell(maskCellLayout(sl.hz, sl.ims.length, j, im.w, im.h, NL.box), im.img, im.caption || ""));
     if (sl.kind === "g") sl.g.forEach((mi, j) => {
       const it = items[mi];
       cell(maskCellLayout(sl.hz, sl.g.length, j, it.w, it.h, NL.box), it.kind === "field" ? fieldThumb(it.f) : thumb({ uid: it.st.uid, st: it.st, w0: it.w, h0: it.h }), it.label);
@@ -5904,7 +5935,7 @@ function drawTZ() {
     c.fillStyle = "#8c9bab";
     c.font = "11px ".concat(FONT);
     c.textAlign = "center";
-    c.fillText(sl.kind === "title" ? "1 · шаблон ".concat(ui.tzTpl) : sl.kind === "ov" ? "".concat(si + 1, " · картинка") : "".concat(si + 1), x + sw / 2, y + sh + 13);
+    c.fillText(sl.kind === "title" ? "1 · шаблон ".concat(ui.tzTpl) : sl.kind === "ov" ? "".concat(si + 1, " · ").concat(sl.ims.length > 1 ? "картинки" : "картинка") : "".concat(si + 1), x + sw / 2, y + sh + 13);
     c.textAlign = "left";
   });
   if (!items.length) {
