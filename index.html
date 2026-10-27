@@ -1315,7 +1315,7 @@ html.nogap .imglist > * {
       <p class="hint" id="tOvInfo">Картинок нет — слайды не добавятся.</p>
       <div class="imglist" id="tImgs"></div>
       <div class="tgroup">ТЕКСТ В ТЗ</div>
-      <p class="hint">Текст любого слайда можно поменять или дополнить. Выделите слова и нажмите <b>Ж</b> — жирный, или выберите цвет и нажмите «Цвет» (в тексте это **…** и [#цвет]…[/]). Текст двигается мышью или пальцем прямо на слайде справа. Строки, которые вы не трогали, сохраняют оформление шаблона. Тип шаблона — ниже, в «Сохранить ТЗ».</p>
+      <p class="hint">Текст любого слайда можно поменять или дополнить. Выделите слова и нажмите <b>Ж</b> — жирный, выберите цвет и нажмите «Цвет», размер — «Размер» (в тексте это **…**, [#цвет]…[/] и [s14]…[/s]). Текст двигается мышью или пальцем прямо на слайде справа. Строки, которые вы не трогали, сохраняют оформление шаблона. Тип шаблона — ниже, в «Сохранить ТЗ».</p>
       <div class="tzt-lbl" id="tReqLbl">Слайд 1 — требования шаблона</div>
       <textarea class="tzt req" id="tReq" spellcheck="false" aria-label="Текст первого слайда"></textarea>
       <div class="btns"><button class="b" id="tReqReset">Вернуть текст шаблона</button><button class="b" id="tReqPos">Вернуть на место</button></div>
@@ -1597,7 +1597,7 @@ html.nogap .imglist > * {
 <li><strong>Картинки</strong> (необязательно). «Добавить картинки…» — можно выбрать сразу несколько (фото, рендеры, схемы). Они встают на слайды после требований, в порядке списка. «Картинок на слайде»: «Авто» (горизонтальные до трёх столбиком, вертикальные до двух в ряд) или ровно 1, 2, 3 на слайд. Стрелки ↑ ↓ меняют порядок, × убирает картинку, «Убрать все» — все. Подпись над картинкой правится в её строке (у первой по умолчанию «Общий план», у остальных — имя файла). Снята галочка — картинки в ТЗ не попадут. Картинки живут, пока открыта программа, и очищаются при «Сброс» и открытии другого проекта.</li>
 <li><strong>Текст в ТЗ</strong> (необязательно). «Слайд 1» — весь текст требований выбранного шаблона: меняйте, удаляйте, дописывайте строки; «Вернуть текст шаблона» — как было. Для каждого следующего слайда есть своё поле — текст встанет над масками.
 <ul>
-<li>Выделите слова и нажмите <strong>Ж</strong> — жирный; выберите цвет и нажмите <strong>«Цвет»</strong> («Без цвета» убирает). В тексте это видно как **…** и [#цвет]…[/]. Ссылки https://… кликаются сами.</li>
+<li>Выделите слова и нажмите <strong>Ж</strong> — жирный; выберите цвет и нажмите <strong>«Цвет»</strong> («Без цвета» убирает); выберите размер в pt и нажмите <strong>«Размер»</strong> («Обычный» возвращает размер по умолчанию). На слайдах 2 и дальше без выделения цвет и размер применяются ко всему тексту поля. В тексте это видно как **…**, [#цвет]…[/] и [s14]…[/s]. Ссылки https://… кликаются сами.</li>
 <li>Строки, которые вы не трогали, сохраняют оформление шаблона (зелёный, подчёркивание, ссылки).</li>
 <li>Текст <strong>двигается мышью или пальцем</strong> прямо на слайде в предпросмотре (появляется пунктирная рамка). Сдвинутый текст лежит поверх масок; «Над масками» и «Вернуть на место» возвращают его.</li>
 </ul></li>
@@ -3904,11 +3904,19 @@ function runsMd(runs) {
 }
 function mdRuns(line, base = {}) {
   const out = [];
-  let bold = false, col2 = null;
-  for (const tok of String(line).split(/(\*\*|\[#[0-9A-Fa-f]{6}\]|\[\/\])/)) {
+  let bold = false, col2 = null, size = null;
+  for (const tok of String(line).split(/(\*\*|\[#[0-9A-Fa-f]{6}\]|\[\/\]|\[s\d{1,2}(?:\.\d)?\]|\[\/s\])/)) {
     if (!tok) continue;
     if (tok === "**") {
       bold = !bold;
+      continue;
+    }
+    if (tok === "[/s]") {
+      size = null;
+      continue;
+    }
+    if (/^\[s\d/.test(tok)) {
+      size = Math.max(4, Math.min(72, parseFloat(tok.slice(2))));
       continue;
     }
     if (tok === "[/]") {
@@ -3920,7 +3928,11 @@ function mdRuns(line, base = {}) {
       continue;
     }
     tok.split(/(https?:\/\/[^\s\[*]+)/).forEach((u, k) => {
-      if (u) out.push({ ...base, t: u, b: bold, color: k % 2 ? null : col2, link: k % 2 === 1 ? u : null });
+      if (u) {
+        const r = { ...base, t: u, b: bold, color: k % 2 ? null : col2, link: k % 2 === 1 ? u : null };
+        if (size) r.sz = size;
+        out.push(r);
+      }
     });
   }
   return out;
@@ -4026,8 +4038,9 @@ function reqParas(info, text) {
 }
 function reqXml(info, text) {
   const { lines, map } = reqMatch(info, text), out = [], rels = [];
-  const newRun = (t, b, link, color) => {
+  const newRun = (t, b, link, color, sz) => {
     let rp = b ? info.baseRpr.replace("<a:rPr", '<a:rPr b="1"') : info.baseRpr;
+    if (sz && Math.abs(sz - info.baseSz) > 1e-6) rp = /\bsz="\d+"/.test(rp) ? rp.replace(/\bsz="\d+"/, 'sz="'.concat(Math.round(sz * 100), '"')) : rp.replace("<a:rPr", '<a:rPr sz="'.concat(Math.round(sz * 100), '"'));
     if (color) {
       const fill = '<a:solidFill><a:srgbClr val="'.concat(color.slice(1), '"/></a:solidFill>');
       rp = rp.endsWith("/>") ? rp.replace(/\/>$/, ">".concat(fill, "</a:rPr>")) : rp.replace(/^(<a:rPr\b[^>]*>)/, "$1" + fill);
@@ -4055,7 +4068,7 @@ function reqXml(info, text) {
       continue;
     }
     const runs = mdRuns(lines[j]);
-    out.push("<a:p>".concat(runs.map((r) => newRun(r.t, r.b, r.link, r.color)).join("")).concat(endP, "</a:p>"));
+    out.push("<a:p>".concat(runs.map((r) => newRun(r.t, r.b, r.link, r.color, r.sz)).join("")).concat(endP, "</a:p>"));
     j++;
   }
   return { xml: out.join(""), rels };
@@ -4129,8 +4142,8 @@ const noteKey = (items) => items.length ? items[0].key || "" : "";
 const noteText = (key2) => project.tz.notes && project.tz.notes[key2] || "";
 function noteShapeXml(id, note) {
   const [x, y, w, h] = note.rect, sz = Math.round(note.sz * 100);
-  const rp = (b, c) => '<a:rPr lang="ru-RU" sz="'.concat(sz, '"').concat(b ? ' b="1"' : "", ' dirty="0"><a:solidFill><a:srgbClr val="').concat((c || "#222222").slice(1), '"/></a:solidFill><a:latin typeface="Arial"/><a:cs typeface="Arial"/></a:rPr>');
-  const ps = note.paras.map((runs) => "<a:p>".concat(runs.map((r) => "<a:r>".concat(rp(r.b, r.link ? "#0563C1" : r.color), "<a:t>").concat(xmlEsc(r.t), "</a:t></a:r>")).join(""), '<a:endParaRPr lang="ru-RU" sz="').concat(sz, '" dirty="0"/></a:p>')).join("");
+  const rp = (b, c, rs) => '<a:rPr lang="ru-RU" sz="'.concat(rs ? Math.round(rs * 100) : sz, '"').concat(b ? ' b="1"' : "", ' dirty="0"><a:solidFill><a:srgbClr val="').concat((c || "#222222").slice(1), '"/></a:solidFill><a:latin typeface="Arial"/><a:cs typeface="Arial"/></a:rPr>');
+  const ps = note.paras.map((runs) => "<a:p>".concat(runs.map((r) => "<a:r>".concat(rp(r.b, r.link ? "#0563C1" : r.color, r.sz), "<a:t>").concat(xmlEsc(r.t), "</a:t></a:r>")).join(""), '<a:endParaRPr lang="ru-RU" sz="').concat(sz, '" dirty="0"/></a:p>')).join("");
   return '<p:sp><p:nvSpPr><p:cNvPr id="'.concat(id, '" name="Свой текст"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="').concat(x, '" y="').concat(y, '"/><a:ext cx="').concat(w, '" cy="').concat(h, '"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/></p:spPr><p:txBody><a:bodyPr wrap="square" lIns="0" tIns="0" rIns="0" bIns="0" rtlCol="0"><a:noAutofit/></a:bodyPr><a:lstStyle/>').concat(ps, "</p:txBody></p:sp>");
 }
 async function rtImage(paras, wPt, hPt, defSz, defColor = "#000", k = 4) {
@@ -5540,7 +5553,8 @@ function refreshTZPanel() {
   refreshTZText();
   updateTZSummary();
 }
-let tzColor = "#E53935";
+let tzColor = "#E53935", tzSize = 14;
+const TZ_SIZES = [8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 32, 36, 48];
 function tzBar(ta, opts = {}) {
   const bar = document.createElement("div");
   bar.className = "tzbar";
@@ -5596,6 +5610,35 @@ function tzBar(ta, opts = {}) {
       s1 = ta.value.length;
     }
     const v = ta.value, out = v.slice(s0, s1).replace(/\[#[0-9A-Fa-f]{6}\]|\[\/\]/g, "");
+    ta.value = v.slice(0, s0) + out + v.slice(s1);
+    ta.focus();
+    ta.setSelectionRange(s0, s0 + out.length);
+    ta.dispatchEvent(new Event("input"));
+  });
+  const sz = document.createElement("select");
+  sz.title = "Размер текста, pt";
+  sz.style.cssText = "padding:3px 4px;font-size:12.5px";
+  sz.innerHTML = TZ_SIZES.map((v) => '<option value="'.concat(v, '">').concat(v, " pt</option>")).join("");
+  sz.value = String(tzSize);
+  sz.onchange = () => {
+    tzSize = +sz.value;
+    document.querySelectorAll(".tzbar select").forEach((x) => {
+      if (x !== sz) x.value = sz.value;
+    });
+  };
+  bar.appendChild(sz);
+  btn("Размер", "Задать размер выделенному тексту", () => wrap("[s" + tzSize + "]", "[/s]", !!opts.whole));
+  btn("Обычный", "Вернуть размер по умолчанию", () => {
+    let s0 = ta.selectionStart, s1 = ta.selectionEnd;
+    if (s0 === s1) {
+      if (!opts.whole) {
+        status("Сначала выделите текст", true);
+        return;
+      }
+      s0 = 0;
+      s1 = ta.value.length;
+    }
+    const v = ta.value, out = v.slice(s0, s1).replace(/\[s\d{1,2}(?:\.\d)?\]|\[\/s\]/g, "");
     ta.value = v.slice(0, s0) + out + v.slice(s1);
     ta.focus();
     ta.setSelectionRange(s0, s0 + out.length);
