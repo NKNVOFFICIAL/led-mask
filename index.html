@@ -1301,12 +1301,15 @@ html.nogap .imglist > * {
     <details class="sec tsec" open><summary>ФОРМИРОВАНИЕ ТЗ</summary><div class="sec-body">
       <p class="hint">Отметьте, что войдёт в ТЗ. По умолчанию — общие поля целиком и маски, которые не стоят на полях. Маски из полей можно добавить галочкой. На холсте — предпросмотр слайдов.</p>
       <div class="flist" id="tList"></div>
+      <div class="row"><label for="tMaskPer">Масок на слайде</label><div class="ctl"><select id="tMaskPer">
+        <option value="0">Авто</option><option value="1">1</option><option value="2">2</option><option value="3">3</option>
+      </select></div></div>
       <div class="btns"><button class="b" id="tDefault">По умолчанию</button></div>
       <div class="tgroup">КАРТИНКИ (СЛАЙДЫ ПОСЛЕ ТРЕБОВАНИЙ)</div>
       <label class="chk"><input type="checkbox" id="tOverview" checked> Добавить картинки в ТЗ</label>
       <div class="btns"><button class="b" id="tOvPick">Добавить картинки…</button><button class="b" id="tOvClear">Убрать все</button></div>
       <div class="row"><label for="tImgPer">Картинок на слайде</label><div class="ctl"><select id="tImgPer">
-        <option value="0">Авто — как маски</option><option value="1">1</option><option value="2">2</option><option value="3">3</option>
+        <option value="0">Авто</option><option value="1">1</option><option value="2">2</option><option value="3">3</option>
       </select></div></div>
       <input type="file" id="tOvFile" accept="image/*" multiple hidden>
       <p class="hint" id="tOvInfo">Картинок нет — слайды не добавятся.</p>
@@ -1591,7 +1594,7 @@ html.nogap .imglist > * {
 <p>ТЗ сохраняется одним ZIP: PPTX по шаблону, такой же PDF и PNG каждой маски и поля. На холсте — предпросмотр всех слайдов.</p>
 <ol>
 <li><strong>Отметьте, что войдёт.</strong> По умолчанию отмечены общие поля целиком и маски, которые не стоят на полях. Маски с полей по отдельности можно добавить галочкой под полем. «По умолчанию» возвращает этот выбор.</li>
-<li><strong>Картинки</strong> (необязательно). «Добавить картинки…» — можно выбрать сразу несколько (фото, рендеры, схемы). Они встают на слайды после требований, в порядке списка. «Картинок на слайде»: «Авто» — как маски (горизонтальные до трёх столбиком, вертикальные до двух в ряд) или ровно 1, 2, 3 на слайд. Стрелки ↑ ↓ меняют порядок, × убирает картинку, «Убрать все» — все. Подпись над картинкой правится в её строке (у первой по умолчанию «Общий план», у остальных — имя файла). Снята галочка — картинки в ТЗ не попадут. Картинки живут, пока открыта программа, и очищаются при «Сброс» и открытии другого проекта.</li>
+<li><strong>Картинки</strong> (необязательно). «Добавить картинки…» — можно выбрать сразу несколько (фото, рендеры, схемы). Они встают на слайды после требований, в порядке списка. «Картинок на слайде»: «Авто» (горизонтальные до трёх столбиком, вертикальные до двух в ряд) или ровно 1, 2, 3 на слайд. Стрелки ↑ ↓ меняют порядок, × убирает картинку, «Убрать все» — все. Подпись над картинкой правится в её строке (у первой по умолчанию «Общий план», у остальных — имя файла). Снята галочка — картинки в ТЗ не попадут. Картинки живут, пока открыта программа, и очищаются при «Сброс» и открытии другого проекта.</li>
 <li><strong>Текст в ТЗ</strong> (необязательно). «Слайд 1» — весь текст требований выбранного шаблона: меняйте, удаляйте, дописывайте строки; «Вернуть текст шаблона» — как было. Для каждого следующего слайда есть своё поле — текст встанет над масками.
 <ul>
 <li>Выделите слова и нажмите <strong>Ж</strong> — жирный; выберите цвет и нажмите <strong>«Цвет»</strong> («Без цвета» убирает). В тексте это видно как **…** и [#цвет]…[/]. Ссылки https://… кликаются сами.</li>
@@ -1626,7 +1629,7 @@ html.nogap .imglist > * {
 </tr>
 </tbody>
 </table>
-<p>Устройство ТЗ: первый слайд — требования из шаблона, дальше маски: горизонтальные до трёх на слайд, вертикальные до двух. Над каждой маской вплотную подпись «разрешение | название | размер в метрах» (у проекции — «проекция», если метры не заданы). Свой текст, цвет и положение текста попадают и в PPTX, и в PDF. PDF — точная копия PPTX, ссылки в нём кликаются.</p>
+<p>Устройство ТЗ: первый слайд — требования из шаблона, дальше картинки и маски. «Масок на слайде»: «Авто» — горизонтальные до трёх на слайд столбиком, вертикальные до двух в ряд; или ровно 1, 2, 3 на слайд. Над каждой маской вплотную подпись «разрешение | название | размер в метрах» (у проекции — «проекция», если метры не заданы). Свой текст, цвет и положение текста попадают и в PPTX, и в PDF. PDF — точная копия PPTX, ссылки в нём кликаются.</p>
 <h2 id="help-s5">Проект</h2>
 <p>Проект — это все экраны, общие поля и выбор для ТЗ сразу. Браузер запоминает его сам, но только на этом устройстве.</p>
 <ul>
@@ -4172,7 +4175,7 @@ async function buildPptx(tplB64, masks, overview, label) {
   const maxId = (re, s, start) => Math.max(start - 1, ...[...s.matchAll(re)].map((m) => +m[1])) + 1;
   let nextPresRel = maxId(/Id="rId(\d+)"/g, presRels, 1), nextSlideId = maxId(/<p:sldId\s+id="(\d+)"/g, pres, 256);
   const relsHead = rels2.slice(0, rels2.indexOf("<Relationships")), relsOpen = rels2.match(/<Relationships\b[^>]*>/)[0];
-  const groups = groupMasks(masks).map((g) => ({ ...g, kind: "masks" }));
+  const groups = maskGroups(masks).map((g) => ({ ...g, kind: "masks" }));
   const imgs = overview || [];
   groups.unshift(...imgGroups(imgs).map(({ hz, g }) => ({ kind: "img", ims: g.map((j) => imgs[j]), hz, g: [] })));
   if (imgs.length && !/Extension="jpe?g"/i.test(types)) types = types.replace(/<Default\b/, '<Default Extension="jpeg" ContentType="image/jpeg"/><Default');
@@ -4345,7 +4348,7 @@ async function buildPdf(label, masks, overview_) {
     }
     page(xo, content + nc);
   }
-  for (const { hz, g } of groupMasks(masks)) {
+  for (const { hz, g } of maskGroups(masks)) {
     const xo = [["BG", bg2]], NL = noteLayout(noteText(noteKey(g.map((i) => masks[i]))), noteKey(g.map((i) => masks[i])));
     let content = full;
     const nc = await notePdf(NL, xo, "N0");
@@ -4641,7 +4644,7 @@ function freshField(k) {
   return { id: newUid(), name: k ? "Общее поле ".concat(k + 1) : "Общее поле", items: [], title: { on: true, x: 0, y: 0, size: 0, meters: false } };
 }
 function freshFieldState() {
-  return { fields: [freshField(0)], fieldCur: 0, tz: { fields: {}, masks: {}, overview: true, imgPer: 0, req: {}, notes: {}, pos: {} } };
+  return { fields: [freshField(0)], fieldCur: 0, tz: { fields: {}, masks: {}, overview: true, imgPer: 0, maskPer: 0, req: {}, notes: {}, pos: {} } };
 }
 function loadFieldState(d, raw) {
   const seen = /* @__PURE__ */ new Set();
@@ -4691,7 +4694,7 @@ function loadFieldState(d, raw) {
     }
     return o;
   };
-  project.tz = { fields: boolMap(tz.fields), masks: boolMap(tz.masks), overview: tz.overview == null ? true : !!tz.overview, imgPer: Math.max(0, Math.min(3, pint(tz.imgPer, 0))), req: strMap(tz.req), notes: strMap(tz.notes), pos: posMap(tz.pos) };
+  project.tz = { fields: boolMap(tz.fields), masks: boolMap(tz.masks), overview: tz.overview == null ? true : !!tz.overview, imgPer: Math.max(0, Math.min(3, pint(tz.imgPer, 0))), maskPer: Math.max(0, Math.min(3, pint(tz.maskPer, 0))), req: strMap(tz.req), notes: strMap(tz.notes), pos: posMap(tz.pos) };
 }
 const CF = () => project.fields[Math.max(0, Math.min(project.fields.length - 1, project.fieldCur || 0))];
 const evenUp = (v) => {
@@ -5454,17 +5457,18 @@ function tzItems() {
 }
 const tzImages = () => project.tz.overview ? ui.images : [];
 const imgKey = (im) => "img:" + im.id;
-function imgGroups(imgs) {
-  const per = project.tz.imgPer | 0;
-  if (!per) return groupMasks(imgs);
+function groupPer(arr, per) {
+  if (!per) return groupMasks(arr);
   const out = [];
-  for (let i = 0; i < imgs.length; i += per) {
+  for (let i = 0; i < arr.length; i += per) {
     const g = [];
-    for (let j = i; j < Math.min(imgs.length, i + per); j++) g.push(j);
-    out.push({ hz: g.every((j) => imgs[j].w >= imgs[j].h), g });
+    for (let j = i; j < Math.min(arr.length, i + per); j++) g.push(j);
+    out.push({ hz: g.every((j) => arr[j].w >= arr[j].h), g });
   }
   return out;
 }
+const imgGroups = (imgs) => groupPer(imgs, project.tz.imgPer | 0);
+const maskGroups = (masks) => groupPer(masks, project.tz.maskPer | 0);
 function refreshTZPanel() {
   if (ui.page !== "tz") return;
   const tz = project.tz, list = $("tList");
@@ -5529,6 +5533,7 @@ function refreshTZPanel() {
   const n = ui.images.length;
   const ns = imgGroups(ui.images).length;
   $("tImgPer").value = String(tz.imgPer | 0);
+  $("tMaskPer").value = String(tz.maskPer | 0);
   $("tOvInfo").textContent = n ? tz.overview ? "Картинок: ".concat(n, " на ").concat(ns, " ").concat(ns === 1 ? "слайде" : "слайдах", " (").concat(ns === 1 ? "слайд 2" : "слайды 2–" + (ns + 1), "), порядок как в списке") : "Картинок: ".concat(n, " — галочка снята, слайды не добавятся") : "Картинок нет — слайды не добавятся.";
   $("tTpl").value = ui.tzTpl;
   $("tSave").textContent = "Сохранить ТЗ ".concat(ui.tzTpl);
@@ -5630,7 +5635,7 @@ function refreshTZText() {
       slides.push({ key: imgKey(ims[0]), title: ims.map((im) => im.caption || "картинка").join(", ") });
     }
   }
-  for (const g of groupMasks(items)) {
+  for (const g of maskGroups(items)) {
     const its = g.g.map((i) => items[i]);
     slides.push({ key: noteKey(its), title: its.map((i) => i.kind === "field" ? i.f.name : i.name).join(", ") });
   }
@@ -5743,7 +5748,7 @@ function renderImgList() {
   });
 }
 function tzSlides(items, withOv) {
-  const groups = groupMasks(items);
+  const groups = maskGroups(items);
   return 1 + (withOv || 0) + groups.length;
 }
 function updateTZSummary() {
@@ -5766,6 +5771,11 @@ $("tOverview").onchange = (e) => {
   tzChanged();
 };
 $("tOvPick").onclick = () => $("tOvFile").click();
+$("tMaskPer").addEventListener("change", (e) => {
+  project.tz.maskPer = +e.target.value || 0;
+  tzChanged();
+  scheduleHistory();
+});
 $("tImgPer").addEventListener("change", (e) => {
   project.tz.imgPer = +e.target.value || 0;
   tzChanged();
@@ -5866,7 +5876,7 @@ function drawTZ() {
   ui.tzHits = [];
   const slides = [{ kind: "title" }];
   for (const { hz, g } of imgGroups(imgs)) slides.push({ kind: "ov", hz, ims: g.map((j) => imgs[j]) });
-  for (const g of groupMasks(items)) slides.push({ kind: "g", ...g });
+  for (const g of maskGroups(items)) slides.push({ kind: "g", ...g });
   const n = slides.length, ar = PDF_W / PDF_H, gap = 14, pad = 16, aw = R.width - pad * 2, ah = R.height - pad * 2 - 16;
   let best = { h: 0, cols: 1 };
   for (let cols2 = 1; cols2 <= n; cols2++) {
