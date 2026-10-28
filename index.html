@@ -1607,7 +1607,7 @@ a.b {
       <div class="btns"><button class="b" id="shapeAdd">+ Круг</button><button class="b" id="shapeDel">Удалить</button></div>
       <div class="row"><label for="shapeW">Ширина × высота</label><div class="ctl"><input type="number" id="shapeW" min="4" class="w-md" inputmode="numeric"><span class="unit">×</span><input type="number" id="shapeH" min="4" class="w-md" inputmode="numeric"><span class="unit">px</span></div></div>
       <label class="chk"><input type="checkbox" id="shapeLock"> Круг (ширина = высоте); снимите — получится овал</label>
-      <label class="chk"><input type="checkbox" id="shapeInv"> Инверсия — чёрное снаружи, внутри светится</label>
+      <label class="chk"><input type="checkbox" id="shapeInv"> Инверсия — светятся только модули под кругом</label>
       <label class="chk"><input type="checkbox" id="shapeLine"> Белая линия по краю кругов</label>
     </div></details>
 
@@ -1791,7 +1791,7 @@ a.b {
 <li><strong>Угловые модули</strong> — выделите кабинеты и нажмите форму: треугольник (◣ ◤ ◥ ◢ — какая половина светится) или четверть круга от одного из углов. Применяется сразу, остальная часть кабинета станет чёрной. «Убрать угловые» возвращает выделенные (или все, если ничего не выделено).</li>
 <li><strong>Фигурные модули</strong> — узкие модули для углов: «1/4 · 90°» и «1/2 · 60°» — четверть и половина ширины выбранного модуля (для 192×192 это 48×192 и 96×192, пересчитывается само при смене модуля), или «Свой» — впишите ширину в пикселях (например 128); поле «Свой» сразу показывает текущую ширину выделенного столбца, чтобы стартовать от неё. Выделите любой модуль и нажмите тип — весь его столбец сразу станет узким, без чёрных полей. Разрешение экрана и общего поля пересчитывается само. «Убрать фигурные» возвращает выделенные столбцы (или все).</li>
 <li><strong>Каше по картинке</strong> — «Загрузить картинку» (схема или рендер сцены), затем «Пипетка» и касание светящейся части экрана на картинке. Программа сама находит рамку экрана (её можно поправить: X, Y, ширина, высота) и отмечает красным кабинеты, которых нет (серое, белое) или которые закрыты декорацией больше заданного процента. «Кабинеты — как на картинке» считает сетку по линиям. «Допуск цвета» — насколько цвет может отличаться от пипетки, «Картинка поверх» — прозрачность подложки. «Применить» гасит красные кабинеты; галочка «Затемнить закрытую зону по точной форме» переносит в маску и дугу/форму каше, даже если она режет кабинет. Для схем, где закрытые кабинеты всё равно существуют (тёмно-синие над дугой), снимите «Гасить кабинеты, закрытые декорацией» и включите затемнение. Сама картинка в проект не сохраняется — только результат.</li>
-<li><strong>Каше-круги и овалы</strong> — выделите убранные модули и нажмите «+ Круг»: чёрный круг ляжет по центру выделения, размером с него. Выбранный круг двигается на холсте и растягивается за жёлтые квадратики (справа — ширина, снизу — высота, в углу — обе) или стрелками «Ширина × высота». Снимите галочку «Круг» — получится овал. Галочка «Инверсия» делает наоборот: чёрное снаружи, внутри светится (если инвертированных несколько — светятся все их области). «Белая линия по краю кругов» — контур 2 px.</li>
+<li><strong>Каше-круги и овалы</strong> — выделите убранные модули и нажмите «+ Круг»: чёрный круг ляжет по центру выделения, размером с него. Выбранный круг двигается на холсте и растягивается за жёлтые квадратики (справа — ширина, снизу — высота, в углу — обе) или стрелками «Ширина × высота». Снимите галочку «Круг» — получится овал. Галочка «Инверсия» (включена по умолчанию) делает наоборот: светятся только модули, которых круг касается (даже краем — модуль светится целиком, с номером), остальные гаснут и теряют нумерацию. Если инвертированных несколько — светятся модули под любым из них. Сам круг с инверсией не рисуется — граница идёт по модулям (удобно с «Автоконтуром»). «Белая линия по краю кругов» — контур 2 px.</li>
 <li><strong>Границы ячеек</strong> — как в Keynote: выделите кабинеты и нажмите, какие границы нарисовать (левая, внутренние вертикальные, правая; верхняя, внутренние горизонтальные, нижняя; внешний контур; все внутренние; все). Белая линия 2 px (по внешнему краю маски — 1 px) появляется сразу, повторное нажатие убирает. «Убрать границы» — в выделении (или все), «Показать / скрыть» — не удаляя. Галочка <strong>«Автоконтур»</strong> рисует линию только там, где убраны модули: выключили модуль «Гашением» — вокруг него сразу появляется граница (по краю экрана ничего не добавляется, там своя рамка 1 px).</li>
 </ul>
 <h3>Проекция</h3>
@@ -3779,6 +3779,20 @@ function drawProj(ctx, st, s, guides) {
   drawInfo(ctx, st, s);
   ctx.restore();
 }
+function shapeOff(st) {
+  const inv = (st.cacheShapes || []).filter((c) => c.inv), out = [];
+  if (!inv.length || st.kind === "proj") return out;
+  const { xs, ys } = grid(st), [, H] = dims(st);
+  for (let r = 0; r < st.cabRows; r++) for (let c = 0; c < st.cabCols; c++) {
+    const x0 = xs[c], x1 = xs[c + 1], y0 = H - ys[r + 1], y1 = H - ys[r];
+    const hit = inv.some((e) => {
+      const px = Math.max(x0, Math.min(e.x, x1)), py = Math.max(y0, Math.min(e.y, y1)), dx = (px - e.x) / (e.w / 2), dy = (py - e.y) / (e.h / 2);
+      return dx * dx + dy * dy < 1;
+    });
+    if (!hit) out.push(key(c, r));
+  }
+  return out;
+}
 const shapedCount = (st) => Object.keys(st.shapedCols || {}).filter((c) => +c < st.cabCols).length + Object.keys(st.shapedRows || {}).filter((r) => +r < st.cabRows).length;
 const key = (c, r) => c + "," + r;
 const parseKey = (k) => {
@@ -3906,6 +3920,7 @@ function drawMask(ctx, st, s, guides) {
     ctx.fillRect(...cell(p[0], p[1]));
   }
   const black = new Set(st.blackCabinets || []);
+  for (const k of shapeOff(st)) black.add(k);
   ctx.fillStyle = "#000";
   for (const k of black) {
     const p = parseKey(k);
@@ -3969,21 +3984,6 @@ function drawMask(ctx, st, s, guides) {
     ctx.fillStyle = "#000";
     ctx.fill();
   }
-  {
-    const inv = (st.cacheShapes || []).filter((c) => c.inv);
-    if (inv.length) {
-      ctx.save();
-      for (const c of inv) {
-        ctx.beginPath();
-        ctx.rect(-1, -1, Wp + 2, Hp + 2);
-        ctx.ellipse(c.x * s, c.y * s, c.w / 2 * s, c.h / 2 * s, 0, 0, Math.PI * 2);
-        ctx.clip("evenodd");
-      }
-      ctx.fillStyle = "#000";
-      ctx.fillRect(0, 0, Wp, Hp);
-      ctx.restore();
-    }
-  }
   ctx.fillStyle = "rgb(64,64,64)";
   const bw = Math.max(1, Math.round(2 * s));
   for (let c = 1; c < cols; c++) ctx.fillRect(fx(xs[c]) - Math.floor(bw / 2), 0, bw, Hp);
@@ -4017,12 +4017,14 @@ function drawMask(ctx, st, s, guides) {
         ctx.fillRect(x0, Y, x1 - x0, w);
       }
     }
-    if (st.cacheLine !== false) for (const c of st.cacheShapes || []) {
-      ctx.beginPath();
-      ctx.ellipse(c.x * s, c.y * s, Math.max(0, c.w / 2 * s - lw / 2), Math.max(0, c.h / 2 * s - lw / 2), 0, 0, Math.PI * 2);
-      ctx.strokeStyle = "#fff";
-      ctx.lineWidth = lw;
-      ctx.stroke();
+    if (st.cacheLine !== false) {
+      for (const c of st.cacheShapes || []) if (!c.inv) {
+        ctx.beginPath();
+        ctx.ellipse(c.x * s, c.y * s, Math.max(0, c.w / 2 * s - lw / 2), Math.max(0, c.h / 2 * s - lw / 2), 0, 0, Math.PI * 2);
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = lw;
+        ctx.stroke();
+      }
     }
     for (const ct of st.persistentContours || []) {
       if (!(ct.cols > 0 && ct.rows > 0)) continue;
@@ -4131,7 +4133,7 @@ function infoLines(st) {
     if (known) out.push("Физический размер: ".concat(m(pw), "×").concat(m(ph), " м"));
     return out;
   }
-  const t = TYPES.find((t2) => t2[0] === st.cabinetTypeName), black = new Set(st.blackCabinets || []);
+  const t = TYPES.find((t2) => t2[0] === st.cabinetTypeName), black = /* @__PURE__ */ new Set([...st.blackCabinets || [], ...shapeOff(st)]);
   const total = st.cabCols * st.cabRows;
   let nb = 0;
   for (const k of black) {
@@ -8917,7 +8919,7 @@ $("shapeAdd").onclick = () => {
     y0 = Math.min(y0, H - ys[p[1] + 1]);
     y1 = Math.max(y1, H - ys[p[1]]);
   }
-  const c = isFinite(x0) ? { x: (x0 + x1) / 2, y: (y0 + y1) / 2, w: Math.min(x1 - x0, y1 - y0), h: Math.min(x1 - x0, y1 - y0), lock: true } : { x: W / 2, y: H / 2, w: Math.round(Math.min(W, H) / 3), h: Math.round(Math.min(W, H) / 3), lock: true };
+  const c = isFinite(x0) ? { x: (x0 + x1) / 2, y: (y0 + y1) / 2, w: Math.min(x1 - x0, y1 - y0), h: Math.min(x1 - x0, y1 - y0), lock: true, inv: true } : { x: W / 2, y: H / 2, w: Math.round(Math.min(W, H) / 3), h: Math.round(Math.min(W, H) / 3), lock: true, inv: true };
   (st.cacheShapes || (st.cacheShapes = [])).push(c);
   ui.selShape = st.cacheShapes.length - 1;
   ui.selected.clear();
