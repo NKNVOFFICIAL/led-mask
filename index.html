@@ -1478,7 +1478,7 @@ a.b {
         <option value="D3">D3 — кодек HAP</option>
         <option value="MP4">Медиаплееры — MPEG-4 (MP4)</option>
       </select></div></div>
-      <label class="chk"><input type="checkbox" id="tSaveProj"> Положить в архив и файл проекта</label>
+      <label class="chk"><input type="checkbox" id="tSaveProj"> Сохранить и проект (отдельным файлом)</label>
       <div class="btns"><button class="x" id="tSave">Сохранить ТЗ Resolume</button></div>
       <p class="hint" id="tNote">ZIP с папкой: PPTX по шаблону, такой же PDF и PNG каждой маски и поля.</p>
     </div></details>
@@ -1782,7 +1782,7 @@ a.b {
 </ol>
 <p>В панели видно размер поля в пикселях и метрах. Метры считаются, только если у всех экранов на поле одинаковый шаг пикселя. Пересечения экранов подсвечиваются красным; пустые места в PNG чёрные. Двойной клик по экрану открывает его на вкладке «Маска».</p>
 <h2 id="help-s4">Вкладка «Формирование ТЗ»</h2>
-<p>ТЗ сохраняется одним ZIP: PPTX по шаблону, такой же PDF и PNG каждой маски и поля. Галочка «Положить в архив и файл проекта» (включена по умолчанию) добавляет в ту же папку файл проекта .ledmask — его потом можно открыть кнопкой «Открыть проект» и поправить. На холсте — предпросмотр всех слайдов.</p>
+<p>ТЗ сохраняется одним ZIP: PPTX по шаблону, такой же PDF и PNG каждой маски и поля. Галочка «Сохранить и проект» (включена по умолчанию): сразу после архива сохраняется отдельный файл проекта .ledmask — место выбираете сами, потом его можно открыть кнопкой «Открыть проект» и поправить. На холсте — предпросмотр всех слайдов.</p>
 <ol>
 <li><strong>Отметьте, что войдёт.</strong> По умолчанию отмечены общие поля целиком и маски, которые не стоят на полях. Маски с полей по отдельности можно добавить галочкой под полем. «По умолчанию» возвращает этот выбор.</li>
 <li><strong>Картинки</strong> (необязательно). «Добавить картинки…» — можно выбрать сразу несколько (фото, рендеры, схемы). Они встают на слайды после требований, в порядке списка. «Картинок на слайде»: «Авто» (горизонтальные до трёх столбиком, вертикальные до двух в ряд) или ровно 1, 2, 3 на слайд. Стрелки ↑ ↓ меняют порядок, × убирает картинку, «Убрать все» — все. Подпись над картинкой правится в её строке (у первой по умолчанию «Общий план», у остальных — имя файла). Снята галочка — картинки в ТЗ не попадут. Картинки живут, пока открыта программа, и очищаются при «Сброс» и открытии другого проекта.</li>
@@ -6271,13 +6271,13 @@ async function exportTZ(label) {
     busy("Упаковка ZIP…");
     await tick();
     const files = [{ name: "".concat(folder).concat(project_, "_ТЗ_").concat(label, ".pptx"), data: pptBytes }, { name: "".concat(folder).concat(project_, "_ТЗ_").concat(label, ".pdf"), data: pdfBytes }, ...pngs.map((p) => ({ name: p.file, data: p.png }))];
-    if (project.tz.saveProj !== false) {
-      const f = projectFile();
-      files.push({ name: folder + f.name, data: typeof f.data === "string" ? enc.encode(f.data) : await toBytes(f.data) });
-    }
     const z = await zip(files);
     busy("");
-    await save("".concat(project_, " ТЗ_").concat(label, ".zip"), z);
+    const ok = await save("".concat(project_, " ТЗ_").concat(label, ".zip"), z);
+    if (ok !== false && project.tz.saveProj !== false) {
+      const f = projectFile();
+      await save(f.name, f.data);
+    }
   } catch (e) {
     busy("");
     status("Ошибка экспорта ТЗ: " + e.message, true);
@@ -6324,7 +6324,7 @@ $("btnSaveProj").onclick = () => {
   return save(f.name, f.data);
 };
 function updateTZNote() {
-  $("tNote").textContent = "ZIP с папкой: PPTX по шаблону, такой же PDF и PNG каждой маски и поля" + (project.tz.saveProj !== false ? ", плюс файл проекта." : ".");
+  $("tNote").textContent = "ZIP с папкой: PPTX по шаблону, такой же PDF и PNG каждой маски и поля" + (project.tz.saveProj !== false ? ". Следом — файл проекта отдельно." : ".");
 }
 $("btnOpenProj").onclick = () => $("fileProj").click();
 $("fileProj").addEventListener("change", async (e) => {
