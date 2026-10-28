@@ -282,6 +282,13 @@ input.w-md {
 .stp {
   display: inline-flex;
   align-items: stretch;
+  flex: none;
+}
+.stp input.w-md {
+  width: 58px;
+}
+.ctl.stp-row {
+  flex-wrap: nowrap;
 }
 .stp input {
   border-top-right-radius: 0;
@@ -301,7 +308,7 @@ input.w-md {
 }
 .stpb button {
   flex: 1;
-  width: 26px;
+  width: 22px;
   padding: 0;
   min-height: 0;
   font-size: 9px;
@@ -1527,7 +1534,7 @@ html.nogap .imglist > * {
       <div class="ctl borders">
         <div class="seg edges" role="group" aria-label="Вертикальные границы"><button data-edge="l" title="Левая граница" aria-label="Левая граница"><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor"><rect x="2.5" y="2.5" width="13" height="13" stroke-opacity=".35"/><path d="M2.5 2L2.5 16" stroke-width="2.4"/></svg></button><button data-edge="iv" title="Внутренние вертикальные" aria-label="Внутренние вертикальные"><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor"><rect x="2.5" y="2.5" width="13" height="13" stroke-opacity=".35"/><path d="M9 2L9 16" stroke-width="2.4"/></svg></button><button data-edge="r" title="Правая граница" aria-label="Правая граница"><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor"><rect x="2.5" y="2.5" width="13" height="13" stroke-opacity=".35"/><path d="M15.5 2L15.5 16" stroke-width="2.4"/></svg></button></div>
         <div class="seg edges" role="group" aria-label="Горизонтальные границы"><button data-edge="t" title="Верхняя граница" aria-label="Верхняя граница"><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor"><rect x="2.5" y="2.5" width="13" height="13" stroke-opacity=".35"/><path d="M2 2.5L16 2.5" stroke-width="2.4"/></svg></button><button data-edge="ih" title="Внутренние горизонтальные" aria-label="Внутренние горизонтальные"><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor"><rect x="2.5" y="2.5" width="13" height="13" stroke-opacity=".35"/><path d="M2 9L16 9" stroke-width="2.4"/></svg></button><button data-edge="b" title="Нижняя граница" aria-label="Нижняя граница"><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor"><rect x="2.5" y="2.5" width="13" height="13" stroke-opacity=".35"/><path d="M2 15.5L16 15.5" stroke-width="2.4"/></svg></button></div>
-        <div class="seg edges" role="group" aria-label="Все границы"><button data-edge="in" title="Все внутренние" aria-label="Все внутренние"><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor"><rect x="2.5" y="2.5" width="13" height="13" stroke-opacity=".35"/><path d="M9 2L9 16" stroke-width="2.4"/><path d="M2 9L16 9" stroke-width="2.4"/></svg></button><button data-edge="all" title="Все границы" aria-label="Все границы"><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor"><rect x="2.5" y="2.5" width="13" height="13" stroke-opacity=".35"/><path d="M9 2L9 16" stroke-width="2.4"/><path d="M2 9L16 9" stroke-width="2.4"/><rect x="2.5" y="2.5" width="13" height="13" stroke-width="2.4"/></svg></button></div>
+        <div class="seg edges" role="group" aria-label="Все границы"><button data-edge="out" title="Внешний контур" aria-label="Внешний контур"><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor"><rect x="2.5" y="2.5" width="13" height="13" stroke-width="2.4"/><path d="M9 3V15M3 9H15" stroke-opacity=".35"/></svg></button><button data-edge="in" title="Все внутренние" aria-label="Все внутренние"><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor"><rect x="2.5" y="2.5" width="13" height="13" stroke-opacity=".35"/><path d="M9 2L9 16" stroke-width="2.4"/><path d="M2 9L16 9" stroke-width="2.4"/></svg></button><button data-edge="all" title="Все границы" aria-label="Все границы"><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor"><rect x="2.5" y="2.5" width="13" height="13" stroke-opacity=".35"/><path d="M9 2L9 16" stroke-width="2.4"/><path d="M2 9L16 9" stroke-width="2.4"/><rect x="2.5" y="2.5" width="13" height="13" stroke-width="2.4"/></svg></button></div>
       </div>
       <div class="btns">
         <button class="b" id="btnContourDel">Убрать границы</button>
@@ -1538,7 +1545,6 @@ html.nogap .imglist > * {
     <details class="sec" open><summary>ОСНОВНОЙ ТЕКСТ</summary><div class="sec-body">
       <div class="row"><label for="inscSize">Размер текста</label><div class="ctl"><select id="inscSize"></select><button class="b sq" id="mainMinus">−</button><button class="b sq" id="mainPlus">+</button></div></div>
       <div class="row"><span class="lbl">Поворот текста <span class="num" id="rotVal">0°</span></span><div class="ctl"><button class="b" id="rotCCW" title="Против часовой на 45°">⟲ 45°</button><button class="b" id="rot0">0°</button><button class="b" id="rotCW" title="По часовой на 45°">⟳ 45°</button><select id="rot" hidden></select></div></div>
-      <label class="chk"><input type="checkbox" id="showInfo"> Информация о маске (в левом нижнем углу)</label>
       <div class="row"><label for="resText">Разрешение (1-я строка)</label><div class="ctl"><input type="text" id="resText" class="num grow" readonly><label class="chk"><input type="checkbox" id="line1"> показ</label></div></div>
       <div class="row"><label for="scrName">Название (2-я строка)</label><div class="ctl"><input type="text" id="scrName" class="grow"><label class="chk"><input type="checkbox" id="line2"> показ</label></div></div>
       <div class="row"><label for="line3Text">Размеры (3-я строка)</label><div class="ctl"><input type="text" id="line3Text" class="num grow" readonly><label class="chk"><input type="checkbox" id="line3"> показ</label></div></div>
@@ -1557,6 +1563,7 @@ html.nogap .imglist > * {
       <div class="row led-only"><label for="numOrigin">Начало нумерации</label><div class="ctl"><select id="numOrigin"></select></div></div>
       <div class="row led-only"><label for="numPos">Расположение номера</label><div class="ctl"><select id="numPos"></select></div></div>
       <div class="row"><span class="lbl">Направляющие</span><div class="ctl"><label class="chk"><input type="checkbox" id="gCircle"> Круг</label><label class="chk"><input type="checkbox" id="gDiag"> Линии через центр</label></div></div>
+      <label class="chk"><input type="checkbox" id="showInfo"> Информация о маске (в левом нижнем углу)</label>
       <div class="info"><span id="infoRes"></span><span id="infoPhys"></span><span id="infoCab"></span></div>
       <div class="status" id="status" aria-live="polite"></div>
     </div></details>
@@ -1693,7 +1700,7 @@ html.nogap .imglist > * {
 <li><strong>Покрасить выделенные</strong> — выделенные кабинеты заливаются цветом из квадратика слева.</li>
 <li><strong>Угловые модули</strong> — выделите кабинеты и нажмите форму: треугольник (◣ ◤ ◥ ◢ — какая половина светится) или четверть круга от одного из углов. Применяется сразу, остальная часть кабинета станет чёрной. «Убрать угловые» возвращает выделенные (или все, если ничего не выделено).</li>
 <li><strong>Фигурные модули</strong> — узкие модули для углов: «1/4 · 90°» и «1/2 · 60°» — четверть и половина ширины выбранного модуля (для 192×192 это 48×192 и 96×192, пересчитывается само при смене модуля), или «Свой» — впишите ширину в пикселях (например 128); поле «Свой» сразу показывает текущую ширину выделенного столбца, чтобы стартовать от неё. Выделите любой модуль и нажмите тип — весь его столбец сразу станет узким, без чёрных полей. Разрешение экрана и общего поля пересчитывается само. «Убрать фигурные» возвращает выделенные столбцы (или все).</li>
-<li><strong>Границы ячеек</strong> — как в Keynote: выделите кабинеты и нажмите, какие границы нарисовать (левая, внутренние вертикальные, правая; верхняя, внутренние горизонтальные, нижняя; все внутренние; все). Белая линия 2 px появляется сразу, повторное нажатие убирает. «Убрать границы» — в выделении (или все), «Показать / скрыть» — не удаляя.</li>
+<li><strong>Границы ячеек</strong> — как в Keynote: выделите кабинеты и нажмите, какие границы нарисовать (левая, внутренние вертикальные, правая; верхняя, внутренние горизонтальные, нижняя; внешний контур; все внутренние; все). Белая линия 2 px появляется сразу, повторное нажатие убирает. «Убрать границы» — в выделении (или все), «Показать / скрыть» — не удаляя.</li>
 </ul>
 <h3>Проекция</h3>
 <p>Тест-паттерн для проекторов. Включается переключателем «Проекция»; экран сам называется «projection 1», «projection 2»… (своё название не меняется). По умолчанию — один проектор 1920×1200.</p>
@@ -1708,7 +1715,7 @@ html.nogap .imglist > * {
 <h3>Текст на маске</h3>
 <ul>
 <li><strong>Основной текст</strong> — до трёх строк в центре: разрешение, название экрана, размер в метрах. Каждая строка включается галочкой «показ»; метраж по умолчанию выключен. Размер — «Авто» или из списка, кнопки − / + меняют на 10 px. Поворот — «⟲ 45°» / «⟳ 45°» шагом 45°, «0°» возвращает прямо.</li>
-<li><strong>Информация о маске</strong> — галочка выводит в левый нижний угол маски сводку: кабинет (модель, размер, разрешение), количество кабинетов по ширине и высоте, разрешение экрана, физический размер и общее число кабинетов без чёрных. У проекции — проектор, ориентация, количество, перекрытие, разрешение и размер.</li>
+<li><strong>Информация о маске</strong> — галочка выводит в левый нижний угол маски сводку: кабинет (модель, размер, разрешение), кабинеты по ширине × высоте (например 16×9), разрешение экрана, физический размер и сколько всего кабинетов светится (чёрные не считаются). Галочка — в разделе «Нумерация и предпросмотр». У проекции — проектор, ориентация, количество, перекрытие, разрешение и размер.</li>
 <li><strong>Дополнительный текст</strong> — «+ Добавить», затем выберите его в списке «Активный текст» и двигайте прямо на холсте. Так же двигается и основной текст.</li>
 </ul>
 <h3>Нумерация и направляющие</h3>
@@ -2725,7 +2732,7 @@ function infoLines(st) {
     const g = projGeom(st), P = g.P, rot = +P.rot || 0;
     const out = [
       "Проектор: ".concat(P.pw, "×").concat(P.ph, " px").concat(rot ? " · портрет ".concat(rot > 0 ? "⟲" : "⟳", " 90°") : ""),
-      "Проекторов: ".concat(g.nx, " × ").concat(g.ny, " (").concat(g.nx * g.ny, " шт.)")
+      "Проекторов: ".concat(g.nx, "×").concat(g.ny)
     ];
     if (g.nx > 1 || g.ny > 1) out.push("Перекрытие: ".concat(g.nx > 1 ? "".concat(+P.ox || 0, "% (").concat(g.ovx, " px)") : "—", " / ").concat(g.ny > 1 ? "".concat(+P.oy || 0, "% (").concat(g.ovy, " px)") : "—"));
     out.push("Разрешение: ".concat(W, "×").concat(H, " px"));
@@ -2741,10 +2748,10 @@ function infoLines(st) {
   }
   return [
     "Кабинет: ".concat(t ? t[0].replace(/\s*-\s*\(.*\)$/, "") + " — " + t[3] + "×" + t[4] + " мм, " : "").concat(st.cabWpx, "×").concat(st.cabHpx, " px"),
-    "Кабинетов: ".concat(st.cabCols, " по ширине × ").concat(st.cabRows, " по высоте"),
+    "Кабинетов: ".concat(st.cabCols, "×").concat(st.cabRows),
     "Разрешение экрана: ".concat(W, "×").concat(H, " px"),
     "Физический размер: ".concat(m(pw), "×").concat(m(ph), " м").concat(known ? "" : " (условно)"),
-    "Кабинетов всего: ".concat(total - nb).concat(nb ? " (".concat(total, " − ").concat(nb, " чёрных)") : "")
+    "Кабинетов всего: ".concat(total - nb)
   ];
 }
 function drawInfo(ctx, st, s) {
@@ -3656,6 +3663,12 @@ function edgeKeys(b, kind) {
   if (kind === "in") {
     inV();
     inH();
+  }
+  if (kind === "out") {
+    V(b.c0);
+    V(b.c1 + 1);
+    H(b.r1 + 1);
+    H(b.r0);
   }
   if (kind === "all") {
     V(b.c0);
@@ -6823,6 +6836,7 @@ function stepper(id, fn) {
     bx.appendChild(b);
   }
   wrap.appendChild(bx);
+  if (wrap.parentNode && wrap.parentNode.classList) wrap.parentNode.classList.add("stp-row");
 }
 const stepCabs = (which, d) => {
   const st = S(), k = which === "w" ? "cabCols" : "cabRows";
