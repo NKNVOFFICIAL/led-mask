@@ -1596,6 +1596,7 @@ a.b {
       <label class="chk"><input type="checkbox" id="shapeInv"> Инверсия — модули под фигурой гаснут, снаружи светятся</label>
       <label class="chk"><input type="checkbox" id="shapeLine"> Линия по краю фигур</label>
       <div class="row"><label for="shapeLW">Толщина и цвет линии</label><div class="ctl"><input type="number" id="shapeLW" min="1" max="200" class="w-sm" inputmode="numeric"><span class="unit">px</span><input type="color" id="shapeLC" title="Цвет линии"></div></div>
+      <div class="row"><label for="shapeLA">Прозрачность линии</label><div class="ctl"><input type="range" id="shapeLA" min="5" max="100" class="grow"><span class="unit num" id="shapeLAV">100%</span></div></div>
     </div></details>
 
     <details class="sec led-only" open><summary>ГРАНИЦЫ ЯЧЕЕК</summary><div class="sec-body">
@@ -1777,7 +1778,7 @@ a.b {
 <li><strong>Покрасить выделенные</strong> — выделенные кабинеты заливаются цветом из квадратика слева.</li>
 <li><strong>Угловые модули</strong> — выделите кабинеты и нажмите форму: треугольник (◣ ◤ ◥ ◢ — какая половина светится) или четверть круга от одного из углов. Применяется сразу, остальная часть кабинета станет чёрной. «Убрать угловые» возвращает выделенные (или все, если ничего не выделено).</li>
 <li><strong>Фигурные модули</strong> — узкие модули для углов: «1/4 · 90°» и «1/2 · 60°» — четверть и половина ширины выбранного модуля (для 192×192 это 48×192 и 96×192, пересчитывается само при смене модуля), или «Свой» — впишите ширину в пикселях (например 128); поле «Свой» сразу показывает текущую ширину выделенного столбца, чтобы стартовать от неё. Выделите любой модуль и нажмите тип — весь его столбец сразу станет узким, без чёрных полей. Разрешение экрана и общего поля пересчитывается само. «Убрать фигурные» возвращает выделенные столбцы (или все).</li>
-<li><strong>Каше — фигуры</strong> — выберите форму (круг, квадрат или «Скруглённый» — прямоугольник со скруглёнными углами, как в Photoshop: «Радиус углов» в px) и нажмите «+ Добавить фигуру»: она ляжет по центру выделенных модулей (или экрана). Модули, которых фигура касается хоть краем, светятся целиком, с номерами; остальные гаснут и теряют нумерацию. «Инверсия» — наоборот: модули под фигурой гаснут. «Только рамка» (по умолчанию выключена) — модули не гаснут вообще, фигура рисуется одной линией поверх маски. Выбранная фигура двигается за жёлтый кружок в центре и растягивается за жёлтые квадратики (справа — ширина, снизу — высота, в углу — обе) или стрелками «Ширина × высота»; снимите «Пропорции 1:1» — получится овал или прямоугольник. «Заливка» — цвет и прозрачность внутри фигуры (0 % — без заливки; номера и сетка видны сквозь неё). «Линия по краю фигур» — контур, толщина (по умолчанию 6 px) и цвет задаются рядом.</li>
+<li><strong>Каше — фигуры</strong> — выберите форму (круг, квадрат или «Скруглённый» — прямоугольник со скруглёнными углами, как в Photoshop: «Радиус углов» в px) и нажмите «+ Добавить фигуру»: она ляжет по центру выделенных модулей (или экрана). Модули, которых фигура касается хоть краем, светятся целиком, с номерами; остальные гаснут и теряют нумерацию. «Инверсия» — наоборот: модули под фигурой гаснут. «Только рамка» (по умолчанию выключена) — модули не гаснут вообще, фигура рисуется одной линией поверх маски. Выбранная фигура двигается за жёлтый кружок в центре и растягивается за жёлтые квадратики (справа — ширина, снизу — высота, в углу — обе) или стрелками «Ширина × высота»; снимите «Пропорции 1:1» — получится овал или прямоугольник. «Заливка» — цвет и прозрачность внутри фигуры (0 % — без заливки; номера и сетка видны сквозь неё). «Линия по краю фигур» — контур: толщина (по умолчанию 6 px), цвет и прозрачность задаются рядом. Например, мягкое каше: цвет маски тёмно-красный, заливка красная 10–15 %, линия красная 2 px с прозрачностью 50 %.</li>
 <li><strong>Границы ячеек</strong> — как в Keynote: выделите кабинеты и нажмите, какие границы нарисовать (левая, внутренние вертикальные, правая; верхняя, внутренние горизонтальные, нижняя; внешний контур; все внутренние; все). Белая линия 2 px (по внешнему краю маски — 1 px) появляется сразу, повторное нажатие убирает. «Убрать границы» — в выделении (или все), «Показать / скрыть» — не удаляя. Галочка <strong>«Автоконтур»</strong> рисует линию только там, где убраны модули: выключили модуль «Гашением» — вокруг него сразу появляется граница (по краю экрана ничего не добавляется, там своя рамка 1 px).</li>
 </ul>
 <h3>Проекция</h3>
@@ -4033,9 +4034,12 @@ function drawMask(ctx, st, s, guides) {
       const cw = Math.max(1, Math.round((st.cacheLineW || 6) * s));
       for (const c of st.cacheShapes || []) if (st.cacheLine !== false || c.frame) {
         shapePath(ctx, c, c.x * s, c.y * s, c.w / 2 * s - cw / 2, c.h / 2 * s - cw / 2);
+        ctx.save();
+        ctx.globalAlpha = Math.max(0.05, Math.min(1, (st.cacheLineA == null ? 100 : +st.cacheLineA) / 100));
         ctx.strokeStyle = st.cacheLineColor || "#FFFFFF";
         ctx.lineWidth = cw;
         ctx.stroke();
+        ctx.restore();
       }
     }
     for (const ct of st.persistentContours || []) {
@@ -4236,6 +4240,7 @@ function normalizeScreen(d) {
   st.cacheShapes = (Array.isArray(d.cacheShapes) ? d.cacheShapes : []).filter((x) => x && isFinite(+x.x) && isFinite(+x.y) && (+x.d > 0 || +x.w > 0 && +x.h > 0)).map((x) => ({ x: +x.x, y: +x.y, w: +x.w > 0 ? +x.w : +x.d, h: +x.h > 0 ? +x.h : +x.d, lock: x.lock == null ? true : !!x.lock, inv: !!x.inv, frame: !!x.frame, fa: Math.max(0, Math.min(100, +x.fa || 0)), fc: typeof x.fc === "string" && /^#[0-9a-f]{6}$/i.test(x.fc) ? x.fc.toUpperCase() : "#FF0000", t: ["circle", "rect", "round"].includes(x.t) ? x.t : x.t === "super" ? "round" : "circle", r: +x.r >= 0 && x.r !== "" && x.r != null ? +x.r : Math.round(Math.min(+x.w || +x.d || 0, +x.h || +x.d || 0) * 0.2) }));
   st.cacheLine = d.cacheLine == null ? true : !!d.cacheLine;
   st.cacheLineW = Math.max(1, Math.min(200, pint(d.cacheLineW, 6)));
+  st.cacheLineA = d.cacheLineA == null ? 100 : Math.max(5, Math.min(100, +d.cacheLineA || 100));
   st.cacheLineColor = typeof d.cacheLineColor === "string" && /^#[0-9a-f]{6}$/i.test(d.cacheLineColor) ? d.cacheLineColor.toUpperCase() : "#FFFFFF";
   st.rotDeg = d.rotDeg != null && isFinite(+d.rotDeg) ? normDeg(+d.rotDeg) : ROT_DEG[clampI(d.rotationIndex, 4)];
   st.uid = typeof d.uid === "string" && d.uid ? d.uid : newUid();
@@ -8550,6 +8555,11 @@ function syncShapes() {
   $("shapeLine").checked = st.cacheLine !== false;
   if (document.activeElement !== $("shapeLW")) $("shapeLW").value = st.cacheLineW || 6;
   $("shapeLC").value = (st.cacheLineColor || "#FFFFFF").toLowerCase();
+  {
+    const a = st.cacheLineA == null ? 100 : st.cacheLineA;
+    $("shapeLA").value = a;
+    $("shapeLAV").textContent = a + "%";
+  }
 }
 $("shapeAdd").onclick = () => {
   const st = S(), { xs, ys } = grid(st), [W, H] = dims(st);
@@ -8657,6 +8667,11 @@ $("shapeLW").addEventListener("input", (e) => {
 });
 $("shapeLC").addEventListener("input", (e) => {
   S().cacheLineColor = e.target.value.toUpperCase();
+  changed();
+});
+$("shapeLA").addEventListener("input", (e) => {
+  S().cacheLineA = +e.target.value;
+  $("shapeLAV").textContent = e.target.value + "%";
   changed();
 });
 syncShapes();
