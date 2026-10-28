@@ -279,6 +279,59 @@ input.w-sm {
 input.w-md {
   width: 76px;
 }
+.stp {
+  display: inline-flex;
+  align-items: stretch;
+}
+.stp input {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  -moz-appearance: textfield;
+  -webkit-appearance: textfield;
+  appearance: textfield;
+}
+.stp input::-webkit-inner-spin-button,
+.stp input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.stpb {
+  display: inline-flex;
+  flex-direction: column;
+}
+.stpb button {
+  flex: 1;
+  width: 26px;
+  padding: 0;
+  min-height: 0;
+  font-size: 9px;
+  line-height: 1;
+  border: 1px solid var(--line);
+  border-left: 0;
+  background: var(--raise);
+  color: var(--fg);
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+.stpb button:first-child {
+  border-top-right-radius: 7px;
+  border-bottom: 0;
+}
+.stpb button:last-child {
+  border-bottom-right-radius: 7px;
+}
+.stpb button:active {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+@media (pointer: coarse) {
+  .stpb button {
+    width: 34px;
+    font-size: 11px;
+  }
+}
 input[readonly] {
   color: var(--muted);
 }
@@ -397,6 +450,24 @@ button.x:hover {
   font-size: 17px;
   line-height: 1;
   padding: 6px 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.seg.corner button svg {
+  display: block;
+}
+.seg.edges button {
+  padding: 5px 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.seg.edges button svg {
+  display: block;
+}
+.ctl.borders {
+  row-gap: 6px;
 }
 .seg button[aria-pressed=true] {
   background: var(--accent);
@@ -1350,8 +1421,10 @@ html.nogap .imglist > * {
       <p class="hint">Отметьте, что войдёт в ТЗ. По умолчанию — общие поля целиком и маски, которые не стоят на полях. Маски из полей можно добавить галочкой. На холсте — предпросмотр слайдов.</p>
       <div class="flist" id="tList"></div>
       <div class="row"><label for="tMaskPer">Масок на слайде</label><div class="ctl"><select id="tMaskPer">
-        <option value="0">Авто</option><option value="1">1</option><option value="2">2</option><option value="3">3</option>
+        <option value="0">Авто</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+        <option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option>
       </select></div></div>
+      <div class="row" id="tMaskGridRow"><label for="tMaskGrid">Расстановка</label><div class="ctl"><select id="tMaskGrid" class="grow"></select></div></div>
       <div class="btns"><button class="b" id="tDefault">По умолчанию</button></div>
       <div class="tgroup">КАРТИНКИ (СЛАЙДЫ ПОСЛЕ ТРЕБОВАНИЙ)</div>
       <label class="chk"><input type="checkbox" id="tOverview" checked> Добавить картинки в ТЗ</label>
@@ -1394,6 +1467,9 @@ html.nogap .imglist > * {
       <p class="hint">Тест-паттерн для проекторов: сетка, рамки и номера проекторов, зоны перекрытия, круги. Общее разрешение считается само.</p>
       <div class="row"><label for="pjPreset">Проектор</label><div class="ctl"><select id="pjPreset" class="grow"></select></div></div>
       <div class="row"><label for="pjW">Пиксели проектора</label><div class="ctl"><input type="number" id="pjW" min="16" class="w-md" inputmode="numeric"><span class="unit">×</span><input type="number" id="pjH" min="16" class="w-md" inputmode="numeric"><span class="unit">px</span></div></div>
+      <div class="row"><span class="lbl">Ориентация</span><div class="ctl"><div class="seg pjrot" role="group" aria-label="Ориентация проектора">
+        <button data-rot="0">Обычная</button><button data-rot="90" title="Портрет: проектор повёрнут на 90° против часовой">Портрет ⟲</button><button data-rot="-90" title="Портрет: проектор повёрнут на 90° по часовой">Портрет ⟳</button>
+      </div></div></div>
       <div class="row"><label for="pjNx">Проекторы</label><div class="ctl"><input type="number" id="pjNx" min="1" max="32" class="w-md" inputmode="numeric"><span class="unit">×</span><input type="number" id="pjNy" min="1" max="32" class="w-md" inputmode="numeric"><span class="unit">шт.</span></div></div>
       <div class="row"><label for="pjWm">Размер</label><div class="ctl"><input type="number" id="pjWm" min="0" step="0.01" class="w-md" inputmode="decimal" aria-label="Ширина изображения, м"><span class="unit">×</span><input type="number" id="pjHm" min="0" step="0.01" class="w-md" inputmode="decimal" aria-label="Высота изображения, м"><span class="unit">м</span></div></div>
       <div class="row"><label for="pjOx">Перекрытие гориз. / верт.</label><div class="ctl"><input type="number" id="pjOx" min="0" max="50" step="0.5" class="w-sm" inputmode="decimal"><span class="unit">%</span><input type="number" id="pjOy" min="0" max="50" step="0.5" class="w-sm" inputmode="decimal"><span class="unit">%</span></div></div>
@@ -1420,13 +1496,20 @@ html.nogap .imglist > * {
       </div>
       <div class="ctl"><input type="color" id="paintColor" aria-label="Цвет покраски"><button class="b" id="btnPaint">Покрасить выделенные</button></div>
       <div class="row"><span class="lbl">Угловые модули</span><div class="ctl">
-        <div class="seg corner" role="group" aria-label="Какая половина светится">
-          <button data-corner="0" aria-pressed="true" title="Светится нижняя левая половина">◣</button>
-          <button data-corner="1" aria-pressed="false" title="Светится верхняя левая половина">◤</button>
-          <button data-corner="2" aria-pressed="false" title="Светится верхняя правая половина">◥</button>
-          <button data-corner="3" aria-pressed="false" title="Светится нижняя правая половина">◢</button>
+        <div class="seg corner" role="group" aria-label="Треугольники: какая половина светится">
+          <button data-corner="0" title="Треугольник: светится нижняя левая половина">◣</button>
+          <button data-corner="1" title="Треугольник: светится верхняя левая половина">◤</button>
+          <button data-corner="2" title="Треугольник: светится верхняя правая половина">◥</button>
+          <button data-corner="3" title="Треугольник: светится нижняя правая половина">◢</button>
+        </div>
+        <div class="seg corner" role="group" aria-label="Четверти круга">
+          <button data-corner="4" title="Четверть круга от нижнего левого угла"><svg viewBox="0 0 16 16" width="16" height="16"><path d="M2 14V2A12 12 0 0 1 14 14Z" fill="currentColor"/></svg></button>
+          <button data-corner="5" title="Четверть круга от верхнего левого угла"><svg viewBox="0 0 16 16" width="16" height="16"><path d="M2 2H14A12 12 0 0 1 2 14Z" fill="currentColor"/></svg></button>
+          <button data-corner="6" title="Четверть круга от верхнего правого угла"><svg viewBox="0 0 16 16" width="16" height="16"><path d="M14 2V14A12 12 0 0 1 2 2Z" fill="currentColor"/></svg></button>
+          <button data-corner="7" title="Четверть круга от нижнего правого угла"><svg viewBox="0 0 16 16" width="16" height="16"><path d="M14 14H2A12 12 0 0 1 14 2Z" fill="currentColor"/></svg></button>
         </div></div></div>
-      <div class="btns"><button class="b" id="btnCorner">Сделать угловыми</button><button class="b" id="btnCornerDel">Убрать угловые</button></div>
+      <p class="hint">Выделите кабинеты и нажмите нужную форму — применится сразу.</p>
+      <div class="btns"><button class="b" id="btnCornerDel">Убрать угловые</button></div>
       <div class="row" style="grid-template-columns:1fr"><span class="lbl">Фигурные модули</span><div class="ctl">
         <div class="seg shaped" style="white-space:nowrap" role="group" aria-label="Тип фигурного модуля">
           <button data-w="1/4" aria-pressed="true" title="Модуль на угол 90°: 1/4 ширины модуля">1/4 · 90° <span class="shp-px" data-f="1/4"></span></button>
@@ -1435,22 +1518,27 @@ html.nogap .imglist > * {
         </div>
         <span id="shapedCustomBox" hidden><input id="shapedCustom" type="number" min="1" max="20000" step="1" value="128" style="width:72px" aria-label="Ширина своего фигурного модуля"> <span class="unit" id="shapedCustomH">×192 px</span></span>
         </div></div>
-      <p class="hint">Выделите любой модуль — узким станет весь его столбец, без чёрных полей. Разрешение и общее поле пересчитываются.</p>
-      <div class="btns"><button class="b" id="btnShaped">Сделать фигурными</button><button class="b" id="btnShapedDel">Убрать фигурные</button></div>
+      <p class="hint">Выделите любой модуль и нажмите тип — весь его столбец сразу станет узким, без чёрных полей. «Свой» — впишите ширину. Разрешение и общее поле пересчитываются.</p>
+      <div class="btns"><button class="b" id="btnShapedDel">Убрать фигурные</button></div>
     </div></details>
 
-    <details class="sec led-only"><summary>КОНТУР УЧАСТКА</summary><div class="sec-body">
-      <p class="hint">Выделите кабинеты, затем создайте постоянный контур. Белая рамка 2 px, яркость 100%, попадает в PNG и ТЗ.</p>
+    <details class="sec led-only" open><summary>ГРАНИЦЫ ЯЧЕЕК</summary><div class="sec-body">
+      <p class="hint">Выделите кабинеты и нажмите, какие границы нарисовать — белая линия 2 px появится сразу (повторное нажатие убирает). Попадает в PNG и ТЗ.</p>
+      <div class="ctl borders">
+        <div class="seg edges" role="group" aria-label="Вертикальные границы"><button data-edge="l" title="Левая граница" aria-label="Левая граница"><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor"><rect x="2.5" y="2.5" width="13" height="13" stroke-opacity=".35"/><path d="M2.5 2L2.5 16" stroke-width="2.4"/></svg></button><button data-edge="iv" title="Внутренние вертикальные" aria-label="Внутренние вертикальные"><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor"><rect x="2.5" y="2.5" width="13" height="13" stroke-opacity=".35"/><path d="M9 2L9 16" stroke-width="2.4"/></svg></button><button data-edge="r" title="Правая граница" aria-label="Правая граница"><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor"><rect x="2.5" y="2.5" width="13" height="13" stroke-opacity=".35"/><path d="M15.5 2L15.5 16" stroke-width="2.4"/></svg></button></div>
+        <div class="seg edges" role="group" aria-label="Горизонтальные границы"><button data-edge="t" title="Верхняя граница" aria-label="Верхняя граница"><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor"><rect x="2.5" y="2.5" width="13" height="13" stroke-opacity=".35"/><path d="M2 2.5L16 2.5" stroke-width="2.4"/></svg></button><button data-edge="ih" title="Внутренние горизонтальные" aria-label="Внутренние горизонтальные"><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor"><rect x="2.5" y="2.5" width="13" height="13" stroke-opacity=".35"/><path d="M2 9L16 9" stroke-width="2.4"/></svg></button><button data-edge="b" title="Нижняя граница" aria-label="Нижняя граница"><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor"><rect x="2.5" y="2.5" width="13" height="13" stroke-opacity=".35"/><path d="M2 15.5L16 15.5" stroke-width="2.4"/></svg></button></div>
+        <div class="seg edges" role="group" aria-label="Все границы"><button data-edge="in" title="Все внутренние" aria-label="Все внутренние"><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor"><rect x="2.5" y="2.5" width="13" height="13" stroke-opacity=".35"/><path d="M9 2L9 16" stroke-width="2.4"/><path d="M2 9L16 9" stroke-width="2.4"/></svg></button><button data-edge="all" title="Все границы" aria-label="Все границы"><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor"><rect x="2.5" y="2.5" width="13" height="13" stroke-opacity=".35"/><path d="M9 2L9 16" stroke-width="2.4"/><path d="M2 9L16 9" stroke-width="2.4"/><rect x="2.5" y="2.5" width="13" height="13" stroke-width="2.4"/></svg></button></div>
+      </div>
       <div class="btns">
-        <button class="b" id="btnContour">Создать контур</button>
+        <button class="b" id="btnContourDel">Убрать границы</button>
         <button class="b" id="btnContourToggle">Показать / скрыть</button>
-        <button class="b" id="btnContourDel">Убрать контур</button>
       </div>
     </div></details>
 
     <details class="sec" open><summary>ОСНОВНОЙ ТЕКСТ</summary><div class="sec-body">
       <div class="row"><label for="inscSize">Размер текста</label><div class="ctl"><select id="inscSize"></select><button class="b sq" id="mainMinus">−</button><button class="b sq" id="mainPlus">+</button></div></div>
-      <div class="row"><label for="rot">Поворот текста</label><div class="ctl"><select id="rot"></select></div></div>
+      <div class="row"><span class="lbl">Поворот текста <span class="num" id="rotVal">0°</span></span><div class="ctl"><button class="b" id="rotCCW" title="Против часовой на 45°">⟲ 45°</button><button class="b" id="rot0">0°</button><button class="b" id="rotCW" title="По часовой на 45°">⟳ 45°</button><select id="rot" hidden></select></div></div>
+      <label class="chk"><input type="checkbox" id="showInfo"> Информация о маске (в левом нижнем углу)</label>
       <div class="row"><label for="resText">Разрешение (1-я строка)</label><div class="ctl"><input type="text" id="resText" class="num grow" readonly><label class="chk"><input type="checkbox" id="line1"> показ</label></div></div>
       <div class="row"><label for="scrName">Название (2-я строка)</label><div class="ctl"><input type="text" id="scrName" class="grow"><label class="chk"><input type="checkbox" id="line2"> показ</label></div></div>
       <div class="row"><label for="line3Text">Размеры (3-я строка)</label><div class="ctl"><input type="text" id="line3Text" class="num grow" readonly><label class="chk"><input type="checkbox" id="line3"> показ</label></div></div>
@@ -1603,14 +1691,14 @@ html.nogap .imglist > * {
 <ul>
 <li><strong>Выключить все / Включить все</strong> — гасят или включают сразу все кабинеты.</li>
 <li><strong>Покрасить выделенные</strong> — выделенные кабинеты заливаются цветом из квадратика слева.</li>
-<li><strong>Угловые модули</strong> — выделите кабинеты, выберите, какая половина светится (◣ ◤ ◥ ◢), и нажмите «Сделать угловыми». Вторая половина станет чёрной. «Убрать угловые» возвращает выделенные (или все, если ничего не выделено).</li>
-<li><strong>Фигурные модули</strong> — узкие модули для углов: «1/4 · 90°» и «1/2 · 60°» — четверть и половина ширины выбранного модуля (для 192×192 это 48×192 и 96×192, пересчитывается само при смене модуля), или «Свой» — впишите ширину в пикселях (например 128); поле «Свой» сразу показывает текущую ширину выделенного столбца, чтобы стартовать от неё. Выделите любой модуль, выберите тип и нажмите «Сделать фигурными» — весь его столбец станет узким, без чёрных полей. Разрешение экрана и общего поля пересчитывается само. «Убрать фигурные» возвращает выделенные столбцы (или все).</li>
-<li><strong>Контур участка</strong> — выделите кабинеты и нажмите «Создать контур»: вокруг участка появится белая рамка 2 px. Её можно скрыть или убрать.</li>
+<li><strong>Угловые модули</strong> — выделите кабинеты и нажмите форму: треугольник (◣ ◤ ◥ ◢ — какая половина светится) или четверть круга от одного из углов. Применяется сразу, остальная часть кабинета станет чёрной. «Убрать угловые» возвращает выделенные (или все, если ничего не выделено).</li>
+<li><strong>Фигурные модули</strong> — узкие модули для углов: «1/4 · 90°» и «1/2 · 60°» — четверть и половина ширины выбранного модуля (для 192×192 это 48×192 и 96×192, пересчитывается само при смене модуля), или «Свой» — впишите ширину в пикселях (например 128); поле «Свой» сразу показывает текущую ширину выделенного столбца, чтобы стартовать от неё. Выделите любой модуль и нажмите тип — весь его столбец сразу станет узким, без чёрных полей. Разрешение экрана и общего поля пересчитывается само. «Убрать фигурные» возвращает выделенные столбцы (или все).</li>
+<li><strong>Границы ячеек</strong> — как в Keynote: выделите кабинеты и нажмите, какие границы нарисовать (левая, внутренние вертикальные, правая; верхняя, внутренние горизонтальные, нижняя; все внутренние; все). Белая линия 2 px появляется сразу, повторное нажатие убирает. «Убрать границы» — в выделении (или все), «Показать / скрыть» — не удаляя.</li>
 </ul>
 <h3>Проекция</h3>
 <p>Тест-паттерн для проекторов. Включается переключателем «Проекция»; экран сам называется «projection 1», «projection 2»… (своё название не меняется). По умолчанию — один проектор 1920×1200.</p>
 <ol>
-<li><strong>Проектор</strong> — готовые разрешения (Full HD, WUXGA, 4K…) или своё.</li>
+<li><strong>Проектор</strong> — готовые разрешения (Full HD, WUXGA, 4K…) или своё. <strong>Ориентация</strong>: «Обычная» или «Портрет ⟲ / ⟳» — проектор повёрнут на 90° влево или вправо, его кадр на маске становится вертикальным (1920×1200 → 1200×1920).</li>
 <li>Три строки «ширина × высота»: <strong>«Пиксели проектора»</strong>, <strong>«Проекторы»</strong> (сколько по горизонтали и вертикали), <strong>«Размер»</strong> в метрах (можно не задавать).</li>
 <li><strong>Перекрытие</strong> в процентах по горизонтали и вертикали — общее разрешение считается само (2 × Full HD с 15% = 3552×1080, перекрытие 288 px).</li>
 <li><strong>Шаг сетки</strong> в пикселях и цвета <strong>фона, линий и текста</strong> (текст отдельно от линий).</li>
@@ -1619,7 +1707,8 @@ html.nogap .imglist > * {
 <p>Проекция сохраняется в PNG, ставится в общее поле и попадает в ТЗ, как обычная маска.</p>
 <h3>Текст на маске</h3>
 <ul>
-<li><strong>Основной текст</strong> — до трёх строк в центре: разрешение, название экрана, размер в метрах. Каждая строка включается галочкой «показ»; метраж по умолчанию выключен. Размер — «Авто» или из списка, кнопки − / + меняют на 10 px; есть поворот 0° / ±90° / 180°.</li>
+<li><strong>Основной текст</strong> — до трёх строк в центре: разрешение, название экрана, размер в метрах. Каждая строка включается галочкой «показ»; метраж по умолчанию выключен. Размер — «Авто» или из списка, кнопки − / + меняют на 10 px. Поворот — «⟲ 45°» / «⟳ 45°» шагом 45°, «0°» возвращает прямо.</li>
+<li><strong>Информация о маске</strong> — галочка выводит в левый нижний угол маски сводку: кабинет (модель, размер, разрешение), количество кабинетов по ширине и высоте, разрешение экрана, физический размер и общее число кабинетов без чёрных. У проекции — проектор, ориентация, количество, перекрытие, разрешение и размер.</li>
 <li><strong>Дополнительный текст</strong> — «+ Добавить», затем выберите его в списке «Активный текст» и двигайте прямо на холсте. Так же двигается и основной текст.</li>
 </ul>
 <h3>Нумерация и направляющие</h3>
@@ -1676,7 +1765,7 @@ html.nogap .imglist > * {
 </tr>
 </tbody>
 </table>
-<p>Устройство ТЗ: первый слайд — требования из шаблона, дальше картинки и маски. «Масок на слайде»: «Авто» — горизонтальные до трёх на слайд столбиком, вертикальные до двух в ряд; или ровно 1, 2, 3 на слайд. Над каждой маской вплотную подпись «разрешение | название | размер в метрах» (у проекции — «проекция», если метры не заданы). Свой текст, цвет и положение текста попадают и в PPTX, и в PDF. PDF — точная копия PPTX, ссылки в нём кликаются.</p>
+<p>Устройство ТЗ: первый слайд — требования из шаблона, дальше картинки и маски. «Масок на слайде»: «Авто» — горизонтальные до трёх на слайд столбиком, вертикальные до двух в ряд; или ровно от 1 до 10 на слайд. Для 2 и больше выбирается «Расстановка» — сколько по горизонтали и сколько по вертикали (например 2 × 3); «Авто» подбирает вариант, где маски крупнее всего. Над каждой маской вплотную подпись «разрешение | название | размер в метрах» (у проекции — «проекция», если метры не заданы). Свой текст, цвет и положение текста попадают и в PPTX, и в PDF. PDF — точная копия PPTX, ссылки в нём кликаются.</p>
 <h2 id="help-s5">Проект</h2>
 <p>Проект — это все экраны, общие поля и выбор для ТЗ сразу. Браузер запоминает его сам, но только на этом устройстве.</p>
 <ul>
@@ -2058,10 +2147,17 @@ const DEFAULT_TYPE = "Dicolor UC-260 - (192x192)";
 const INSC = ["Авто", "6 px"];
 for (let n = 10; n <= 900; n += 10) INSC.push(n + " px");
 const ROTS = ["0°", "-90°", "90°", "180°"], ROT_DEG = [0, -90, 90, 180];
+const normDeg = (d) => {
+  d = Math.round(d) % 360;
+  if (d > 180) d -= 360;
+  if (d <= -180) d += 360;
+  return d;
+};
+const titleRot = (st) => st.rotDeg != null ? st.rotDeg : ROT_DEG[clampI(st.rotationIndex, 4)];
 const NUM_FORMATS = ["1,1", "1-1", "1 / 1", "C1-R1", "1"];
 const NUM_ORIGINS = ["Слева-снизу", "Слева-сверху", "Справа-снизу", "Справа-сверху"];
 const NUM_POS = ["По центру", "Слева снизу", "Слева сверху", "Справа снизу", "Справа сверху"];
-const CORNER_GLYPH = ["◣", "◤", "◥", "◢"], CORNER_NUMPOS = [1, 2, 4, 3];
+const CORNER_GLYPH = ["◣", "◤", "◥", "◢", "◟ четверть круга", "◜ четверть круга", "◝ четверть круга", "◞ четверть круга"], CORNER_NUMPOS = [1, 2, 4, 3, 1, 2, 4, 3];
 const FONT = '"Gill Sans", "Gill Sans MT", GillSans, Calibri, "Segoe UI", system-ui, sans-serif';
 const col = (r, g, b, a = 1) => ({ r, g, b, a });
 const fromRGB = ([r, g, b]) => col(r / 255, g / 255, b / 255, 1);
@@ -2095,7 +2191,10 @@ function defaultScreen(name = "screen 1") {
     titleOffsetX: 0,
     titleOffsetY: 0,
     persistentContours: [],
+    borders: [],
     showPersistentContour: true,
+    showInfo: false,
+    rotDeg: 0,
     cornerCabinets: {},
     shapedCols: {},
     shapedRows: {},
@@ -2132,13 +2231,14 @@ const dims = (st) => {
 };
 const PJ_PRESETS = [["Full HD 1920×1080", 1920, 1080], ["WUXGA 1920×1200", 1920, 1200], ["4K UHD 3840×2160", 3840, 2160], ["WQXGA 2560×1600", 2560, 1600], ["HD 1280×720", 1280, 720], ["WXGA 1280×800", 1280, 800], ["XGA 1024×768", 1024, 768], ["SXGA+ 1400×1050", 1400, 1050]];
 const PJ_COLORS = ["#FF3B30", "#34C759", "#0A84FF", "#FFCC00", "#FF2D92", "#32D7E6", "#FF9500", "#AF52DE"];
-const defProj = () => ({ pw: 1920, ph: 1200, nx: 1, ny: 1, ox: 15, oy: 15, grid: 120, wm: 0, bg: "#101010", line: "#FFFFFF", text: "#FFFFFF", zones: true, frames: true, circles: true, cells: true, hatch: false, bar: true, invert: false });
+const defProj = () => ({ pw: 1920, ph: 1200, nx: 1, ny: 1, ox: 15, oy: 15, grid: 120, wm: 0, rot: 0, bg: "#101010", line: "#FFFFFF", text: "#FFFFFF", zones: true, frames: true, circles: true, cells: true, hatch: false, bar: true, invert: false });
 function projGeom(st) {
-  const P = st.proj || defProj(), pw = Math.max(16, P.pw | 0), ph = Math.max(16, P.ph | 0), nx = Math.max(1, P.nx | 0), ny = Math.max(1, P.ny | 0);
+  const P = st.proj || defProj(), rot = +P.rot || 0, pw0 = Math.max(16, P.pw | 0), ph0 = Math.max(16, P.ph | 0);
+  const pw = rot ? ph0 : pw0, ph = rot ? pw0 : ph0, nx = Math.max(1, P.nx | 0), ny = Math.max(1, P.ny | 0);
   const ovx = nx > 1 ? Math.round(pw * Math.max(0, Math.min(50, +P.ox || 0)) / 100) : 0, ovy = ny > 1 ? Math.round(ph * Math.max(0, Math.min(50, +P.oy || 0)) / 100) : 0;
   const W = nx * pw - (nx - 1) * ovx, H = ny * ph - (ny - 1) * ovy, rects = [];
   for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) rects.push({ n: j * nx + i + 1, x: i * (pw - ovx), y: j * (ph - ovy), w: pw, h: ph });
-  return { P, pw, ph, nx, ny, ovx, ovy, W, H, rects };
+  return { P, rot, pw, ph, nx, ny, ovx, ovy, W, H, rects };
 }
 function drawProj(ctx, st, s, guides) {
   const g = projGeom(st), P = g.P, W = g.W, H = g.H, Wp = Math.max(1, Math.round(W * s)), Hp = Math.max(1, Math.round(H * s));
@@ -2261,7 +2361,7 @@ function drawProj(ctx, st, s, guides) {
       ctx.font = "bold ".concat(fs, "px ").concat(FONT);
       const t1 = "P".concat(r.n), w1 = ctx.measureText(t1).width;
       ctx.font = "".concat(fs * 0.55, "px ").concat(FONT);
-      const t2 = "".concat(r.w, "×").concat(r.h, " · X ").concat(r.x, " · Y ").concat(r.y), w2 = ctx.measureText(t2).width;
+      const t2 = "".concat(r.w, "×").concat(r.h).concat(g.rot ? g.rot > 0 ? " · портрет ⟲" : " · портрет ⟳" : "", " · X ").concat(r.x, " · Y ").concat(r.y), w2 = ctx.measureText(t2).width;
       ctx.fillStyle = P.invert ? "rgba(255,255,255,0.88)" : "rgba(0,0,0,0.72)";
       ctx.fillRect(lx - fs * 0.35, ly - fs * 0.25, Math.max(w1, w2) + fs * 0.7, fs * 2.05);
       ctx.fillStyle = c;
@@ -2294,7 +2394,7 @@ function drawProj(ctx, st, s, guides) {
     ctx.restore();
   }
   if (P.bar) {
-    const bw = W * 0.5, bh = Math.max(12, H * 0.05), bx = (W - bw) / 2, by = H * 0.78, cols = ["#FFFFFF", "#FFFF00", "#00FFFF", "#00FF00", "#FF00FF", "#FF0000", "#0000FF", "#000000"];
+    const bw = W * 0.5, bh = Math.max(12, H * 0.05), bx = st.showInfo ? W * 0.47 : (W - bw) / 2, by = H * 0.78, cols = ["#FFFFFF", "#FFFF00", "#00FFFF", "#00FF00", "#FF00FF", "#FF0000", "#0000FF", "#000000"];
     cols.forEach((c, i) => {
       ctx.fillStyle = c;
       ctx.fillRect(X(bx + bw * i / cols.length), X(by), X(bw / cols.length) + 1, X(bh));
@@ -2330,13 +2430,21 @@ function drawProj(ctx, st, s, guides) {
   }
   const lines = titleLines(st, s), b = blockSize(lines, TITLE_GAP * s), tx = W * s / 2 + (st.titleOffsetX || 0) * s, ty = H * s / 2 - (st.titleOffsetY || 0) * s;
   ctx.fillStyle = P.invert ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.6)";
-  if (ROT_DEG[clampI(st.rotationIndex, 4)] % 180 === 0) ctx.fillRect(tx - b.w / 2 - 14 * s, ty - b.h / 2 - 8 * s, b.w + 28 * s, b.h + 16 * s);
+  {
+    const a = -titleRot(st) * Math.PI / 180;
+    ctx.save();
+    ctx.translate(tx, ty);
+    ctx.rotate(a);
+    ctx.fillRect(-b.w / 2 - 14 * s, -b.h / 2 - 8 * s, b.w + 28 * s, b.h + 16 * s);
+    ctx.restore();
+  }
   ctx.fillStyle = tc;
-  drawBlock(ctx, lines, TITLE_GAP * s, tx, ty, ROT_DEG[clampI(st.rotationIndex, 4)]);
+  drawBlock(ctx, lines, TITLE_GAP * s, tx, ty, titleRot(st));
   for (const it of st.extraLabels || []) {
     const fs2 = Math.min(900, Math.max(6, +it.size || 120)) * s;
     drawBlock(ctx, [[it.text || "Текст", fs2]], 0, W * s / 2 + (+it.x || 0) * s, H * s / 2 - (+it.y || 0) * s, +it.rotation || 0);
   }
+  drawInfo(ctx, st, s);
   ctx.restore();
 }
 const shapedCount = (st) => Object.keys(st.shapedCols || {}).filter((c) => +c < st.cabCols).length + Object.keys(st.shapedRows || {}).filter((r) => +r < st.cabRows).length;
@@ -2474,6 +2582,25 @@ function drawMask(ctx, st, s, guides) {
   const corners = cornerList(st, black);
   for (const [c, r, o] of corners) {
     const [x, y, w, h] = cell(c, r), X = [x, x, x + w, x + w], Y = [y + h, y, y, y + h];
+    if (o >= 4) {
+      const q = o - 4;
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(x, y, w, h);
+      ctx.clip();
+      ctx.beginPath();
+      ctx.rect(x, y, w, h);
+      ctx.ellipse(X[q], Y[q], w, h, 0, 0, Math.PI * 2);
+      ctx.fillStyle = "#000";
+      ctx.fill("evenodd");
+      ctx.beginPath();
+      ctx.ellipse(X[q], Y[q], w, h, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgb(64,64,64)";
+      ctx.lineWidth = Math.max(1, 2 * s);
+      ctx.stroke();
+      ctx.restore();
+      continue;
+    }
     const a = (o + 1) % 4, b = (o + 2) % 4, d = (o + 3) % 4;
     ctx.save();
     ctx.beginPath();
@@ -2506,6 +2633,16 @@ function drawMask(ctx, st, s, guides) {
   ctx.fillRect(Wp - ow, 0, ow, Hp);
   if (st.showPersistentContour !== false) {
     const lw = Math.max(1, Math.round(2 * s));
+    for (const k of st.borders || []) {
+      const [t, a] = k.split(":"), [u, v] = a.split(",").map(Number);
+      if (t === "v" && u >= 0 && u <= cols && v >= 0 && v < rows) {
+        const X = u === 0 ? 0 : u === cols ? Wp - lw : fx(xs[u]) - Math.floor(lw / 2), y0 = fy(ys[v + 1]), y1 = fy(ys[v]);
+        ctx.fillRect(X, y0, lw, y1 - y0);
+      } else if (t === "h" && u >= 0 && u < cols && v >= 0 && v <= rows) {
+        const Y = v === 0 ? Hp - lw : v === rows ? 0 : fy(ys[v]) - Math.floor(lw / 2), x0 = fx(xs[u]), x1 = fx(xs[u + 1]);
+        ctx.fillRect(x0, Y, x1 - x0, lw);
+      }
+    }
     for (const ct of st.persistentContours || []) {
       if (!(ct.cols > 0 && ct.rows > 0)) continue;
       const ci = (v) => xs[Math.max(0, Math.min(cols, v))], ri = (v) => ys[Math.max(0, Math.min(rows, v))];
@@ -2557,7 +2694,8 @@ function drawMask(ctx, st, s, guides) {
     let p = pos;
     if (o !== void 0 && pos !== CORNER_NUMPOS[o]) {
       p = -1;
-      const gx = o >= 2 ? left + cW * 2 / 3 : left + cW / 3, gy = o === 1 || o === 2 ? top + cH / 3 : top + cH * 2 / 3;
+      const q = o % 4, f = o >= 4 ? 4 / (3 * Math.PI) : 1 / 3;
+      const gx = q >= 2 ? left + cW * (1 - f) : left + cW * f, gy = q === 1 || q === 2 ? top + cH * f : top + cH * (1 - f);
       x = gx - tw / 2;
       y = gy - nm.h / 2;
     }
@@ -2573,11 +2711,55 @@ function drawMask(ctx, st, s, guides) {
   }
   ctx.fillStyle = "#fff";
   const lines = titleLines(st, s);
-  drawBlock(ctx, lines, TITLE_GAP * s, W * s / 2 + (st.titleOffsetX || 0) * s, H * s / 2 - (st.titleOffsetY || 0) * s, ROT_DEG[clampI(st.rotationIndex, 4)]);
+  drawBlock(ctx, lines, TITLE_GAP * s, W * s / 2 + (st.titleOffsetX || 0) * s, H * s / 2 - (st.titleOffsetY || 0) * s, titleRot(st));
   for (const it of st.extraLabels || []) {
     const fs = Math.min(900, Math.max(6, +it.size || 120)) * s;
     drawBlock(ctx, [[it.text || "Текст", fs]], 0, W * s / 2 + (+it.x || 0) * s, H * s / 2 - (+it.y || 0) * s, +it.rotation || 0);
   }
+  drawInfo(ctx, st, s);
+  ctx.restore();
+}
+function infoLines(st) {
+  const [W, H] = dims(st), [pw, ph, known] = physM(st), m = (v) => compactM(v);
+  if (st.kind === "proj") {
+    const g = projGeom(st), P = g.P, rot = +P.rot || 0;
+    const out = [
+      "Проектор: ".concat(P.pw, "×").concat(P.ph, " px").concat(rot ? " · портрет ".concat(rot > 0 ? "⟲" : "⟳", " 90°") : ""),
+      "Проекторов: ".concat(g.nx, " × ").concat(g.ny, " (").concat(g.nx * g.ny, " шт.)")
+    ];
+    if (g.nx > 1 || g.ny > 1) out.push("Перекрытие: ".concat(g.nx > 1 ? "".concat(+P.ox || 0, "% (").concat(g.ovx, " px)") : "—", " / ").concat(g.ny > 1 ? "".concat(+P.oy || 0, "% (").concat(g.ovy, " px)") : "—"));
+    out.push("Разрешение: ".concat(W, "×").concat(H, " px"));
+    if (known) out.push("Физический размер: ".concat(m(pw), "×").concat(m(ph), " м"));
+    return out;
+  }
+  const t = TYPES.find((t2) => t2[0] === st.cabinetTypeName), black = new Set(st.blackCabinets || []);
+  const total = st.cabCols * st.cabRows;
+  let nb = 0;
+  for (const k of black) {
+    const p = parseKey(k);
+    if (p && p[0] < st.cabCols && p[1] < st.cabRows) nb++;
+  }
+  return [
+    "Кабинет: ".concat(t ? t[0].replace(/\s*-\s*\(.*\)$/, "") + " — " + t[3] + "×" + t[4] + " мм, " : "").concat(st.cabWpx, "×").concat(st.cabHpx, " px"),
+    "Кабинетов: ".concat(st.cabCols, " по ширине × ").concat(st.cabRows, " по высоте"),
+    "Разрешение экрана: ".concat(W, "×").concat(H, " px"),
+    "Физический размер: ".concat(m(pw), "×").concat(m(ph), " м").concat(known ? "" : " (условно)"),
+    "Кабинетов всего: ".concat(total - nb).concat(nb ? " (".concat(total, " − ").concat(nb, " чёрных)") : "")
+  ];
+}
+function drawInfo(ctx, st, s) {
+  if (!st.showInfo) return;
+  const [W, H] = dims(st), lines = infoLines(st);
+  const fs = Math.max(10, Math.min(72, Math.min(W, H) * 0.026)) * s, pad = fs * 0.6, lh = fs * 1.3;
+  ctx.save();
+  ctx.font = "".concat(fs, "px ").concat(FONT);
+  ctx.textBaseline = "top";
+  const w = Math.max(...lines.map((l) => ctx.measureText(l).width)) + pad * 2, h = lines.length * lh + pad * 2 - (lh - fs);
+  const x = fs * 0.8, y = H * s - fs * 0.8 - h;
+  ctx.fillStyle = "rgba(0,0,0,0.72)";
+  ctx.fillRect(x, y, w, h);
+  ctx.fillStyle = "#fff";
+  lines.forEach((l, i) => ctx.fillText(l, x + pad, y + pad + i * lh));
   ctx.restore();
 }
 function drawBlock(ctx, lines, gap, cx, cy, deg) {
@@ -2597,7 +2779,7 @@ function cornerList(st, black) {
   const out = [];
   for (const [k, v] of Object.entries(st.cornerCabinets || {})) {
     const p = parseKey(k), o = +v;
-    if (!p || black.has(k) || !(o >= 0 && o <= 3) || p[0] < 0 || p[1] < 0 || p[0] >= st.cabCols || p[1] >= st.cabRows) continue;
+    if (!p || black.has(k) || !(o >= 0 && o <= 7) || p[0] < 0 || p[1] < 0 || p[0] >= st.cabCols || p[1] >= st.cabRows) continue;
     out.push([p[0], p[1], o | 0]);
   }
   return out;
@@ -2639,17 +2821,21 @@ function normalizeScreen(d) {
   st.titleOffsetY = +d.titleOffsetY || 0;
   st.persistentContours = (Array.isArray(d.persistentContours) ? d.persistentContours : []).map((c) => ({ col: pint(c.col, 0), row: pint(c.row, 0), cols: pint(c.cols, 0), rows: pint(c.rows, 0) })).filter((c) => c.cols > 0 && c.rows > 0);
   st.showPersistentContour = d.showPersistentContour == null ? true : !!d.showPersistentContour;
+  st.borders = (Array.isArray(d.borders) ? d.borders : []).map(String).filter((k) => /^[vh]:\d+,\d+$/.test(k));
+  st.showInfo = !!d.showInfo;
+  st.rotDeg = d.rotDeg != null && isFinite(+d.rotDeg) ? normDeg(+d.rotDeg) : ROT_DEG[clampI(d.rotationIndex, 4)];
   st.uid = typeof d.uid === "string" && d.uid ? d.uid : newUid();
   st.cornerCabinets = {};
   if (d.cornerCabinets && typeof d.cornerCabinets === "object") for (const [k, v] of Object.entries(d.cornerCabinets)) {
     const o = pint(v, -1);
-    if (parseKey(k) && o >= 0 && o <= 3) st.cornerCabinets[k] = o;
+    if (parseKey(k) && o >= 0 && o <= 7) st.cornerCabinets[k] = o;
   }
   st.kind = d.kind === "proj" ? "proj" : "led";
   {
     const P = defProj(), q = d.proj && typeof d.proj === "object" ? d.proj : {};
     for (const k of ["pw", "ph", "nx", "ny", "grid"]) if (q[k] != null) P[k] = Math.max(1, pint(q[k], P[k]));
     for (const k of ["ox", "oy", "wm"]) if (q[k] != null && isFinite(+q[k])) P[k] = Math.max(0, +q[k]);
+    P.rot = [-90, 0, 90].includes(+q.rot) ? +q.rot : 0;
     for (const k of ["bg", "line", "text"]) if (typeof q[k] === "string" && /^#[0-9a-f]{6}$/i.test(q[k])) P[k] = q[k].toUpperCase();
     for (const k of ["zones", "frames", "circles", "cells", "hatch", "bar", "invert", "used"]) if (q[k] != null) P[k] = !!q[k];
     if (d.kind === "proj") P.used = true;
@@ -2708,6 +2894,8 @@ function syncUI() {
   $("paintColor").value = hex(ui.paint);
   $("inscSize").value = st.inscriptionIndex;
   $("rot").value = st.rotationIndex;
+  $("rotVal").textContent = titleRot(st) + "°";
+  $("showInfo").checked = !!st.showInfo;
   $("scrName").value = st.name;
   $("line1").checked = st.line1Enabled !== false;
   $("line2").checked = st.line2Enabled;
@@ -2884,8 +3072,8 @@ function cellRect(c, r) {
 }
 function titleFrame() {
   const st = L.st, s = L.scale, b = blockSize(titleLines(st, s), TITLE_GAP * s);
-  let w = b.w, h = b.h;
-  if (Math.abs(ROT_DEG[st.rotationIndex]) % 180 === 90) [w, h] = [h, w];
+  const a = titleRot(st) * Math.PI / 180, cs = Math.abs(Math.cos(a)), sn = Math.abs(Math.sin(a));
+  const w = b.w * cs + b.h * sn, h = b.w * sn + b.h * cs;
   return { cx: L.ox + L.W * s / 2 + st.titleOffsetX * s, cy: L.oy + L.H * s / 2 - st.titleOffsetY * s, w, h };
 }
 function labelFrame(i) {
@@ -3104,6 +3292,7 @@ function syncProjUI() {
   const set = (id, v) => {
     if (document.activeElement !== $(id)) $(id).value = v;
   };
+  document.querySelectorAll(".seg.pjrot button").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.rot === (+P.rot || 0))));
   {
     const [W, H] = dims(st), wm = +P.wm || 0;
     set("pjHm", wm > 0 ? +(wm * H / W).toFixed(3) : 0);
@@ -3169,6 +3358,11 @@ $("pjPreset").addEventListener("change", (e) => {
   const t = PJ_PRESETS[+e.target.value];
   if (!t || e.target.value === "") return;
   Object.assign(S().proj, { pw: t[1], ph: t[2] });
+  syncProjUI();
+  changed({ forcePhys: true });
+});
+document.querySelectorAll(".seg.pjrot button").forEach((b) => b.onclick = () => {
+  S().proj.rot = +b.dataset.rot;
   syncProjUI();
   changed({ forcePhys: true });
 });
@@ -3318,9 +3512,9 @@ $("btnPaint").onclick = () => {
 };
 document.querySelectorAll(".seg.corner button").forEach((b) => b.onclick = () => {
   ui.corner = +b.dataset.corner;
-  document.querySelectorAll(".seg.corner button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  applyCorner();
 });
-$("btnCorner").onclick = () => {
+function applyCorner() {
   const st = S();
   if (!ui.selected.size) {
     status("Сначала выделите кабинеты: инструмент «Выбор» или «Диапазон»", true);
@@ -3335,7 +3529,7 @@ $("btnCorner").onclick = () => {
   st.blackCabinets = [...black];
   changed();
   status("Угловых модулей ".concat(CORNER_GLYPH[ui.corner], ": ").concat(ui.selected.size), true);
-};
+}
 ui.shapedW = "1/4";
 ui.shapedCustom = false;
 function currentColW(st) {
@@ -3375,9 +3569,12 @@ document.querySelectorAll(".seg.shaped button").forEach((b) => b.onclick = () =>
     $("shapedCustom").select();
   }
   document.querySelectorAll(".seg.shaped button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  applyShaped();
 });
 $("shapedCustom").addEventListener("input", () => {
-  if (ui.shapedCustom) ui.shapedW = customW();
+  if (!ui.shapedCustom) return;
+  ui.shapedW = customW();
+  if (ui.selected.size) applyShaped(true);
 });
 function selectedLines(st) {
   const cols = /* @__PURE__ */ new Set(), rows = /* @__PURE__ */ new Set();
@@ -3389,10 +3586,10 @@ function selectedLines(st) {
   }
   return { cols: [...cols].sort((a, b) => a - b), rows: [...rows].sort((a, b) => a - b) };
 }
-$("btnShaped").onclick = () => {
+function applyShaped(quiet) {
   const st = S();
   if (!ui.selected.size) {
-    status("Сначала выделите модуль в нужном столбце", true);
+    if (!quiet) status("Выделите модуль в нужном столбце — тип применится сразу", true);
     return;
   }
   const isCol = true, f = "shapedCols", lines = selectedLines(st).cols;
@@ -3402,7 +3599,7 @@ $("btnShaped").onclick = () => {
   changed({ forcePhys: true });
   const [W, H] = dims(st), name = ui.shapedCustom ? "".concat(ui.shapedW, "×").concat(st.cabHpx) : "".concat(SHAPED[ui.shapedW][1], " (").concat(shapedPx(st, ui.shapedW), "×").concat(st.cabHpx, ")");
   status("Фигурные ".concat(name, ": ").concat(isCol ? "столбцов" : "рядов", " ").concat(lines.length, " · разрешение ").concat(W, "×").concat(H), true);
-};
+}
 $("btnShapedDel").onclick = () => {
   const st = S(), { cols, rows } = selectedLines(st);
   let n = 0;
@@ -3434,34 +3631,88 @@ $("btnCornerDel").onclick = () => {
   changed();
   status(ui.selected.size ? "Обычными стали кабинетов: ".concat(n) : "Все угловые модули экрана убраны: ".concat(n), true);
 };
-$("btnContour").onclick = () => {
-  const st = S(), cells = [...ui.selected].map(parseKey).filter((p) => p && p[0] < st.cabCols && p[1] < st.cabRows);
-  if (!cells.length) {
-    status("Сначала выделите участок кабинетов", true);
+function selBox(st) {
+  const cells = [...ui.selected].map(parseKey).filter((p) => p && p[0] < st.cabCols && p[1] < st.cabRows);
+  if (!cells.length) return null;
+  return { c0: Math.min(...cells.map((p) => p[0])), c1: Math.max(...cells.map((p) => p[0])), r0: Math.min(...cells.map((p) => p[1])), r1: Math.max(...cells.map((p) => p[1])) };
+}
+function edgeKeys(b, kind) {
+  const out = [], V = (x) => {
+    for (let r = b.r0; r <= b.r1; r++) out.push("v:".concat(x, ",").concat(r));
+  }, H = (y) => {
+    for (let c = b.c0; c <= b.c1; c++) out.push("h:".concat(c, ",").concat(y));
+  };
+  const inV = () => {
+    for (let x = b.c0 + 1; x <= b.c1; x++) V(x);
+  }, inH = () => {
+    for (let y = b.r0 + 1; y <= b.r1; y++) H(y);
+  };
+  if (kind === "l") V(b.c0);
+  if (kind === "r") V(b.c1 + 1);
+  if (kind === "iv") inV();
+  if (kind === "t") H(b.r1 + 1);
+  if (kind === "b") H(b.r0);
+  if (kind === "ih") inH();
+  if (kind === "in") {
+    inV();
+    inH();
+  }
+  if (kind === "all") {
+    V(b.c0);
+    V(b.c1 + 1);
+    H(b.r1 + 1);
+    H(b.r0);
+    inV();
+    inH();
+  }
+  return out;
+}
+document.querySelectorAll(".seg.edges button").forEach((btn) => btn.onclick = () => {
+  const st = S(), b = selBox(st);
+  if (!b) {
+    status("Сначала выделите кабинеты — границы нарисуются сразу", true);
     return;
   }
-  const c0 = Math.min(...cells.map((p) => p[0])), c1 = Math.max(...cells.map((p) => p[0])), r0 = Math.min(...cells.map((p) => p[1])), r1 = Math.max(...cells.map((p) => p[1]));
-  st.persistentContours.push({ col: c0, row: r0, cols: c1 - c0 + 1, rows: r1 - r0 + 1 });
+  const keys = edgeKeys(b, btn.dataset.edge);
+  if (!keys.length) {
+    status("Для одного кабинета внутренних границ нет", true);
+    return;
+  }
+  const set = new Set(st.borders || []), allOn = keys.every((k) => set.has(k));
+  for (const k of keys) allOn ? set.delete(k) : set.add(k);
+  st.borders = [...set];
   st.showPersistentContour = true;
   changed();
-  status("Контуров на этом экране: ".concat(st.persistentContours.length, " · яркость 100%"), true);
-};
+  status(allOn ? "Границы убраны: ".concat(keys.length) : "Границы: ".concat(btn.title.toLowerCase(), " · ").concat(keys.length), true);
+});
 $("btnContourToggle").onclick = () => {
   const st = S();
-  if (!st.persistentContours.length) {
-    status("Сначала создайте контур участка", true);
+  if (!(st.borders || []).length && !st.persistentContours.length) {
+    status("Границ пока нет", true);
     return;
   }
   st.showPersistentContour = !st.showPersistentContour;
   changed();
-  status(st.showPersistentContour ? "Контуры этого экрана показаны" : "Контуры этого экрана скрыты (сохранены)", true);
+  status(st.showPersistentContour ? "Границы показаны" : "Границы скрыты (сохранены)", true);
 };
 $("btnContourDel").onclick = () => {
-  const st = S();
-  st.persistentContours = [];
-  st.showPersistentContour = true;
-  changed();
-  status("Контуры текущего экрана удалены", true);
+  const st = S(), b = selBox(st);
+  if (b) {
+    const inBox = (k) => {
+      const [t, a] = k.split(":"), [u, v] = a.split(",").map(Number);
+      return t === "v" ? u >= b.c0 && u <= b.c1 + 1 && v >= b.r0 && v <= b.r1 : u >= b.c0 && u <= b.c1 && v >= b.r0 && v <= b.r1 + 1;
+    };
+    const n0 = (st.borders || []).length;
+    st.borders = (st.borders || []).filter((k) => !inBox(k));
+    changed();
+    status("Убрано границ: ".concat(n0 - st.borders.length), true);
+  } else {
+    st.borders = [];
+    st.persistentContours = [];
+    st.showPersistentContour = true;
+    changed();
+    status("Все границы экрана убраны", true);
+  }
 };
 $("activeText").addEventListener("change", (e) => {
   ui.textMode = +e.target.value - 1;
@@ -3531,7 +3782,7 @@ $("screens").addEventListener("change", (e) => {
 });
 $("btnAddScreen").onclick = () => {
   const base = JSON.parse(JSON.stringify(S()));
-  Object.assign(base, { name: base.kind === "proj" ? "projection ".concat(project.screens.filter((x) => x.kind === "proj").length + 1) : "screen ".concat(project.screens.length + 1), blackCabinets: [], cabinetColors: {}, persistentContours: [], showPersistentContour: true, extraLabels: [], cornerCabinets: {}, shapedCols: {}, shapedRows: {} });
+  Object.assign(base, { borders: [], name: base.kind === "proj" ? "projection ".concat(project.screens.filter((x) => x.kind === "proj").length + 1) : "screen ".concat(project.screens.length + 1), blackCabinets: [], cabinetColors: {}, persistentContours: [], showPersistentContour: true, extraLabels: [], cornerCabinets: {}, shapedCols: {}, shapedRows: {} });
   delete base.field;
   base.uid = newUid();
   project.screens.push(base);
@@ -3898,15 +4149,15 @@ const REL_NOTES = "http://schemas.openxmlformats.org/officeDocument/2006/relatio
 const CT_SLIDE = "application/vnd.openxmlformats-officedocument.presentationml.slide+xml";
 const xmlEsc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const BOX = { x: 42e4, y: 205e4, w: 6018e3, h: 72e5 }, GAP = 165e3, LABEL_H = 22e4, LABEL_GAP = 35e3;
+const labelPt = (text, wEmu) => {
+  mctxRT.font = '10px Arial, "Liberation Sans", Helvetica, sans-serif';
+  const tw = mctxRT.measureText(text || "").width;
+  return Math.max(5, Math.min(10, 10 * (wEmu / PT) * 0.97 / Math.max(1, tw)));
+};
 function maskCellLayout(hz, n, j, w, h, B = BOX) {
-  let cx0 = B.x, cy0 = B.y, cw = B.w, chh = B.h;
-  if (hz) {
-    chh = Math.floor((B.h - GAP * (n - 1)) / n);
-    cy0 = B.y + j * (chh + GAP);
-  } else {
-    cw = Math.floor((B.w - GAP * (n - 1)) / n);
-    cx0 = B.x + j * (cw + GAP);
-  }
+  const G = hz && typeof hz === "object" ? hz : hz ? { cols: 1, rows: n } : { cols: n, rows: 1 };
+  const cw = Math.floor((B.w - GAP * (G.cols - 1)) / G.cols), chh = Math.floor((B.h - GAP * (G.rows - 1)) / G.rows);
+  const cx0 = B.x + j % G.cols * (cw + GAP), cy0 = B.y + Math.floor(j / G.cols) * (chh + GAP);
   const ih = Math.max(1, chh - LABEL_H - LABEL_GAP);
   const sc = Math.min(cw / Math.max(1, w), ih / Math.max(1, h)), ew = Math.round(w * sc), eh = Math.round(h * sc);
   const by = cy0 + Math.floor((chh - (LABEL_H + LABEL_GAP + eh)) / 2), ix = cx0 + Math.floor((cw - ew) / 2);
@@ -4259,7 +4510,7 @@ async function buildPptx(tplB64, masks, overview, label) {
     const NL = noteLayout(noteText(noteKey(items)), noteKey(items));
     items.forEach((m, j) => {
       const lay = maskCellLayout(hz, items.length, j, m.w, m.h, NL.box), [cx0, cy0, cw] = lay.label;
-      shapes.push('<p:sp><p:nvSpPr><p:cNvPr id="'.concat(100 + j, '" name="Mask info ').concat(j + 1, '"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="').concat(cx0, '" y="').concat(cy0, '"/><a:ext cx="').concat(cw, '" cy="').concat(LABEL_H, '"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></p:spPr><p:txBody><a:bodyPr wrap="none" lIns="0" rIns="0" tIns="0" bIns="0" anchor="ctr"/><a:lstStyle/><a:p><a:pPr algn="ctr"/><a:r><a:rPr lang="ru-RU" sz="1000"><a:solidFill><a:srgbClr val="222222"/></a:solidFill><a:latin typeface="Arial"/><a:ea typeface="Arial"/><a:cs typeface="Arial"/></a:rPr><a:t>').concat(xmlEsc(m.label), '</a:t></a:r><a:endParaRPr lang="ru-RU" sz="1100"/></a:p></p:txBody></p:sp>'));
+      shapes.push('<p:sp><p:nvSpPr><p:cNvPr id="'.concat(100 + j, '" name="Mask info ').concat(j + 1, '"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="').concat(cx0, '" y="').concat(cy0, '"/><a:ext cx="').concat(cw, '" cy="').concat(LABEL_H, '"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></p:spPr><p:txBody><a:bodyPr wrap="none" lIns="0" rIns="0" tIns="0" bIns="0" anchor="ctr"/><a:lstStyle/><a:p><a:pPr algn="ctr"/><a:r><a:rPr lang="ru-RU" sz="').concat(Math.round(labelPt(m.label, cw) * 100), '"><a:solidFill><a:srgbClr val="222222"/></a:solidFill><a:latin typeface="Arial"/><a:ea typeface="Arial"/><a:cs typeface="Arial"/></a:rPr><a:t>').concat(xmlEsc(m.label), '</a:t></a:r><a:endParaRPr lang="ru-RU" sz="1100"/></a:p></p:txBody></p:sp>'));
       const [x, y, ew, eh] = lay.image;
       const img = "mask_".concat(gi + 1, "_").concat(j + 1, ".").concat(m.ext || "png");
       put("ppt/media/" + img, m.png);
@@ -4322,10 +4573,11 @@ async function labelImage(text, wPt, hPt, k = 4) {
   const c = cv.getContext("2d", { willReadFrequently: true, alpha: false });
   c.fillStyle = "#fff";
   c.fillRect(0, 0, W, H);
-  c.font = "".concat(10 * k, 'px Arial, "Liberation Sans", Helvetica, sans-serif');
+  const pt = Math.min(10, labelPt(text, wPt * PT));
+  c.font = "".concat(pt * k, 'px Arial, "Liberation Sans", Helvetica, sans-serif');
   c.fillStyle = "#222222";
   c.textBaseline = "alphabetic";
-  const m = c.measureText(text), asc = (_a = m.fontBoundingBoxAscent) != null ? _a : 10 * k * 0.905, desc = (_b = m.fontBoundingBoxDescent) != null ? _b : 10 * k * 0.212;
+  const m = c.measureText(text), asc = (_a = m.fontBoundingBoxAscent) != null ? _a : pt * k * 0.905, desc = (_b = m.fontBoundingBoxDescent) != null ? _b : pt * k * 0.212;
   if (text) c.fillText(text, (W - m.width) / 2, (H - (asc + desc)) / 2 + asc);
   const px = c.getImageData(0, 0, W, H).data, rgb = new Uint8Array(W * H * 3);
   for (let i = 0, j = 0; i < px.length; i += 4, j += 3) {
@@ -4704,7 +4956,7 @@ function freshField(k) {
   return { id: newUid(), name: k ? "Общее поле ".concat(k + 1) : "Общее поле", items: [], title: { on: true, x: 0, y: 0, size: 0, meters: false } };
 }
 function freshFieldState() {
-  return { fields: [freshField(0)], fieldCur: 0, tz: { fields: {}, masks: {}, overview: true, imgPer: 0, maskPer: 0, req: {}, notes: {}, pos: {} } };
+  return { fields: [freshField(0)], fieldCur: 0, tz: { fields: {}, masks: {}, overview: true, imgPer: 0, maskPer: 0, maskGrid: "", req: {}, notes: {}, pos: {} } };
 }
 function loadFieldState(d, raw) {
   const seen = /* @__PURE__ */ new Set();
@@ -4754,7 +5006,7 @@ function loadFieldState(d, raw) {
     }
     return o;
   };
-  project.tz = { fields: boolMap(tz.fields), masks: boolMap(tz.masks), overview: tz.overview == null ? true : !!tz.overview, imgPer: Math.max(0, Math.min(3, pint(tz.imgPer, 0))), maskPer: Math.max(0, Math.min(3, pint(tz.maskPer, 0))), req: strMap(tz.req), notes: strMap(tz.notes), pos: posMap(tz.pos) };
+  project.tz = { fields: boolMap(tz.fields), masks: boolMap(tz.masks), overview: tz.overview == null ? true : !!tz.overview, imgPer: Math.max(0, Math.min(3, pint(tz.imgPer, 0))), maskPer: Math.max(0, Math.min(10, pint(tz.maskPer, 0))), maskGrid: /^\d+x\d+$/.test(tz.maskGrid || "") ? tz.maskGrid : "", req: strMap(tz.req), notes: strMap(tz.notes), pos: posMap(tz.pos) };
 }
 const CF = () => project.fields[Math.max(0, Math.min(project.fields.length - 1, project.fieldCur || 0))];
 const evenUp = (v) => {
@@ -5517,18 +5769,41 @@ function tzItems() {
 }
 const tzImages = () => project.tz.overview ? ui.images : [];
 const imgKey = (im) => "img:" + im.id;
-function groupPer(arr, per) {
+function gridOptions(n) {
+  const out = [];
+  for (let c = 1; c <= n; c++) {
+    const r = Math.ceil(n / c);
+    if ((c - 1) * r >= n || c * (r - 1) >= n) continue;
+    out.push({ cols: c, rows: r });
+  }
+  return out;
+}
+function autoGrid(arr, g) {
+  let best = null;
+  for (const G of gridOptions(g.length)) {
+    const cw = (BOX.w - GAP * (G.cols - 1)) / G.cols, ch = (BOX.h - GAP * (G.rows - 1)) / G.rows - LABEL_H - LABEL_GAP;
+    let a = 0;
+    for (const j of g) {
+      const m = arr[j], sc = Math.min(cw / Math.max(1, m.w), ch / Math.max(1, m.h));
+      a += m.w * m.h * sc * sc;
+    }
+    if (!best || a > best.a + 1e-6) best = { ...G, a };
+  }
+  return { cols: best.cols, rows: best.rows };
+}
+function groupPer(arr, per, grid2) {
   if (!per) return groupMasks(arr);
+  const m = String(grid2 || "").match(/^(\d+)x(\d+)$/), fixed = m && +m[1] * +m[2] >= per ? { cols: +m[1], rows: +m[2] } : null;
   const out = [];
   for (let i = 0; i < arr.length; i += per) {
     const g = [];
     for (let j = i; j < Math.min(arr.length, i + per); j++) g.push(j);
-    out.push({ hz: g.every((j) => arr[j].w >= arr[j].h), g });
+    out.push({ hz: g.length === 1 ? true : fixed || autoGrid(arr, g), g });
   }
   return out;
 }
 const imgGroups = (imgs) => groupPer(imgs, project.tz.imgPer | 0);
-const maskGroups = (masks) => groupPer(masks, project.tz.maskPer | 0);
+const maskGroups = (masks) => groupPer(masks, project.tz.maskPer | 0, project.tz.maskGrid);
 function refreshTZPanel() {
   if (ui.page !== "tz") return;
   const tz = project.tz, list = $("tList");
@@ -5594,6 +5869,12 @@ function refreshTZPanel() {
   const ns = imgGroups(ui.images).length;
   $("tImgPer").value = String(tz.imgPer | 0);
   $("tMaskPer").value = String(tz.maskPer | 0);
+  {
+    const n2 = tz.maskPer | 0, gs = $("tMaskGrid");
+    $("tMaskGridRow").hidden = n2 < 2;
+    gs.innerHTML = '<option value="">Авто — маски крупнее всего</option>' + gridOptions(n2).map((G) => '<option value="'.concat(G.cols, "x").concat(G.rows, '">').concat(G.cols, " по горизонтали × ").concat(G.rows, " по вертикали").concat(G.cols === 1 ? " (столбиком)" : G.rows === 1 ? " (в ряд)" : "", "</option>")).join("");
+    gs.value = gridOptions(n2).some((G) => "".concat(G.cols, "x").concat(G.rows) === tz.maskGrid) ? tz.maskGrid : "";
+  }
   $("tOvInfo").textContent = n ? tz.overview ? "Картинок: ".concat(n, " на ").concat(ns, " ").concat(ns === 1 ? "слайде" : "слайдах", " (").concat(ns === 1 ? "слайд 2" : "слайды 2–" + (ns + 1), "), порядок как в списке") : "Картинок: ".concat(n, " — галочка снята, слайды не добавятся") : "Картинок нет — слайды не добавятся.";
   $("tTpl").value = ui.tzTpl;
   $("tSave").textContent = "Сохранить ТЗ ".concat(ui.tzTpl);
@@ -5983,6 +6264,13 @@ $("tOverview").onchange = (e) => {
 $("tOvPick").onclick = () => $("tOvFile").click();
 $("tMaskPer").addEventListener("change", (e) => {
   project.tz.maskPer = +e.target.value || 0;
+  const G = project.tz.maskGrid.match(/^(\d+)x(\d+)$/);
+  if (G && !gridOptions(project.tz.maskPer).some((o) => o.cols === +G[1] && o.rows === +G[2])) project.tz.maskGrid = "";
+  tzChanged();
+  scheduleHistory();
+});
+$("tMaskGrid").addEventListener("change", (e) => {
+  project.tz.maskGrid = e.target.value;
   tzChanged();
   scheduleHistory();
 });
@@ -6137,7 +6425,7 @@ function drawTZ() {
       const [lx, ly, lw, lh] = lay.label, [ix, iy, iw, ih] = lay.image;
       if (img) c.drawImage(img, x + ix * k, y + iy * k, iw * k, ih * k);
       c.fillStyle = "#222";
-      c.font = "".concat(Math.max(5, 10 * 12700 * k), "px Arial, sans-serif");
+      c.font = "".concat(Math.max(3, labelPt(text, lw) * 12700 * k), "px Arial, sans-serif");
       c.textAlign = "center";
       c.textBaseline = "middle";
       c.fillText(text, x + (lx + lw / 2) * k, y + (ly + lh / 2) * k, lw * k);
@@ -6486,6 +6774,67 @@ pv.addEventListener("mousedown", (e) => {
 });
 pv.addEventListener("selectstart", (e) => e.preventDefault());
 document.querySelector(".canvas-wrap") && document.querySelector(".canvas-wrap").addEventListener("selectstart", (e) => e.preventDefault());
+function setTitleRot(d) {
+  const st = S();
+  st.rotDeg = normDeg(d);
+  let best = 0;
+  ROT_DEG.forEach((v, i) => {
+    if (Math.abs(normDeg(v - st.rotDeg)) < Math.abs(normDeg(ROT_DEG[best] - st.rotDeg))) best = i;
+  });
+  st.rotationIndex = best;
+  $("rotVal").textContent = st.rotDeg + "°";
+  changed();
+}
+$("rotCCW").onclick = () => setTitleRot(titleRot(S()) + 45);
+$("rotCW").onclick = () => setTitleRot(titleRot(S()) - 45);
+$("rot0").onclick = () => setTitleRot(0);
+$("showInfo").addEventListener("change", (e) => {
+  S().showInfo = e.target.checked;
+  changed();
+});
+function stepper(id, fn) {
+  const inp = $(id), wrap = document.createElement("span");
+  wrap.className = "stp";
+  inp.parentNode.insertBefore(wrap, inp);
+  wrap.appendChild(inp);
+  const bx = document.createElement("span");
+  bx.className = "stpb";
+  for (const [d, t] of [[1, "▲"], [-1, "▼"]]) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = t;
+    b.tabIndex = -1;
+    b.setAttribute("aria-label", (d > 0 ? "Больше: " : "Меньше: ") + (inp.getAttribute("aria-label") || id));
+    let t1 = 0, t2 = 0;
+    const stop = () => {
+      clearTimeout(t1);
+      clearInterval(t2);
+    };
+    b.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      fn(d);
+      stop();
+      t1 = setTimeout(() => {
+        t2 = setInterval(() => fn(d), 90);
+      }, 380);
+    });
+    ["pointerup", "pointerleave", "pointercancel"].forEach((ev) => b.addEventListener(ev, stop));
+    b.addEventListener("click", (e) => e.preventDefault());
+    bx.appendChild(b);
+  }
+  wrap.appendChild(bx);
+}
+const stepCabs = (which, d) => {
+  const st = S(), k = which === "w" ? "cabCols" : "cabRows";
+  st[k] = Math.max(1, st[k] + d);
+  $("cols").value = st.cabCols;
+  $("rows").value = st.cabRows;
+  changed({ forcePhys: true });
+};
+stepper("cols", (d) => stepCabs("w", d));
+stepper("rows", (d) => stepCabs("h", d));
+stepper("physW", (d) => stepCabs("w", d));
+stepper("physH", (d) => stepCabs("h", d));
 (function keepPanelScroll() {
   const pn = document.querySelector(".panel");
   if (!pn) return;
