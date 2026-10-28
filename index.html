@@ -636,6 +636,12 @@ html[data-kind=proj] .led-only {
 html:not([data-kind=proj]) .proj-only {
   display: none !important;
 }
+html[data-pjmode=dome] .pjg {
+  display: none !important;
+}
+html:not([data-pjmode=dome]) .pjd {
+  display: none !important;
+}
 .tgroup {
   font-size: 11px;
   font-weight: 700;
@@ -1474,23 +1480,34 @@ html.nogap .imglist > * {
     </div></details>
 
     <details class="sec proj-only" open><summary>ПРОЕКЦИЯ</summary><div class="sec-body">
-      <p class="hint">Тест-паттерн для проекторов: сетка, рамки и номера проекторов, зоны перекрытия, круги. Общее разрешение считается само.</p>
-      <div class="row"><label for="pjPreset">Проектор</label><div class="ctl"><select id="pjPreset" class="grow"></select></div></div>
-      <div class="row"><label for="pjW">Пиксели проектора</label><div class="ctl"><input type="number" id="pjW" min="16" class="w-md" inputmode="numeric"><span class="unit">×</span><input type="number" id="pjH" min="16" class="w-md" inputmode="numeric"><span class="unit">px</span></div></div>
-      <div class="row"><span class="lbl">Ориентация</span><div class="ctl"><div class="seg pjrot" role="group" aria-label="Ориентация проектора">
+      <p class="hint">Тест-паттерн для проекторов: сетка, рамки и номера проекторов, зоны перекрытия, круги — или полярная сетка для купола. Общее разрешение считается само.</p>
+      <div class="row"><span class="lbl">Паттерн</span><div class="ctl"><div class="seg pjmode" role="group" aria-label="Паттерн проекции">
+        <button data-mode="grid">Сетка проекторов</button><button data-mode="dome" title="Domemaster: полярная сетка для купола (fisheye)">Купол</button>
+      </div></div></div>
+      <div class="row pjd"><span class="lbl">Разрешение купола</span><div class="ctl"><div class="seg pjdsize" role="group" aria-label="Разрешение купола">
+        <button data-d="1024">1K</button><button data-d="2048">2K</button><button data-d="4096">4K</button><button data-d="6144">6K</button><button data-d="8192">8K</button>
+      </div><input type="number" id="pjDome" min="256" max="16384" class="w-md" inputmode="numeric" aria-label="Сторона квадрата, px"><span class="unit">px</span></div></div>
+      <div class="row pjd"><label for="pjFov">Угол обзора</label><div class="ctl"><input type="number" id="pjFov" min="60" max="360" step="5" class="w-sm" inputmode="numeric"><span class="unit">°</span></div></div>
+      <div class="row pjd"><label for="pjAz">Шаг азимута / высоты</label><div class="ctl"><input type="number" id="pjAz" min="1" max="90" class="w-sm" inputmode="numeric"><span class="unit">°</span><input type="number" id="pjEl" min="1" max="45" class="w-sm" inputmode="numeric"><span class="unit">°</span></div></div>
+      <div class="row pjg"><label for="pjPreset">Проектор</label><div class="ctl"><select id="pjPreset" class="grow"></select></div></div>
+      <div class="row pjg"><label for="pjW">Пиксели проектора</label><div class="ctl"><input type="number" id="pjW" min="16" class="w-md" inputmode="numeric"><span class="unit">×</span><input type="number" id="pjH" min="16" class="w-md" inputmode="numeric"><span class="unit">px</span></div></div>
+      <div class="row pjg"><span class="lbl">Ориентация</span><div class="ctl"><div class="seg pjrot" role="group" aria-label="Ориентация проектора">
         <button data-rot="0">Обычный</button><button data-rot="90" title="Портрет: проектор повёрнут на 90°, кадр вертикальный">Портрет</button>
       </div></div></div>
-      <div class="row"><label for="pjNx">Проекторы</label><div class="ctl"><input type="number" id="pjNx" min="1" max="32" class="w-md" inputmode="numeric"><span class="unit">×</span><input type="number" id="pjNy" min="1" max="32" class="w-md" inputmode="numeric"><span class="unit">шт.</span></div></div>
-      <div class="row"><label for="pjWm">Размер</label><div class="ctl"><input type="number" id="pjWm" min="0" step="0.01" class="w-md" inputmode="decimal" aria-label="Ширина изображения, м"><span class="unit">×</span><input type="number" id="pjHm" min="0" step="0.01" class="w-md" inputmode="decimal" aria-label="Высота изображения, м"><span class="unit">м</span></div></div>
-      <div class="row"><label for="pjOx">Перекрытие гориз. / верт.</label><div class="ctl"><input type="number" id="pjOx" min="0" max="50" step="0.5" class="w-sm" inputmode="decimal"><span class="unit">%</span><input type="number" id="pjOy" min="0" max="50" step="0.5" class="w-sm" inputmode="decimal"><span class="unit">%</span></div></div>
-      <div class="row"><label for="pjGrid">Шаг сетки</label><div class="ctl"><input type="number" id="pjGrid" min="8" inputmode="numeric"><span class="unit">px</span></div></div>
+      <div class="row pjg"><label for="pjNx">Проекторы</label><div class="ctl"><input type="number" id="pjNx" min="1" max="32" class="w-md" inputmode="numeric"><span class="unit">×</span><input type="number" id="pjNy" min="1" max="32" class="w-md" inputmode="numeric"><span class="unit">шт.</span></div></div>
+      <div class="row pjg"><label for="pjWm">Размер</label><div class="ctl"><input type="number" id="pjWm" min="0" step="0.01" class="w-md" inputmode="decimal" aria-label="Ширина изображения, м"><span class="unit">×</span><input type="number" id="pjHm" min="0" step="0.01" class="w-md" inputmode="decimal" aria-label="Высота изображения, м"><span class="unit">м</span></div></div>
+      <div class="row pjg"><label for="pjOx">Перекрытие гориз. / верт.</label><div class="ctl"><input type="number" id="pjOx" min="0" max="50" step="0.5" class="w-sm" inputmode="decimal"><span class="unit">%</span><input type="number" id="pjOy" min="0" max="50" step="0.5" class="w-sm" inputmode="decimal"><span class="unit">%</span></div></div>
+      <div class="row pjg"><label for="pjGrid">Шаг сетки</label><div class="ctl"><input type="number" id="pjGrid" min="8" inputmode="numeric"><span class="unit">px</span></div></div>
       <div class="row"><label for="pjBg">Фон / линии / текст</label><div class="ctl"><input type="color" id="pjBg" title="Фон"><input type="color" id="pjLine" title="Линии"><input type="color" id="pjText" title="Текст"></div></div>
       <div class="ctl" style="row-gap:6px">
-        <label class="chk"><input type="checkbox" id="pjZones"> Зоны перекрытия</label>
-        <label class="chk"><input type="checkbox" id="pjFrames"> Рамки и номера проекторов</label>
-        <label class="chk"><input type="checkbox" id="pjCircles"> Круги</label>
-        <label class="chk"><input type="checkbox" id="pjCells"> Подписи клеток (A1, B1…)</label>
-        <label class="chk"><input type="checkbox" id="pjHatch"> Штриховка</label>
+        <label class="chk pjg"><input type="checkbox" id="pjZones"> Зоны перекрытия</label>
+        <label class="chk pjg"><input type="checkbox" id="pjFrames"> Рамки и номера проекторов</label>
+        <label class="chk pjg"><input type="checkbox" id="pjCircles"> Круги</label>
+        <label class="chk pjg"><input type="checkbox" id="pjCells"> Подписи клеток (A1, B1…)</label>
+        <label class="chk pjg"><input type="checkbox" id="pjHatch"> Штриховка</label>
+        <label class="chk pjd"><input type="checkbox" id="pjDMinor"> Мелкая сетка (½ шага)</label>
+        <label class="chk pjd"><input type="checkbox" id="pjDLabels"> Подписи градусов</label>
+        <label class="chk pjd"><input type="checkbox" id="pjDSides"> Стороны FRONT / BACK / LEFT / RIGHT</label>
         <label class="chk"><input type="checkbox" id="pjBar"> Цветовая полоса</label>
         <label class="chk"><input type="checkbox" id="pjInvert"> Инверсия (белый фон)</label>
       </div>
@@ -1707,13 +1724,14 @@ html.nogap .imglist > * {
 <li><strong>Границы ячеек</strong> — как в Keynote: выделите кабинеты и нажмите, какие границы нарисовать (левая, внутренние вертикальные, правая; верхняя, внутренние горизонтальные, нижняя; внешний контур; все внутренние; все). Белая линия 2 px появляется сразу, повторное нажатие убирает. «Убрать границы» — в выделении (или все), «Показать / скрыть» — не удаляя. Галочка <strong>«Автоконтур»</strong> сама обводит все включённые кабинеты: выключили модуль «Гашением» — контур сразу обходит его.</li>
 </ul>
 <h3>Проекция</h3>
-<p>Тест-паттерн для проекторов. Включается переключателем «Проекция»; экран сам называется «projection 1», «projection 2»… (своё название не меняется). По умолчанию — один проектор 1920×1200.</p>
+<p>Тест-паттерн для проекторов. Включается переключателем «Проекция»; экран сам называется «projection 1», «projection 2»… (своё название не меняется). По умолчанию — один проектор 1920×1200. Переключатель «Паттерн»: сетка проекторов или купол (domemaster).</p>
 <ol>
 <li><strong>Проектор</strong> — готовые разрешения (Full HD, WUXGA, 4K…) или своё. <strong>Ориентация</strong>: «Обычный» или «Портрет» — проектор повёрнут на 90°, его кадр на маске становится вертикальным (1920×1200 → 1200×1920).</li>
 <li>Три строки «ширина × высота»: <strong>«Пиксели проектора»</strong>, <strong>«Проекторы»</strong> (сколько по горизонтали и вертикали), <strong>«Размер»</strong> в метрах (можно не задавать).</li>
 <li><strong>Перекрытие</strong> в процентах по горизонтали и вертикали — общее разрешение считается само (2 × Full HD с 15% = 3552×1080, перекрытие 288 px).</li>
 <li><strong>Шаг сетки</strong> в пикселях и цвета <strong>фона, линий и текста</strong> (текст отдельно от линий).</li>
 <li>Галочки: зоны перекрытия, рамки и номера проекторов (P1, P2… с разрешением и координатами), круги, подписи клеток A1, B1…, штриховка, цветовая полоса, инверсия (белый фон).</li>
+<li><strong>Купол</strong> (переключатель «Паттерн») — полярная сетка domemaster для купольной проекции: квадрат 1K / 2K / 4K / 6K / 8K или своя сторона, зенит в центре, азимут 0° сверху по часовой. Задаются <strong>угол обзора</strong> (180° — полусфера, больше — ниже горизонта), <strong>шаг азимута и высоты</strong> в градусах. Красный крест, фиолетовые кольца каждые 30° высоты и край купола; галочки — мелкая сетка, подписи градусов, стороны FRONT / BACK / LEFT / RIGHT. Текст и цветовая полоса — ниже центра, чтобы не закрывать зенит.</li>
 </ol>
 <p>Проекция сохраняется в PNG, ставится в общее поле и попадает в ТЗ, как обычная маска.</p>
 <h3>Текст на маске</h3>
@@ -2242,17 +2260,162 @@ const dims = (st) => {
 };
 const PJ_PRESETS = [["Full HD 1920×1080", 1920, 1080], ["WUXGA 1920×1200", 1920, 1200], ["4K UHD 3840×2160", 3840, 2160], ["WQXGA 2560×1600", 2560, 1600], ["HD 1280×720", 1280, 720], ["WXGA 1280×800", 1280, 800], ["XGA 1024×768", 1024, 768], ["SXGA+ 1400×1050", 1400, 1050]];
 const PJ_COLORS = ["#FF3B30", "#34C759", "#0A84FF", "#FFCC00", "#FF2D92", "#32D7E6", "#FF9500", "#AF52DE"];
-const defProj = () => ({ pw: 1920, ph: 1200, nx: 1, ny: 1, ox: 15, oy: 15, grid: 120, wm: 0, rot: 0, bg: "#101010", line: "#FFFFFF", text: "#FFFFFF", zones: true, frames: true, circles: true, cells: true, hatch: false, bar: true, invert: false });
+const defProj = () => ({ pw: 1920, ph: 1200, nx: 1, ny: 1, ox: 15, oy: 15, grid: 120, wm: 0, rot: 0, bg: "#101010", line: "#FFFFFF", text: "#FFFFFF", zones: true, frames: true, circles: true, cells: true, hatch: false, bar: true, invert: false, mode: "grid", dome: 4096, fov: 180, az: 10, el: 10, dminor: true, dlabels: true, dsides: true });
 function projGeom(st) {
-  const P = st.proj || defProj(), rot = +P.rot || 0, pw0 = Math.max(16, P.pw | 0), ph0 = Math.max(16, P.ph | 0);
+  const P0 = st.proj || defProj();
+  if (P0.mode === "dome") {
+    const D = Math.max(256, Math.min(16384, P0.dome | 0 || 4096));
+    return { P: P0, dome: true, rot: 0, pw: D, ph: D, nx: 1, ny: 1, ovx: 0, ovy: 0, W: D, H: D, rects: [] };
+  }
+  const P = P0, rot = +P.rot || 0, pw0 = Math.max(16, P.pw | 0), ph0 = Math.max(16, P.ph | 0);
   const pw = rot ? ph0 : pw0, ph = rot ? pw0 : ph0, nx = Math.max(1, P.nx | 0), ny = Math.max(1, P.ny | 0);
   const ovx = nx > 1 ? Math.round(pw * Math.max(0, Math.min(50, +P.ox || 0)) / 100) : 0, ovy = ny > 1 ? Math.round(ph * Math.max(0, Math.min(50, +P.oy || 0)) / 100) : 0;
   const W = nx * pw - (nx - 1) * ovx, H = ny * ph - (ny - 1) * ovy, rects = [];
   for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) rects.push({ n: j * nx + i + 1, x: i * (pw - ovx), y: j * (ph - ovy), w: pw, h: ph });
   return { P, rot, pw, ph, nx, ny, ovx, ovy, W, H, rects };
 }
+function drawDome(ctx, st, s, guides, g) {
+  const P = g.P, D = g.W, Dp = Math.max(1, Math.round(D * s)), c = Dp / 2;
+  const bg = P.invert ? "#FFFFFF" : P.bg || "#101010", fg = P.invert ? "#000000" : P.line || "#FFFFFF", tc = P.invert ? "#000000" : P.text || "#FFFFFF";
+  const ACC = P.invert ? "#8E2BD9" : "#B45CFF", RED = "#FF3B30", k = D / 2048, lw = (px) => Math.max(1, px * k * s);
+  const fov = Math.max(60, Math.min(360, +P.fov || 180)), half = fov / 2, az = Math.max(1, Math.min(90, +P.az || 10)), el = Math.max(1, Math.min(45, +P.el || 10));
+  const R = Dp / 2 - lw(2), rOf = (t) => R * t / half;
+  const pt = (a, r) => [c + r * Math.sin(a * Math.PI / 180), c - r * Math.cos(a * Math.PI / 180)];
+  ctx.save();
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, Dp, Dp);
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(c, c, R, 0, Math.PI * 2);
+  ctx.clip();
+  const ring = (t, col2, w, al) => {
+    ctx.strokeStyle = col2;
+    ctx.lineWidth = w;
+    ctx.globalAlpha = al;
+    ctx.beginPath();
+    ctx.arc(c, c, rOf(t), 0, Math.PI * 2);
+    ctx.stroke();
+  };
+  const spoke = (a, r0, col2, w, al) => {
+    const [x0, y0] = pt(a, r0), [x1, y1] = pt(a, R);
+    ctx.strokeStyle = col2;
+    ctx.lineWidth = w;
+    ctx.globalAlpha = al;
+    ctx.beginPath();
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x1, y1);
+    ctx.stroke();
+  };
+  if (P.dminor !== false) {
+    for (let t = el / 2; t < half + 1e-6; t += el) ring(t, fg, lw(1), 0.28);
+    for (let a = az / 2; a < 360; a += az) spoke(a, rOf(Math.min(half, el * 2)), fg, lw(1), 0.28);
+  }
+  for (let t = el; t < half + 1e-6; t += el) ring(t, fg, lw(2), 0.7);
+  for (let a = 0; a < 360; a += az) spoke(a, a % 30 === 0 ? 0 : rOf(Math.min(half, el)), fg, lw(2), 0.7);
+  for (let e = 60; 90 - e <= half + 1e-6; e -= 30) ring(90 - e, ACC, lw(4), 1);
+  ctx.globalAlpha = 1;
+  ctx.strokeStyle = RED;
+  ctx.lineWidth = lw(3);
+  ctx.beginPath();
+  ctx.moveTo(c, c - R);
+  ctx.lineTo(c, c + R);
+  ctx.moveTo(c - R, c);
+  ctx.lineTo(c + R, c);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(c, c, Math.max(3, R * 0.012), 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
+  ctx.strokeStyle = ACC;
+  ctx.lineWidth = lw(5);
+  ctx.beginPath();
+  ctx.arc(c, c, R, 0, Math.PI * 2);
+  ctx.stroke();
+  const fs = Math.max(6, 30 * k * s), tang = (txt, a, r, col2, font) => {
+    const [x, y] = pt(a, r);
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(a * Math.PI / 180);
+    ctx.fillStyle = col2;
+    ctx.font = font;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(txt, 0, 0);
+    ctx.restore();
+  };
+  if (P.dlabels !== false) {
+    const stepL = 2 * Math.PI * R * az / 360 < fs * 3.2 ? az * Math.ceil(fs * 3.2 / (2 * Math.PI * R * az / 360)) : az;
+    for (let a = 0; a < 360; a += stepL) tang("".concat(a, "°"), a, R - fs * 1.1, tc, "bold ".concat(fs, "px ").concat(FONT));
+    ctx.fillStyle = tc;
+    ctx.font = "".concat(fs * 0.8, "px ").concat(FONT);
+    ctx.textAlign = "left";
+    ctx.textBaseline = "bottom";
+    for (let t = el; t < half - el * 0.3; t += el) {
+      if (rOf(el) < fs * 1.1 && Math.round(t / el) % 2) continue;
+      {
+        const [x, y] = pt(az * Math.round(45 / az) || 45, rOf(t));
+        ctx.fillText("".concat(+(90 - t).toFixed(1), "°"), x + fs * 0.25, y - fs * 0.1);
+      }
+    }
+  }
+  if (P.dsides !== false) {
+    const f2 = "bold ".concat(fs * 1.25, "px ").concat(FONT), r2 = R - fs * (P.dlabels !== false ? 3 : 1.4);
+    [["BACK", 0], ["RIGHT", 90], ["FRONT", 180], ["LEFT", 270]].forEach(([t, a]) => tang(t, a, r2, RED, f2));
+  }
+  if (guides.circle || guides.diag) {
+    ctx.beginPath();
+    if (guides.diag) {
+      ctx.moveTo(0, 0);
+      ctx.lineTo(Dp, Dp);
+      ctx.moveTo(0, Dp);
+      ctx.lineTo(Dp, 0);
+    }
+    if (guides.circle) {
+      ctx.moveTo(Dp, c);
+      ctx.arc(c, c, Dp / 2, 0, Math.PI * 2);
+    }
+    ctx.strokeStyle = P.invert ? "rgba(0,0,0,0.5)" : "rgba(255,255,255,0.5)";
+    ctx.lineWidth = Math.max(1, 2 * s);
+    ctx.stroke();
+  }
+  const lines = titleLines(st, s), b = blockSize(lines, TITLE_GAP * s), tx = c + (st.titleOffsetX || 0) * s, ty = Dp * 0.62 - (st.titleOffsetY || 0) * s;
+  ctx.fillStyle = P.invert ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.6)";
+  {
+    const a = -titleRot(st) * Math.PI / 180;
+    ctx.save();
+    ctx.translate(tx, ty);
+    ctx.rotate(a);
+    ctx.fillRect(-b.w / 2 - 14 * s, -b.h / 2 - 8 * s, b.w + 28 * s, b.h + 16 * s);
+    ctx.restore();
+  }
+  ctx.fillStyle = tc;
+  drawBlock(ctx, lines, TITLE_GAP * s, tx, ty, titleRot(st));
+  if (P.bar) {
+    const bw = D * 0.36, bh = D * 0.03, bx = (D - bw) / 2, by = Math.max(D * 0.7, (ty + b.h / 2 + 24 * s) / s), X = (v) => v * s, cols = ["#FFFFFF", "#FFFF00", "#00FFFF", "#00FF00", "#FF00FF", "#FF0000", "#0000FF", "#000000"];
+    cols.forEach((cl, i) => {
+      ctx.fillStyle = cl;
+      ctx.fillRect(X(bx + bw * i / cols.length), X(by), X(bw / cols.length) + 1, X(bh));
+    });
+    for (let i = 0; i < 11; i++) {
+      const v = Math.round(255 * i / 10);
+      ctx.fillStyle = "rgb(".concat(v, ",").concat(v, ",").concat(v, ")");
+      ctx.fillRect(X(bx + bw * i / 11), X(by + bh), X(bw / 11) + 1, X(bh * 0.5));
+    }
+    ctx.strokeStyle = fg;
+    ctx.lineWidth = lw(1);
+    ctx.strokeRect(X(bx), X(by), X(bw), X(bh * 1.5));
+  }
+  for (const it of st.extraLabels || []) {
+    const fs2 = Math.min(900, Math.max(6, +it.size || 120)) * s;
+    drawBlock(ctx, [[it.text || "Текст", fs2]], 0, c + (+it.x || 0) * s, c - (+it.y || 0) * s, +it.rotation || 0);
+  }
+  drawInfo(ctx, st, s);
+  ctx.restore();
+}
 function drawProj(ctx, st, s, guides) {
-  const g = projGeom(st), P = g.P, W = g.W, H = g.H, Wp = Math.max(1, Math.round(W * s)), Hp = Math.max(1, Math.round(H * s));
+  const g = projGeom(st);
+  if (g.dome) return drawDome(ctx, st, s, guides, g);
+  const P = g.P, W = g.W, H = g.H, Wp = Math.max(1, Math.round(W * s)), Hp = Math.max(1, Math.round(H * s));
   const bg = P.invert ? "#FFFFFF" : P.bg || "#101010", fg = P.invert ? "#000000" : P.line || "#FFFFFF";
   const tc = P.invert ? "#000000" : P.text || "#FFFFFF";
   const X = (v) => v * s, lw = (px) => Math.max(1, px * s);
@@ -2479,7 +2642,7 @@ function typeMM(st) {
 }
 function physM(st) {
   if (st.kind === "proj") {
-    const [W2, H2] = dims(st), wm = +(st.proj && st.proj.wm) || 0;
+    const [W2, H2] = dims(st), wm = st.proj && st.proj.mode !== "dome" ? +st.proj.wm || 0 : 0;
     return wm > 0 ? [wm, wm * H2 / W2, true] : [0, 0, false];
   }
   const [w, h, k] = typeMM(st), [W, H] = dims(st);
@@ -2761,6 +2924,7 @@ function infoLines(st) {
   const [W, H] = dims(st), [pw, ph, known] = physM(st), m = (v) => compactM(v);
   if (st.kind === "proj") {
     const g = projGeom(st), P = g.P, rot = +P.rot || 0;
+    if (g.dome) return ["Купол (domemaster): ".concat(W, "×").concat(H, " px"), "Угол обзора: ".concat(+P.fov || 180, "°"), "Шаг: азимут ".concat(+P.az || 10, "° · высота ").concat(+P.el || 10, "°")];
     const out = [
       "Проектор: ".concat(P.pw, "×").concat(P.ph, " px").concat(rot ? " · портрет" : ""),
       "Проекторов: ".concat(g.nx, "×").concat(g.ny)
@@ -2872,7 +3036,9 @@ function normalizeScreen(d) {
     for (const k of ["ox", "oy", "wm"]) if (q[k] != null && isFinite(+q[k])) P[k] = Math.max(0, +q[k]);
     P.rot = [-90, 0, 90].includes(+q.rot) ? +q.rot : 0;
     for (const k of ["bg", "line", "text"]) if (typeof q[k] === "string" && /^#[0-9a-f]{6}$/i.test(q[k])) P[k] = q[k].toUpperCase();
-    for (const k of ["zones", "frames", "circles", "cells", "hatch", "bar", "invert", "used"]) if (q[k] != null) P[k] = !!q[k];
+    for (const k of ["zones", "frames", "circles", "cells", "hatch", "bar", "invert", "used", "dminor", "dlabels", "dsides"]) if (q[k] != null) P[k] = !!q[k];
+    P.mode = q.mode === "dome" ? "dome" : "grid";
+    for (const [k, lo, hi] of [["dome", 256, 16384], ["fov", 60, 360], ["az", 1, 90], ["el", 1, 45]]) if (q[k] != null && isFinite(+q[k])) P[k] = Math.max(lo, Math.min(hi, Math.round(+q[k])));
     if (d.kind === "proj") P.used = true;
     st.proj = P;
   }
@@ -2959,7 +3125,7 @@ function updateInfo(forcePhys) {
   if (st.kind === "proj") {
     const g = projGeom(st);
     $("infoCab").textContent = "";
-    $("pjInfo").textContent = "Итог: ".concat(W, "×").concat(H, " px").concat(g.ovx ? " · перекрытие по горизонтали ".concat(g.ovx, " px") : "").concat(g.ovy ? " · по вертикали ".concat(g.ovy, " px") : "");
+    $("pjInfo").textContent = g.dome ? "Итог: ".concat(W, "×").concat(H, " px · купол ").concat(+g.P.fov || 180, "°") : "Итог: ".concat(W, "×").concat(H, " px").concat(g.ovx ? " · перекрытие по горизонтали ".concat(g.ovx, " px") : "").concat(g.ovy ? " · по вертикали ".concat(g.ovy, " px") : "");
     $("zLabel").textContent = Math.round(ui.zoom * 100) + "%";
     return;
   }
@@ -3318,6 +3484,9 @@ function clearSelection() {
 function syncProjUI() {
   const st = S(), P = st.proj || (st.proj = defProj()), kind = st.kind === "proj" ? "proj" : "led";
   document.documentElement.setAttribute("data-kind", kind);
+  document.documentElement.setAttribute("data-pjmode", P.mode === "dome" ? "dome" : "grid");
+  document.querySelectorAll(".seg.pjmode button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === (P.mode === "dome" ? "dome" : "grid"))));
+  document.querySelectorAll(".seg.pjdsize button").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.d === (P.dome | 0))));
   document.querySelectorAll(".seg.kind button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.kind === kind)));
   const sel = $("pjPreset");
   if (!sel.options.length) {
@@ -3341,10 +3510,15 @@ function syncProjUI() {
   set("pjOy", P.oy);
   set("pjGrid", P.grid);
   set("pjWm", P.wm || 0);
+  set("pjDome", P.dome || 4096);
+  set("pjFov", P.fov || 180);
+  set("pjAz", P.az || 10);
+  set("pjEl", P.el || 10);
   $("pjBg").value = (P.bg || "#101010").toLowerCase();
   $("pjLine").value = (P.line || "#FFFFFF").toLowerCase();
   $("pjText").value = (P.text || "#FFFFFF").toLowerCase();
   for (const [id, k] of [["pjZones", "zones"], ["pjFrames", "frames"], ["pjCircles", "circles"], ["pjCells", "cells"], ["pjHatch", "hatch"], ["pjBar", "bar"], ["pjInvert", "invert"]]) $(id).checked = !!P[k];
+  for (const [id, k] of [["pjDMinor", "dminor"], ["pjDLabels", "dlabels"], ["pjDSides", "dsides"]]) $(id).checked = P[k] !== false;
 }
 document.querySelectorAll(".seg.kind button").forEach((b) => b.onclick = () => {
   const st = S(), was = st.kind === "proj" ? "proj" : "led";
@@ -3414,6 +3588,29 @@ $("pjText").addEventListener("input", (e) => {
   S().proj.text = e.target.value.toUpperCase();
   changed();
 });
+for (const [id, k] of [["pjDMinor", "dminor"], ["pjDLabels", "dlabels"], ["pjDSides", "dsides"]]) $(id).addEventListener("change", (e) => {
+  S().proj[k] = e.target.checked;
+  changed();
+});
+document.querySelectorAll(".seg.pjmode button").forEach((b) => b.onclick = () => {
+  const P = S().proj;
+  P.mode = b.dataset.mode;
+  for (const [k, v] of Object.entries(defProj())) if (P[k] == null) P[k] = v;
+  syncProjUI();
+  changed({ forcePhys: true });
+  fitAuto && fitAuto();
+  status(P.mode === "dome" ? "Купол: полярная сетка domemaster" : "Сетка проекторов", true);
+});
+document.querySelectorAll(".seg.pjdsize button").forEach((b) => b.onclick = () => {
+  S().proj.dome = +b.dataset.d;
+  syncProjUI();
+  changed({ forcePhys: true });
+  fitAuto && fitAuto();
+});
+projNum("pjDome", "dome", false, 256);
+projNum("pjFov", "fov", false, 60);
+projNum("pjAz", "az", false, 1);
+projNum("pjEl", "el", false, 1);
 for (const [id, k] of [["pjZones", "zones"], ["pjFrames", "frames"], ["pjCircles", "circles"], ["pjCells", "cells"], ["pjHatch", "hatch"], ["pjBar", "bar"], ["pjInvert", "invert"]]) $(id).addEventListener("change", (e) => {
   S().proj[k] = e.target.checked;
   changed();
