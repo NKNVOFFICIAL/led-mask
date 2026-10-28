@@ -3765,7 +3765,9 @@ function drawProj(ctx, st, s, guides) {
   drawInfo(ctx, st, s);
   ctx.restore();
 }
-const shapeR = (c) => c.t === "rect" ? 0 : c.t === "round" ? Math.max(0, Math.min(+c.r || 0, c.w / 2, c.h / 2)) : null;
+function shapeR(c) {
+  return c.t === "rect" ? 0 : c.t === "round" ? Math.max(0, Math.min(+c.r || 0, c.w / 2, c.h / 2)) : null;
+}
 function shapeHas(c, dx, dy) {
   const hw = c.w / 2, hh = c.h / 2, ax = Math.abs(dx), ay = Math.abs(dy), r = shapeR(c);
   if (r === null) {
@@ -4193,7 +4195,7 @@ function cornerList(st, black) {
 }
 let project = { name: "Проект", screens: [defaultScreen()], cur: 0, guides: { circle: true, diag: true }, ...freshFieldState() };
 const S = () => project.screens[project.cur];
-const ui = { selShape: -1, corner: 0, selected: /* @__PURE__ */ new Set(), anchor: null, textMode: -1, selLabel: -1, zoom: 1, panX: 0, panY: 0, tool: "select", mod: false, hover: null, paint: { ...DEF_PAINT } };
+const ui = { shapeType: "circle", selShape: -1, corner: 0, selected: /* @__PURE__ */ new Set(), anchor: null, textMode: -1, selLabel: -1, zoom: 1, panX: 0, panY: 0, tool: "select", mod: false, hover: null, paint: { ...DEF_PAINT } };
 let downloads = null;
 function normalizeScreen(d) {
   var _a;
@@ -8517,8 +8519,9 @@ function drawCachePreview(st, s) {
     pctx.restore();
   }
 }
-const shapeName = (c) => c.t === "rect" ? c.lock ? "Квадрат" : "Прямоугольник" : c.t === "round" ? "Скруглённый" : c.lock ? "Круг" : "Овал";
-ui.shapeType = "circle";
+function shapeName(c) {
+  return c.t === "rect" ? c.lock ? "Квадрат" : "Прямоугольник" : c.t === "round" ? "Скруглённый" : c.lock ? "Круг" : "Овал";
+}
 function syncShapes() {
   const st = S(), list = st.cacheShapes || (st.cacheShapes = []), sel = $("shapeSel");
   if (ui.selShape >= list.length) ui.selShape = list.length - 1;
