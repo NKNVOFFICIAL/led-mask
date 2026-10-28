@@ -1478,6 +1478,7 @@ a.b {
         <option value="D3">D3 — кодек HAP</option>
         <option value="MP4">Медиаплееры — MPEG-4 (MP4)</option>
       </select></div></div>
+      <label class="chk"><input type="checkbox" id="tSaveProj"> Положить в архив и файл проекта</label>
       <div class="btns"><button class="x" id="tSave">Сохранить ТЗ Resolume</button></div>
       <p class="hint" id="tNote">ZIP с папкой: PPTX по шаблону, такой же PDF и PNG каждой маски и поля.</p>
     </div></details>
@@ -1781,7 +1782,7 @@ a.b {
 </ol>
 <p>В панели видно размер поля в пикселях и метрах. Метры считаются, только если у всех экранов на поле одинаковый шаг пикселя. Пересечения экранов подсвечиваются красным; пустые места в PNG чёрные. Двойной клик по экрану открывает его на вкладке «Маска».</p>
 <h2 id="help-s4">Вкладка «Формирование ТЗ»</h2>
-<p>ТЗ сохраняется одним ZIP: PPTX по шаблону, такой же PDF и PNG каждой маски и поля. На холсте — предпросмотр всех слайдов.</p>
+<p>ТЗ сохраняется одним ZIP: PPTX по шаблону, такой же PDF и PNG каждой маски и поля. Галочка «Положить в архив и файл проекта» (включена по умолчанию) добавляет в ту же папку файл проекта .ledmask — его потом можно открыть кнопкой «Открыть проект» и поправить. На холсте — предпросмотр всех слайдов.</p>
 <ol>
 <li><strong>Отметьте, что войдёт.</strong> По умолчанию отмечены общие поля целиком и маски, которые не стоят на полях. Маски с полей по отдельности можно добавить галочкой под полем. «По умолчанию» возвращает этот выбор.</li>
 <li><strong>Картинки</strong> (необязательно). «Добавить картинки…» — можно выбрать сразу несколько (фото, рендеры, схемы). Они встают на слайды после требований, в порядке списка. «Картинок на слайде»: «Авто» (горизонтальные до трёх столбиком, вертикальные до двух в ряд) или ровно 1, 2, 3 на слайд. Стрелки ↑ ↓ меняют порядок, × убирает картинку, «Убрать все» — все. Подпись над картинкой правится в её строке (у первой по умолчанию «Общий план», у остальных — имя файла). Снята галочка — картинки в ТЗ не попадут. Картинки живут, пока открыта программа, и очищаются при «Сброс» и открытии другого проекта.</li>
@@ -6269,7 +6270,12 @@ async function exportTZ(label) {
     const pdfBytes = new Uint8Array(await (await buildPdf(label, masks, ov)).arrayBuffer());
     busy("Упаковка ZIP…");
     await tick();
-    const z = await zip([{ name: "".concat(folder).concat(project_, "_ТЗ_").concat(label, ".pptx"), data: pptBytes }, { name: "".concat(folder).concat(project_, "_ТЗ_").concat(label, ".pdf"), data: pdfBytes }, ...pngs.map((p) => ({ name: p.file, data: p.png }))]);
+    const files = [{ name: "".concat(folder).concat(project_, "_ТЗ_").concat(label, ".pptx"), data: pptBytes }, { name: "".concat(folder).concat(project_, "_ТЗ_").concat(label, ".pdf"), data: pdfBytes }, ...pngs.map((p) => ({ name: p.file, data: p.png }))];
+    if (project.tz.saveProj !== false) {
+      const f = projectFile();
+      files.push({ name: folder + f.name, data: typeof f.data === "string" ? enc.encode(f.data) : await toBytes(f.data) });
+    }
+    const z = await zip(files);
     busy("");
     await save("".concat(project_, " ТЗ_").concat(label, ".zip"), z);
   } catch (e) {
@@ -6312,7 +6318,14 @@ $("btnAuthors").onclick = () => {
   setPage("about");
   window.scrollTo({ top: 0, behavior: "smooth" });
 };
-$("btnSaveProj").onclick = () => STANDALONE ? save("".concat(safeName(project.name, "Проект"), ".ledmask"), toPlist(ledmaskData())) : save("".concat(safeName(project.name, "Проект"), ".ledmask.json"), JSON.stringify(projectData(), null, 1));
+const projectFile = () => STANDALONE ? { name: "".concat(safeName(project.name, "Проект"), ".ledmask"), data: toPlist(ledmaskData()) } : { name: "".concat(safeName(project.name, "Проект"), ".ledmask.json"), data: JSON.stringify(projectData(), null, 1) };
+$("btnSaveProj").onclick = () => {
+  const f = projectFile();
+  return save(f.name, f.data);
+};
+function updateTZNote() {
+  $("tNote").textContent = "ZIP с папкой: PPTX по шаблону, такой же PDF и PNG каждой маски и поля" + (project.tz.saveProj !== false ? ", плюс файл проекта." : ".");
+}
 $("btnOpenProj").onclick = () => $("fileProj").click();
 $("fileProj").addEventListener("change", async (e) => {
   const f = e.target.files[0];
@@ -6335,7 +6348,7 @@ function freshField(k) {
   return { id: newUid(), name: k ? "Общее поле ".concat(k + 1) : "Общее поле", items: [], title: { on: true, x: 0, y: 0, size: 0, meters: false } };
 }
 function freshFieldState() {
-  return { fields: [freshField(0)], fieldCur: 0, tz: { fields: {}, masks: {}, overview: true, imgPer: 0, maskPer: 0, maskGrid: "", req: {}, notes: {}, pos: {} } };
+  return { fields: [freshField(0)], fieldCur: 0, tz: { fields: {}, masks: {}, overview: true, saveProj: true, imgPer: 0, maskPer: 0, maskGrid: "", req: {}, notes: {}, pos: {} } };
 }
 function loadFieldState(d, raw) {
   const seen = /* @__PURE__ */ new Set();
@@ -6385,7 +6398,7 @@ function loadFieldState(d, raw) {
     }
     return o;
   };
-  project.tz = { fields: boolMap(tz.fields), masks: boolMap(tz.masks), overview: tz.overview == null ? true : !!tz.overview, imgPer: Math.max(0, Math.min(3, pint(tz.imgPer, 0))), maskPer: Math.max(0, Math.min(10, pint(tz.maskPer, 0))), maskGrid: /^\d+x\d+$/.test(tz.maskGrid || "") ? tz.maskGrid : "", req: strMap(tz.req), notes: strMap(tz.notes), pos: posMap(tz.pos) };
+  project.tz = { fields: boolMap(tz.fields), masks: boolMap(tz.masks), overview: tz.overview == null ? true : !!tz.overview, saveProj: tz.saveProj == null ? true : !!tz.saveProj, imgPer: Math.max(0, Math.min(3, pint(tz.imgPer, 0))), maskPer: Math.max(0, Math.min(10, pint(tz.maskPer, 0))), maskGrid: /^\d+x\d+$/.test(tz.maskGrid || "") ? tz.maskGrid : "", req: strMap(tz.req), notes: strMap(tz.notes), pos: posMap(tz.pos) };
 }
 const CF = () => project.fields[Math.max(0, Math.min(project.fields.length - 1, project.fieldCur || 0))];
 const evenUp = (v) => {
@@ -7243,6 +7256,7 @@ function refreshTZPanel() {
     rest.forEach(maskRow);
   }
   $("tOverview").checked = tz.overview;
+  $("tSaveProj").checked = tz.saveProj !== false;
   renderImgList();
   const n = ui.images.length;
   const ns = imgGroups(ui.images).length;
@@ -7259,6 +7273,7 @@ function refreshTZPanel() {
   $("tSave").textContent = "Сохранить ТЗ ".concat(ui.tzTpl);
   refreshTZText();
   updateTZSummary();
+  updateTZNote();
 }
 const TZ_SIZES = [8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 32, 36, 48];
 const rgbHex = (c) => {
@@ -7639,6 +7654,11 @@ $("tDefault").onclick = () => {
 $("tOverview").onchange = (e) => {
   project.tz.overview = e.target.checked;
   tzChanged();
+};
+$("tSaveProj").onchange = (e) => {
+  project.tz.saveProj = e.target.checked;
+  scheduleAutosave();
+  updateTZNote();
 };
 $("tOvPick").onclick = () => $("tOvFile").click();
 $("tMaskPer").addEventListener("change", (e) => {
