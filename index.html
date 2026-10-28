@@ -1475,7 +1475,7 @@ html.nogap .imglist > * {
       <div class="row"><label for="pjPreset">Проектор</label><div class="ctl"><select id="pjPreset" class="grow"></select></div></div>
       <div class="row"><label for="pjW">Пиксели проектора</label><div class="ctl"><input type="number" id="pjW" min="16" class="w-md" inputmode="numeric"><span class="unit">×</span><input type="number" id="pjH" min="16" class="w-md" inputmode="numeric"><span class="unit">px</span></div></div>
       <div class="row"><span class="lbl">Ориентация</span><div class="ctl"><div class="seg pjrot" role="group" aria-label="Ориентация проектора">
-        <button data-rot="0">Обычная</button><button data-rot="90" title="Портрет: проектор повёрнут на 90° против часовой">Портрет ⟲</button><button data-rot="-90" title="Портрет: проектор повёрнут на 90° по часовой">Портрет ⟳</button>
+        <button data-rot="0">Обычный</button><button data-rot="90" title="Портрет: проектор повёрнут на 90°, кадр вертикальный">Портрет</button>
       </div></div></div>
       <div class="row"><label for="pjNx">Проекторы</label><div class="ctl"><input type="number" id="pjNx" min="1" max="32" class="w-md" inputmode="numeric"><span class="unit">×</span><input type="number" id="pjNy" min="1" max="32" class="w-md" inputmode="numeric"><span class="unit">шт.</span></div></div>
       <div class="row"><label for="pjWm">Размер</label><div class="ctl"><input type="number" id="pjWm" min="0" step="0.01" class="w-md" inputmode="decimal" aria-label="Ширина изображения, м"><span class="unit">×</span><input type="number" id="pjHm" min="0" step="0.01" class="w-md" inputmode="decimal" aria-label="Высота изображения, м"><span class="unit">м</span></div></div>
@@ -1705,7 +1705,7 @@ html.nogap .imglist > * {
 <h3>Проекция</h3>
 <p>Тест-паттерн для проекторов. Включается переключателем «Проекция»; экран сам называется «projection 1», «projection 2»… (своё название не меняется). По умолчанию — один проектор 1920×1200.</p>
 <ol>
-<li><strong>Проектор</strong> — готовые разрешения (Full HD, WUXGA, 4K…) или своё. <strong>Ориентация</strong>: «Обычная» или «Портрет ⟲ / ⟳» — проектор повёрнут на 90° влево или вправо, его кадр на маске становится вертикальным (1920×1200 → 1200×1920).</li>
+<li><strong>Проектор</strong> — готовые разрешения (Full HD, WUXGA, 4K…) или своё. <strong>Ориентация</strong>: «Обычный» или «Портрет» — проектор повёрнут на 90°, его кадр на маске становится вертикальным (1920×1200 → 1200×1920).</li>
 <li>Три строки «ширина × высота»: <strong>«Пиксели проектора»</strong>, <strong>«Проекторы»</strong> (сколько по горизонтали и вертикали), <strong>«Размер»</strong> в метрах (можно не задавать).</li>
 <li><strong>Перекрытие</strong> в процентах по горизонтали и вертикали — общее разрешение считается само (2 × Full HD с 15% = 3552×1080, перекрытие 288 px).</li>
 <li><strong>Шаг сетки</strong> в пикселях и цвета <strong>фона, линий и текста</strong> (текст отдельно от линий).</li>
@@ -2368,7 +2368,7 @@ function drawProj(ctx, st, s, guides) {
       ctx.font = "bold ".concat(fs, "px ").concat(FONT);
       const t1 = "P".concat(r.n), w1 = ctx.measureText(t1).width;
       ctx.font = "".concat(fs * 0.55, "px ").concat(FONT);
-      const t2 = "".concat(r.w, "×").concat(r.h).concat(g.rot ? g.rot > 0 ? " · портрет ⟲" : " · портрет ⟳" : "", " · X ").concat(r.x, " · Y ").concat(r.y), w2 = ctx.measureText(t2).width;
+      const t2 = "".concat(r.w, "×").concat(r.h).concat(g.rot ? " · портрет" : "", " · X ").concat(r.x, " · Y ").concat(r.y), w2 = ctx.measureText(t2).width;
       ctx.fillStyle = P.invert ? "rgba(255,255,255,0.88)" : "rgba(0,0,0,0.72)";
       ctx.fillRect(lx - fs * 0.35, ly - fs * 0.25, Math.max(w1, w2) + fs * 0.7, fs * 2.05);
       ctx.fillStyle = c;
@@ -2731,7 +2731,7 @@ function infoLines(st) {
   if (st.kind === "proj") {
     const g = projGeom(st), P = g.P, rot = +P.rot || 0;
     const out = [
-      "Проектор: ".concat(P.pw, "×").concat(P.ph, " px").concat(rot ? " · портрет ".concat(rot > 0 ? "⟲" : "⟳", " 90°") : ""),
+      "Проектор: ".concat(P.pw, "×").concat(P.ph, " px").concat(rot ? " · портрет" : ""),
       "Проекторов: ".concat(g.nx, "×").concat(g.ny)
     ];
     if (g.nx > 1 || g.ny > 1) out.push("Перекрытие: ".concat(g.nx > 1 ? "".concat(+P.ox || 0, "% (").concat(g.ovx, " px)") : "—", " / ").concat(g.ny > 1 ? "".concat(+P.oy || 0, "% (").concat(g.ovy, " px)") : "—"));
@@ -3299,7 +3299,7 @@ function syncProjUI() {
   const set = (id, v) => {
     if (document.activeElement !== $(id)) $(id).value = v;
   };
-  document.querySelectorAll(".seg.pjrot button").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.rot === (+P.rot || 0))));
+  document.querySelectorAll(".seg.pjrot button").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.rot === (+P.rot ? 90 : 0))));
   {
     const [W, H] = dims(st), wm = +P.wm || 0;
     set("pjHm", wm > 0 ? +(wm * H / W).toFixed(3) : 0);
