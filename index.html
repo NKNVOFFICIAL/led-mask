@@ -290,6 +290,12 @@ input.w-md {
 .stp input.w-md {
   width: 58px;
 }
+.stp input.w-sm {
+  width: 48px;
+}
+.stp #pjGrid {
+  width: 58px;
+}
 .ctl.stp-row {
   flex-wrap: nowrap;
 }
@@ -1747,6 +1753,7 @@ a.b {
 <li>Три строки «ширина × высота»: <strong>«Пиксели проектора»</strong>, <strong>«Проекторы»</strong> (сколько по горизонтали и вертикали), <strong>«Размер»</strong> в метрах (можно не задавать).</li>
 <li><strong>Перекрытие</strong> в процентах по горизонтали и вертикали — общее разрешение считается само (2 × Full HD с 15% = 3552×1080, перекрытие 288 px).</li>
 <li><strong>Шаг сетки</strong> в пикселях и цвета <strong>фона, линий и текста</strong> (текст отдельно от линий).</li>
+<li>У всех числовых полей есть стрелки <strong>▲▼</strong>, как у кабинетов: пиксели и проекторы — по 1, метры — по 0,1, перекрытие — по 0,5%, шаг сетки — по 10 px, купол — по 128 px и 5°. Удержание листает.</li>
 <li>Галочки: зоны перекрытия, рамки и номера проекторов (P1, P2… с разрешением и координатами), круги, подписи клеток A1, B1…, штриховка, цветовая полоса, инверсия (белый фон).</li>
 <li><strong>Купол</strong> (переключатель «Паттерн») — полярная сетка domemaster для купольной проекции: квадрат 1K / 2K / 4K / 6K / 8K или своя сторона, зенит в центре, азимут 0° сверху по часовой. Задаются <strong>угол обзора</strong> (180° — полусфера, больше — ниже горизонта), <strong>шаг азимута и высоты</strong> в градусах. Красный крест, фиолетовые кольца каждые 30° высоты и край купола; галочки — мелкая сетка, подписи градусов, стороны FRONT / BACK / LEFT / RIGHT. Текст и цветовая полоса — ниже центра, чтобы не закрывать зенит.</li>
 </ol>
@@ -8207,6 +8214,35 @@ const stepCabs = (which, d) => {
   $("rows").value = st.cabRows;
   changed({ forcePhys: true });
 };
+const stepInput = (id, step) => stepper(id, (d) => {
+  const i = $(id), lo = i.min !== "" ? +i.min : -Infinity, hi = i.max !== "" ? +i.max : Infinity;
+  let v = parseFloat(String(i.value).replace(",", ".")) || 0;
+  v = Math.min(hi, Math.max(lo, Math.round((v + d * step) / step) * step));
+  i.value = +v.toFixed(3);
+  i.dispatchEvent(new Event("input", { bubbles: true }));
+  i.dispatchEvent(new Event("change", { bubbles: true }));
+});
+[
+  ["wpx", 1],
+  ["hpx", 1],
+  ["pjW", 1],
+  ["pjH", 1],
+  ["pjNx", 1],
+  ["pjNy", 1],
+  ["pjWm", 0.1],
+  ["pjHm", 0.1],
+  ["pjOx", 0.5],
+  ["pjOy", 0.5],
+  ["pjGrid", 10],
+  ["pjDome", 128],
+  ["pjFov", 5],
+  ["pjAz", 1],
+  ["pjEl", 1],
+  ["fX", 1],
+  ["fY", 1]
+].forEach(([id, st]) => {
+  if ($(id)) stepInput(id, st);
+});
 stepper("cols", (d) => stepCabs("w", d));
 stepper("rows", (d) => stepCabs("h", d));
 stepper("physW", (d) => stepCabs("w", d));
