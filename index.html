@@ -95,17 +95,20 @@ select {
   flex-direction: column;
   gap: 10px;
   overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-  will-change: transform;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
 }
-.canvas-wrap,
-.mstrip {
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
+@media (hover: hover) and (pointer: fine) {
+  .panel {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    will-change: transform;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  .canvas-wrap,
+  .mstrip {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
 }
 .app > * {
   min-height: 0;
@@ -8199,6 +8202,7 @@ stepper("physH", (d) => stepCabs("h", d));
     if (drag) mark();
   });
   if (QS.get("noguard")) return;
+  if (window.matchMedia && !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
   pn.addEventListener("scroll", () => {
     const t = pn.scrollTop;
     if (t < 2 && last > 40 && !drag && Date.now() - userAt > 600 && window.innerWidth > 820) {
