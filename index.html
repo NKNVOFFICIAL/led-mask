@@ -475,6 +475,54 @@ textarea.tzt.req {
   min-height: 230px;
   font-size: 12px;
 }
+.rte {
+  width: 100%;
+  box-sizing: border-box;
+  background: #fff;
+  color: #111;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 8px 10px;
+  font:
+    13px/1.35 Arial,
+    "Helvetica Neue",
+    sans-serif;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  overflow-y: auto;
+  outline: none;
+  -webkit-user-select: text;
+  user-select: text;
+  min-height: 96px;
+  max-height: 360px;
+  resize: vertical;
+}
+.rte.req {
+  min-height: 240px;
+  font-size: 12px;
+}
+.rte:focus {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+.rte:empty::before {
+  content: attr(data-ph);
+  color: #8a8a8a;
+}
+.rte .lnk {
+  color: #0563C1;
+  text-decoration: underline;
+}
+.rte .u {
+  text-decoration: underline;
+}
+.tzbar .swatch {
+  width: 30px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  cursor: pointer;
+}
 .tzt-lbl {
   font-size: 12px;
   color: var(--muted);
@@ -1315,11 +1363,10 @@ html.nogap .imglist > * {
       <p class="hint" id="tOvInfo">Картинок нет — слайды не добавятся.</p>
       <div class="imglist" id="tImgs"></div>
       <div class="tgroup">ТЕКСТ В ТЗ</div>
-      <p class="hint">Текст любого слайда можно поменять или дополнить. Выделите слова и нажмите <b>Ж</b> — жирный, выберите цвет и нажмите «Цвет», размер — «Размер» (в тексте это **…**, [#цвет]…[/] и [s14]…[/s]). Текст двигается мышью или пальцем прямо на слайде справа. Строки, которые вы не трогали, сохраняют оформление шаблона. Тип шаблона — ниже, в «Сохранить ТЗ».</p>
-      <div class="tzt-lbl" id="tReqLbl">Слайд 1 — требования шаблона</div>
-      <textarea class="tzt req" id="tReq" spellcheck="false" aria-label="Текст первого слайда"></textarea>
-      <div class="btns"><button class="b" id="tReqReset">Вернуть текст шаблона</button><button class="b" id="tReqPos">Вернуть на место</button></div>
-      <div id="tNotes"></div>
+      <p class="hint">Нажмите на слайд справа (или выберите его в списке) — его текст откроется здесь. Выделите слова и нажмите <b>Ж</b>, выберите цвет или размер — оформление видно сразу. Текст двигается мышью или пальцем прямо на слайде. Строки шаблона, которые вы не трогали, сохраняют его оформление. Тип шаблона — ниже, в «Сохранить ТЗ».</p>
+      <div class="row"><label for="tTxtSel">Слайд</label><div class="ctl"><select id="tTxtSel" class="grow"></select></div></div>
+      <div class="tzt rte" id="tTxt" contenteditable="true" spellcheck="false" role="textbox" aria-multiline="true" aria-label="Текст выбранного слайда"></div>
+      <div class="btns"><button class="b" id="tTxtReset">Вернуть текст шаблона</button><button class="b" id="tTxtPos">Вернуть на место</button></div>
       <div class="tgroup">СОХРАНИТЬ ТЗ</div>
       <div class="row"><label for="tTpl">Тип ТЗ</label><div class="ctl"><select id="tTpl" class="grow">
         <option value="Resolume">Resolume — кодек DXV3</option>
@@ -1595,11 +1642,11 @@ html.nogap .imglist > * {
 <ol>
 <li><strong>Отметьте, что войдёт.</strong> По умолчанию отмечены общие поля целиком и маски, которые не стоят на полях. Маски с полей по отдельности можно добавить галочкой под полем. «По умолчанию» возвращает этот выбор.</li>
 <li><strong>Картинки</strong> (необязательно). «Добавить картинки…» — можно выбрать сразу несколько (фото, рендеры, схемы). Они встают на слайды после требований, в порядке списка. «Картинок на слайде»: «Авто» (горизонтальные до трёх столбиком, вертикальные до двух в ряд) или ровно 1, 2, 3 на слайд. Стрелки ↑ ↓ меняют порядок, × убирает картинку, «Убрать все» — все. Подпись над картинкой правится в её строке (у первой по умолчанию «Общий план», у остальных — имя файла). Снята галочка — картинки в ТЗ не попадут. Картинки живут, пока открыта программа, и очищаются при «Сброс» и открытии другого проекта.</li>
-<li><strong>Текст в ТЗ</strong> (необязательно). «Слайд 1» — весь текст требований выбранного шаблона: меняйте, удаляйте, дописывайте строки; «Вернуть текст шаблона» — как было. Для каждого следующего слайда есть своё поле — текст встанет над масками.
+<li><strong>Текст в ТЗ</strong> (необязательно). Один редактор для всех слайдов: нажмите на слайд в предпросмотре справа или выберите его в списке «Слайд» — выбранный слайд обведён, его текст открывается в редакторе. На 1-м слайде — весь текст требований выбранного шаблона: меняйте, удаляйте, дописывайте строки; «Вернуть текст шаблона» — как было. На остальных слайдах — свой текст, он встанет над масками или картинками.
 <ul>
-<li>Выделите слова и нажмите <strong>Ж</strong> — жирный; выберите цвет и нажмите <strong>«Цвет»</strong> («Без цвета» убирает); выберите размер в pt и нажмите <strong>«Размер»</strong> («Обычный» возвращает размер по умолчанию). На слайдах 2 и дальше без выделения цвет и размер применяются ко всему тексту поля. В тексте это видно как **…**, [#цвет]…[/] и [s14]…[/s]. Ссылки https://… кликаются сами.</li>
+<li>Редактор показывает текст сразу с оформлением. Выделите слова и нажмите <strong>Ж</strong> — жирный; нажмите на квадратик цвета и выберите цвет — слова покрасятся; выберите размер в списке «Размер» — он применится сразу. <strong>«Сбросить»</strong> убирает жирный, цвет и размер. На слайдах 2 и дальше без выделения цвет и размер применяются ко всему тексту. Ссылки https://… кликаются сами.</li>
 <li>Строки, которые вы не трогали, сохраняют оформление шаблона (зелёный, подчёркивание, ссылки).</li>
-<li>Текст <strong>двигается мышью или пальцем</strong> прямо на слайде в предпросмотре (появляется пунктирная рамка). Сдвинутый текст лежит поверх масок; «Над масками» и «Вернуть на место» возвращают его.</li>
+<li>Текст <strong>двигается мышью или пальцем</strong> прямо на слайде в предпросмотре (появляется пунктирная рамка). Сдвинутый текст лежит поверх масок; «Над масками» (или «Вернуть на место» на 1-м слайде) возвращает его.</li>
 </ul></li>
 <li><strong>Выберите тип ТЗ</strong> в списке и нажмите «Сохранить ТЗ».</li>
 </ol>
@@ -5553,9 +5600,120 @@ function refreshTZPanel() {
   refreshTZText();
   updateTZSummary();
 }
-let tzColor = "#E53935", tzSize = 14;
 const TZ_SIZES = [8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 32, 36, 48];
-function tzBar(ta, opts = {}) {
+const rgbHex = (c) => {
+  if (!c) return null;
+  if (c[0] === "#") return c.length === 4 ? ("#" + c[1] + c[1] + c[2] + c[2] + c[3] + c[3]).toUpperCase() : c.slice(0, 7).toUpperCase();
+  const m = c.match(/\d+/g);
+  return m && m.length >= 3 ? "#" + m.slice(0, 3).map((v) => (+v).toString(16).padStart(2, "0")).join("").toUpperCase() : null;
+};
+function runsMdS(runs) {
+  let out = "", col2 = null, size = null, bold = false;
+  for (const r of runs) {
+    if (!r.t) continue;
+    const c = r.link ? null : hexU(r.color), z = r.sz || null;
+    if (c !== col2 || z !== size) {
+      if (bold) {
+        out += "**";
+        bold = false;
+      }
+      if (size && z !== size) {
+        out += "[/s]";
+      }
+      if (c !== col2) {
+        if (col2) out += "[/]";
+        if (c) out += "[" + c + "]";
+      }
+      if (z && z !== size) out += "[s" + z + "]";
+      col2 = c;
+      size = z;
+    }
+    if (!!r.b !== bold) {
+      out += "**";
+      bold = !!r.b;
+    }
+    out += r.t;
+  }
+  if (bold) out += "**";
+  if (size) out += "[/s]";
+  if (col2) out += "[/]";
+  return out;
+}
+const rteBase = () => ui.tzSel === "req" ? (tplCache[ui.tzTpl] || {}).baseSz || 10 : NOTE_SZ;
+function rteRender(el, paras, base) {
+  const esc = (t) => xmlEsc(t);
+  el.innerHTML = paras.map((runs) => {
+    const inner = runs.map((r) => {
+      let h = esc(r.t);
+      if (r.b) h = "<b>".concat(h, "</b>");
+      if (r.link) h = '<span class="lnk">'.concat(h, "</span>");
+      else if (r.color) h = '<font color="'.concat(r.color, '">').concat(h, "</font>");
+      if (r.u && !r.link) h = '<span class="u">'.concat(h, "</span>");
+      if (r.sz && Math.abs(r.sz - base) > 1e-6) h = '<span data-sz="'.concat(r.sz, '" style="font-size:').concat((13 * r.sz / base).toFixed(1), 'px">').concat(h, "</span>");
+      return h;
+    }).join("");
+    return "<div>".concat(inner || "<br>", "</div>");
+  }).join("");
+}
+function rteRead(el) {
+  const lines = [[]];
+  const walk = (node, st) => {
+    for (const n of node.childNodes) {
+      if (n.nodeType === 3) {
+        if (n.nodeValue) lines[lines.length - 1].push({ t: n.nodeValue.replace(/ /g, " "), ...st });
+        continue;
+      }
+      if (n.nodeType !== 1) continue;
+      const tag = n.tagName;
+      if (tag === "BR") {
+        if (n.nextSibling || n.parentNode === el) lines.push([]);
+        continue;
+      }
+      const s2 = { ...st };
+      if (tag === "B" || tag === "STRONG" || /^(bold|[6-9]00)$/.test(n.style.fontWeight)) s2.b = true;
+      if (n.classList.contains("lnk")) s2.color = null;
+      else {
+        const c = n.getAttribute("color") || n.style && n.style.color;
+        if (c) s2.color = rgbHex(c);
+      }
+      if (n.dataset && n.dataset.sz) s2.sz = +n.dataset.sz;
+      const block = tag === "DIV" || tag === "P";
+      if (block && lines[lines.length - 1].length) lines.push([]);
+      walk(n, s2);
+      if (block) lines.push([]);
+    }
+  };
+  walk(el, {});
+  if (lines.length > 1 && !lines[lines.length - 1].length) lines.pop();
+  return lines.map(runsMdS).join("\n");
+}
+let rteRange = null;
+document.addEventListener("selectionchange", () => {
+  const el = document.getElementById("tTxt"), sel = window.getSelection();
+  if (el && sel && sel.rangeCount && el.contains(sel.anchorNode)) rteRange = sel.getRangeAt(0).cloneRange();
+});
+function rteSelect(whole) {
+  const el = $("tTxt"), sel = window.getSelection();
+  el.focus();
+  let r = rteRange && el.contains(rteRange.startContainer) ? rteRange : null;
+  if (!r || r.collapsed) {
+    if (!whole) {
+      status("Сначала выделите текст", true);
+      return false;
+    }
+    r = document.createRange();
+    r.selectNodeContents(el);
+  }
+  sel.removeAllRanges();
+  sel.addRange(r);
+  return true;
+}
+function rteDone() {
+  $("tTxt").dispatchEvent(new Event("input"));
+  const sel = window.getSelection();
+  if (sel.rangeCount) rteRange = sel.getRangeAt(0).cloneRange();
+}
+function rteBar(opts) {
   const bar = document.createElement("div");
   bar.className = "tzbar";
   const btn = (txt, title, fn) => {
@@ -5569,173 +5727,182 @@ function tzBar(ta, opts = {}) {
     bar.appendChild(b);
     return b;
   };
-  const wrap = (a, z, whole) => {
-    let s0 = ta.selectionStart, s1 = ta.selectionEnd;
-    if (s0 === s1) {
-      if (!whole) {
-        status("Сначала выделите текст", true);
-        return;
-      }
-      s0 = 0;
-      s1 = ta.value.length;
-    }
-    const v = ta.value, sel = v.slice(s0, s1);
-    const out = sel.split("\n").map((l) => l ? a + l + z : l).join("\n");
-    ta.value = v.slice(0, s0) + out + v.slice(s1);
-    ta.focus();
-    ta.setSelectionRange(s0, s0 + out.length);
-    ta.dispatchEvent(new Event("input"));
-  };
-  btn("<b>Ж</b>", "Жирный: **текст**", () => wrap("**", "**", false));
+  const W = () => opts.whole();
+  btn("<b>Ж</b>", "Жирный", () => {
+    if (!rteSelect(W())) return;
+    document.execCommand("styleWithCSS", false, false);
+    document.execCommand("bold");
+    rteDone();
+  });
   const ci = document.createElement("input");
   ci.type = "color";
-  ci.value = tzColor.toLowerCase();
-  ci.title = "Цвет текста";
-  ci.oninput = () => {
-    tzColor = ci.value.toUpperCase();
-    document.querySelectorAll(".tzbar input[type=color]").forEach((x) => {
-      if (x !== ci) x.value = ci.value;
-    });
+  ci.className = "swatch";
+  ci.value = "#e53935";
+  ci.title = "Цвет выделенного текста";
+  ci.addEventListener("mousedown", () => {
+  });
+  const applyColor = () => {
+    if (!rteSelect(W())) return;
+    document.execCommand("styleWithCSS", false, false);
+    document.execCommand("foreColor", false, ci.value);
+    rteDone();
   };
+  ci.addEventListener("input", applyColor);
+  ci.addEventListener("change", applyColor);
   bar.appendChild(ci);
-  btn("Цвет", "Покрасить выделенный текст", () => wrap("[" + tzColor.toUpperCase() + "]", "[/]", !!opts.whole));
-  btn("Без цвета", "Убрать цвет у выделенного текста", () => {
-    let s0 = ta.selectionStart, s1 = ta.selectionEnd;
-    if (s0 === s1) {
-      if (!opts.whole) {
-        status("Сначала выделите текст", true);
-        return;
-      }
-      s0 = 0;
-      s1 = ta.value.length;
-    }
-    const v = ta.value, out = v.slice(s0, s1).replace(/\[#[0-9A-Fa-f]{6}\]|\[\/\]/g, "");
-    ta.value = v.slice(0, s0) + out + v.slice(s1);
-    ta.focus();
-    ta.setSelectionRange(s0, s0 + out.length);
-    ta.dispatchEvent(new Event("input"));
-  });
   const sz = document.createElement("select");
-  sz.title = "Размер текста, pt";
+  sz.title = "Размер выделенного текста";
   sz.style.cssText = "padding:3px 4px;font-size:12.5px";
-  sz.innerHTML = TZ_SIZES.map((v) => '<option value="'.concat(v, '">').concat(v, " pt</option>")).join("");
-  sz.value = String(tzSize);
-  sz.onchange = () => {
-    tzSize = +sz.value;
-    document.querySelectorAll(".tzbar select").forEach((x) => {
-      if (x !== sz) x.value = sz.value;
+  sz.innerHTML = '<option value="">Размер</option>' + TZ_SIZES.map((v) => '<option value="'.concat(v, '">').concat(v, " pt</option>")).join("");
+  sz.addEventListener("change", () => {
+    const v = +sz.value;
+    sz.value = "";
+    if (!v) return;
+    if (!rteSelect(W())) return;
+    const el = $("tTxt"), base = rteBase();
+    document.execCommand("styleWithCSS", false, false);
+    document.execCommand("fontSize", false, "7");
+    const made = [];
+    el.querySelectorAll('font[size="7"]').forEach((f) => {
+      const sp = document.createElement("span");
+      sp.dataset.sz = v;
+      sp.style.fontSize = (13 * v / base).toFixed(1) + "px";
+      if (f.getAttribute("color")) {
+        const c = document.createElement("font");
+        c.setAttribute("color", f.getAttribute("color"));
+        while (f.firstChild) c.appendChild(f.firstChild);
+        sp.appendChild(c);
+      } else while (f.firstChild) sp.appendChild(f.firstChild);
+      sp.querySelectorAll("[data-sz]").forEach((x) => {
+        while (x.firstChild) x.parentNode.insertBefore(x.firstChild, x);
+        x.remove();
+      });
+      f.replaceWith(sp);
+      made.push(sp);
     });
-  };
-  bar.appendChild(sz);
-  btn("Размер", "Задать размер выделенному тексту", () => wrap("[s" + tzSize + "]", "[/s]", !!opts.whole));
-  btn("Обычный", "Вернуть размер по умолчанию", () => {
-    let s0 = ta.selectionStart, s1 = ta.selectionEnd;
-    if (s0 === s1) {
-      if (!opts.whole) {
-        status("Сначала выделите текст", true);
-        return;
-      }
-      s0 = 0;
-      s1 = ta.value.length;
+    if (made.length) {
+      const r = document.createRange();
+      r.setStartBefore(made[0]);
+      r.setEndAfter(made[made.length - 1]);
+      const sl = window.getSelection();
+      sl.removeAllRanges();
+      sl.addRange(r);
     }
-    const v = ta.value, out = v.slice(s0, s1).replace(/\[s\d{1,2}(?:\.\d)?\]|\[\/s\]/g, "");
-    ta.value = v.slice(0, s0) + out + v.slice(s1);
-    ta.focus();
-    ta.setSelectionRange(s0, s0 + out.length);
-    ta.dispatchEvent(new Event("input"));
+    rteDone();
   });
-  if (opts.pos) {
-    const pb = btn("Над масками", "Вернуть текст на место над масками", () => {
-      delete project.tz.pos[opts.pos];
-      requestDraw();
-      scheduleAutosave();
-      scheduleHistory();
-      refreshTZText();
+  bar.appendChild(sz);
+  btn("Сбросить", "Убрать жирный, цвет и размер у выделенного текста", () => {
+    if (!rteSelect(W())) return;
+    document.execCommand("removeFormat");
+    const el = $("tTxt"), sel = window.getSelection(), r = sel.rangeCount ? sel.getRangeAt(0) : null;
+    el.querySelectorAll("[data-sz]").forEach((x) => {
+      if (!r || r.intersectsNode(x)) {
+        while (x.firstChild) x.parentNode.insertBefore(x.firstChild, x);
+        x.remove();
+      }
     });
-    pb.hidden = !tzPos(opts.pos);
-    pb.dataset.pos = opts.pos;
-  }
+    rteDone();
+  });
   return bar;
 }
-function refreshTZText() {
-  const label = ui.tzTpl, ta = $("tReq");
-  $("tReqLbl").innerHTML = "<b>Слайд 1</b> — требования шаблона ".concat(xmlEsc(label));
-  tplInfo(label).then((info) => {
-    if (ui.tzTpl !== label || document.activeElement === ta) return;
-    const v = reqText(label);
-    ta.value = v != null ? v : info.md;
-    $("tReqReset").disabled = reqText(label) == null;
-    $("tReqPos").hidden = !tzPos("req:" + label);
-  }).catch((e) => {
-    ta.value = "";
-    status("Шаблон не прочитан: " + e.message, true);
-  });
-  const box = $("tNotes"), items = tzItems(), slides = [];
-  {
-    const imgs = tzImages();
-    for (const { g } of imgGroups(imgs)) {
-      const ims = g.map((j) => imgs[j]);
-      slides.push({ key: imgKey(ims[0]), title: ims.map((im) => im.caption || "картинка").join(", ") });
-    }
+function tzTextSlides() {
+  const out = [{ key: "req", title: "Слайд 1 — требования шаблона ".concat(ui.tzTpl) }], items = tzItems(), imgs = tzImages();
+  for (const { g } of imgGroups(imgs)) {
+    const ims = g.map((j) => imgs[j]);
+    out.push({ key: imgKey(ims[0]), title: ims.map((im) => im.caption || "картинка").join(", ") });
   }
   for (const g of maskGroups(items)) {
     const its = g.g.map((i) => items[i]);
-    slides.push({ key: noteKey(its), title: its.map((i) => i.kind === "field" ? i.f.name : i.name).join(", ") });
+    out.push({ key: noteKey(its), title: its.map((i) => i.kind === "field" ? i.f.name : i.name).join(", ") });
   }
-  const keep = new Map([...box.querySelectorAll("textarea")].map((t) => [t.dataset.key, t]));
-  const frag = document.createDocumentFragment();
-  slides.forEach((sl, i) => {
-    const lbl = document.createElement("div");
-    lbl.className = "tzt-lbl";
-    lbl.innerHTML = "<b>Слайд ".concat(i + 2, "</b> — ").concat(xmlEsc(sl.title));
-    if (sl.img) lbl.dataset.img = sl.img;
-    let t = keep.get(sl.key);
-    if (!t) {
-      t = document.createElement("textarea");
-      t.className = "tzt";
-      t.rows = 2;
-      t.dataset.key = sl.key;
-      t.spellcheck = false;
-      t.placeholder = "Свой текст на этом слайде (необязательно)";
-      t.addEventListener("input", () => {
-        const v = t.value;
-        if (v.trim()) project.tz.notes[t.dataset.key] = v;
-        else delete project.tz.notes[t.dataset.key];
-        requestDraw();
-        scheduleAutosave();
-        scheduleHistory();
-      });
-    }
-    if (document.activeElement !== t) t.value = noteText(sl.key);
-    frag.append(lbl, t, tzBar(t, { whole: true, pos: "note:" + sl.key }));
+  out.forEach((sl, i) => {
+    if (i) sl.title = "Слайд ".concat(i + 1, " — ").concat(sl.title);
   });
-  box.innerHTML = "";
-  box.appendChild(frag);
+  return out;
 }
-$("tReq").addEventListener("input", () => {
-  const label = ui.tzTpl, info = tplCache[label];
-  if (!info) return;
-  const v = $("tReq").value;
-  if (v.replace(/\r/g, "") === info.md) delete project.tz.req[label];
-  else project.tz.req[label] = v;
-  $("tReqReset").disabled = reqText(label) == null;
+ui.tzSel = "req";
+const tzSelPk = () => ui.tzSel === "req" ? "req:" + ui.tzTpl : "note:" + ui.tzSel;
+function refreshTZText() {
+  const slides = tzTextSlides(), sel = $("tTxtSel"), ta = $("tTxt");
+  if (!slides.some((x) => x.key === ui.tzSel)) ui.tzSel = "req";
+  sel.innerHTML = slides.map((x) => '<option value="'.concat(xmlEsc(x.key), '">').concat(xmlEsc(x.title), "</option>")).join("");
+  sel.value = ui.tzSel;
+  const isReq = ui.tzSel === "req";
+  ta.classList.toggle("req", isReq);
+  ta.classList.toggle("note", !isReq);
+  ta.dataset.ph = isReq ? "" : "Свой текст на этом слайде (необязательно)";
+  $("tTxtReset").hidden = !isReq;
+  $("tTxtPos").hidden = !tzPos(tzSelPk());
+  $("tTxtPos").textContent = isReq ? "Вернуть на место" : "Над масками";
+  if (isReq) {
+    const label = ui.tzTpl;
+    $("tTxtReset").disabled = reqText(label) == null;
+    tplInfo(label).then((info) => {
+      if (ui.tzTpl !== label || ui.tzSel !== "req" || document.activeElement === ta && ta.dataset.key === "req:" + label) return;
+      rteRender(ta, reqParas(info, reqTextOr(info)), info.baseSz);
+      ta.dataset.key = "req:" + label;
+    }).catch((e) => {
+      ta.value = "";
+      status("Шаблон не прочитан: " + e.message, true);
+    });
+  } else if (document.activeElement !== ta || ta.dataset.key !== ui.tzSel) {
+    const t = noteText(ui.tzSel);
+    if (t) rteRender(ta, mdParas(t), NOTE_SZ);
+    else ta.innerHTML = "";
+    ta.dataset.key = ui.tzSel;
+  }
+}
+function selectTZText(key2) {
+  if (ui.tzSel === key2) return;
+  ui.tzSel = key2;
+  $("tTxt").blur();
+  rteRange = null;
+  refreshTZText();
+  requestDraw();
+}
+$("tTxtSel").addEventListener("change", (e) => selectTZText(e.target.value));
+$("tTxt").addEventListener("input", () => {
+  const ta = $("tTxt"), v = rteRead(ta);
+  if (ui.tzSel === "req") {
+    const label = ui.tzTpl, info = tplCache[label];
+    if (!info) return;
+    if (v.replace(/\r/g, "") === info.md) delete project.tz.req[label];
+    else project.tz.req[label] = v;
+    $("tTxtReset").disabled = reqText(label) == null;
+  } else {
+    if (v.trim()) project.tz.notes[ui.tzSel] = v;
+    else delete project.tz.notes[ui.tzSel];
+  }
   requestDraw();
   scheduleAutosave();
   scheduleHistory();
 });
-$("tReq").after(tzBar($("tReq")));
-$("tReqPos").onclick = () => {
-  delete project.tz.pos["req:" + ui.tzTpl];
-  $("tReqPos").hidden = true;
+$("tTxt").before(rteBar({ whole: () => ui.tzSel !== "req" }));
+$("tTxt").addEventListener("paste", (e) => {
+  e.preventDefault();
+  const t = (e.clipboardData || window.clipboardData).getData("text/plain");
+  document.execCommand("insertText", false, t);
+});
+$("tTxt").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    document.execCommand("insertParagraph");
+  }
+});
+$("tTxtPos").onclick = () => {
+  delete project.tz.pos[tzSelPk()];
+  $("tTxtPos").hidden = true;
   requestDraw();
   scheduleAutosave();
   scheduleHistory();
 };
-$("tReqReset").onclick = () => {
+$("tTxtReset").onclick = () => {
   delete project.tz.req[ui.tzTpl];
   const info = tplCache[ui.tzTpl];
-  if (info) $("tReq").value = info.md;
-  $("tReqReset").disabled = true;
+  if (info) {
+    rteRender($("tTxt"), reqParas(info, info.md), info.baseSz);
+  }
+  $("tTxtReset").disabled = true;
   requestDraw();
   scheduleAutosave();
   scheduleHistory();
@@ -5917,6 +6084,7 @@ function fieldThumb(f) {
 function drawTZ() {
   const R = prepCanvas([16, 9]), c = pctx, items = tzItems(), imgs = tzImages();
   ui.tzHits = [];
+  ui.tzSlideHits = [];
   const slides = [{ kind: "title" }];
   for (const { hz, g } of imgGroups(imgs)) slides.push({ kind: "ov", hz, ims: g.map((j) => imgs[j]) });
   for (const g of maskGroups(items)) slides.push({ kind: "g", ...g });
@@ -5982,9 +6150,17 @@ function drawTZ() {
       cell(maskCellLayout(sl.hz, sl.g.length, j, it.w, it.h, NL.box), it.kind === "field" ? fieldThumb(it.f) : thumb({ uid: it.st.uid, st: it.st, w0: it.w, h0: it.h }), it.label);
     });
     drawNote();
-    c.strokeStyle = "#2b3946";
-    c.lineWidth = 1;
-    c.strokeRect(x + 0.5, y + 0.5, sw - 1, sh - 1);
+    const skey = sl.kind === "title" ? "req" : sl.kind === "ov" ? imgKey(sl.ims[0]) : noteKey(sl.g.map((i) => items[i]));
+    ui.tzSlideHits.push({ x, y, w: sw, h: sh, key: skey });
+    if (skey === ui.tzSel) {
+      c.strokeStyle = "#1ec8b4";
+      c.lineWidth = 3;
+      c.strokeRect(x - 1.5, y - 1.5, sw + 3, sh + 3);
+    } else {
+      c.strokeStyle = "#2b3946";
+      c.lineWidth = 1;
+      c.strokeRect(x + 0.5, y + 0.5, sw - 1, sh - 1);
+    }
     c.fillStyle = "#8c9bab";
     c.font = "11px ".concat(FONT);
     c.textAlign = "center";
@@ -6008,8 +6184,10 @@ function drawTZ() {
   }
 }
 ui.tzHits = [];
+ui.tzSlideHits = [];
 ui.tzHover = null;
 ui.tzDrag = null;
+const pkKey = (pk) => pk.startsWith("req:") ? "req" : pk.slice(5);
 const tzHitAt = (p) => {
   for (let i = ui.tzHits.length - 1; i >= 0; i--) {
     const h = ui.tzHits[i];
@@ -6021,7 +6199,12 @@ function tzPointer(e, type) {
   const p = local(e);
   if (type === "down") {
     const h = tzHitAt(p);
-    if (!h) return;
+    if (!h) {
+      const sh = ui.tzSlideHits.find((q) => p[0] >= q.x && p[0] <= q.x + q.w && p[1] >= q.y && p[1] <= q.y + q.h);
+      if (sh) selectTZText(sh.key);
+      return;
+    }
+    selectTZText(pkKey(h.pk));
     pv.setPointerCapture(e.pointerId);
     ui.tzDrag = { hit: h, px: p[0], py: p[1], x0: h.ex, y0: h.ey, moved: false };
     requestDraw();
@@ -6035,7 +6218,7 @@ function tzPointer(e, type) {
         ui.tzHover = h;
         requestDraw();
       }
-      pv.style.cursor = h ? "move" : "default";
+      pv.style.cursor = h ? "move" : ui.tzSlideHits.some((q) => p[0] >= q.x && p[0] <= q.x + q.w && p[1] >= q.y && p[1] <= q.y + q.h) ? "pointer" : "default";
       return;
     }
     const k = d.hit.k, nx = Math.round(d.x0 + (p[0] - d.px) / k), ny = Math.round(d.y0 + (p[1] - d.py) / k);
