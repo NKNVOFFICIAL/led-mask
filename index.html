@@ -376,7 +376,8 @@ input[type=checkbox] {
   flex-wrap: wrap;
   gap: 6px;
 }
-button.b {
+button.b,
+a.b {
   background: var(--raise);
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -1245,6 +1246,12 @@ html.nogap .imglist > * {
   margin: 0;
   font-size: 16px;
 }
+a.b {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  color: var(--fg);
+}
 .modal-card input {
   width: 100%;
 }
@@ -1634,6 +1641,13 @@ html.nogap .imglist > * {
   </main>
 </div>
 
+<div class="modal" id="saveSheet" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="saveTitle">
+    <h2 id="saveTitle">Файл готов</h2>
+    <p class="hint num" id="saveName"></p>
+    <div class="btns" style="justify-content:flex-end"><button class="b" id="saveCancel">Закрыть</button><a class="b" id="saveLink" download>Скачать</a><button class="b" id="saveShare" style="border-color:var(--accent)">Сохранить в Файлы…</button></div>
+  </div>
+</div>
 <div class="modal" id="modal" hidden>
   <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <h2 id="modalTitle"></h2>
@@ -6061,18 +6075,7 @@ async function saveStandalone(filename, data) {
   const blob = data instanceof Blob ? data : new Blob([data], { type: MIME[ext] || "application/octet-stream" });
   const file = new File([blob], filename, { type: MIME[ext] || blob.type || "application/octet-stream" });
   const touch = matchMedia("(pointer: coarse)").matches;
-  if (touch && navigator.canShare && navigator.canShare({ files: [file] })) {
-    try {
-      await navigator.share({ files: [file] });
-      status("Готово: " + filename, true);
-      return true;
-    } catch (e) {
-      if (e && e.name === "AbortError") {
-        status("Сохранение отменено", true);
-        return false;
-      }
-    }
-  }
+  if (touch) return saveSheet(filename, blob, file);
   const url = URL.createObjectURL(blob), a = document.createElement("a");
   a.href = url;
   a.download = filename;
@@ -6082,6 +6085,36 @@ async function saveStandalone(filename, data) {
   setTimeout(() => URL.revokeObjectURL(url), 6e4);
   status("Сохранено: " + filename, true);
   return true;
+}
+function saveSheet(filename, blob, file) {
+  return new Promise((done) => {
+    const sh = $("saveSheet"), url = URL.createObjectURL(blob), canShare = !!(navigator.canShare && navigator.canShare({ files: [file] }));
+    $("saveName").textContent = "".concat(filename, " · ").concat((blob.size / 1048576).toFixed(1), " МБ");
+    const link = $("saveLink");
+    link.href = url;
+    link.download = filename;
+    $("saveShare").hidden = !canShare;
+    const close = (ok) => {
+      sh.hidden = true;
+      setTimeout(() => URL.revokeObjectURL(url), 12e4);
+      done(ok);
+    };
+    $("saveShare").onclick = async () => {
+      try {
+        await navigator.share({ files: [file] });
+        status("Готово: " + filename, true);
+        close(true);
+      } catch (e) {
+        if (!(e && e.name === "AbortError")) status("«Поделиться» не сработало — нажмите «Скачать»", true);
+      }
+    };
+    link.onclick = () => {
+      status("Скачивание: " + filename + " (папка «Загрузки» в Файлах)", true);
+      setTimeout(() => close(true), 400);
+    };
+    $("saveCancel").onclick = () => close(false);
+    sh.hidden = false;
+  });
 }
 async function saveAndroid(filename, data) {
   const br = window.AndroidBridge;
@@ -8212,6 +8245,21 @@ stepper("physH", (d) => stepCabs("h", d));
     last = t;
   }, { passive: true });
 })();
+if (QS.get("diag")) {
+  const box = document.createElement("pre");
+  box.style.cssText = "position:fixed;left:4px;bottom:4px;z-index:99;max-width:70vw;max-height:40vh;overflow:auto;margin:0;padding:6px;background:rgba(0,0,0,.85);color:#7CFC9A;font:11px/1.3 monospace;pointer-events:none;white-space:pre-wrap";
+  document.body.appendChild(box);
+  const lg = (t) => {
+    box.textContent = (t + "\n" + box.textContent).slice(0, 3e3);
+  };
+  const nm = (el) => el ? el.id ? "#" + el.id : el.tagName : "-";
+  lg("UA ".concat(navigator.userAgent.slice(0, 90), "\nCS=").concat(typeof CompressionStream, " pako=").concat(!!window.pako, " PE=").concat(typeof PointerEvent, " hover=").concat(matchMedia("(hover: hover)").matches, " coarse=").concat(matchMedia("(pointer: coarse)").matches));
+  ["focusin", "focusout", "keydown", "beforeinput", "input", "touchstart", "mousedown", "click"].forEach((t) => document.addEventListener(t, (e) => lg("".concat(t, " ").concat(nm(e.target)).concat(e.key ? " key=" + e.key : "").concat(e.inputType ? " " + e.inputType : "", " prevented=").concat(e.defaultPrevented, " active=").concat(nm(document.activeElement))), true));
+  ["touchstart", "mousedown", "keydown", "beforeinput"].forEach((t) => document.addEventListener(t, (e) => {
+    if (e.defaultPrevented) lg("!! ".concat(t, " отменён"));
+  }, false));
+  window.addEventListener("error", (e) => lg("ERR " + e.message));
+}
 window.__appReady = true;
 if (!STANDALONE) (async () => {
   try {
