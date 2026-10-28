@@ -1592,7 +1592,7 @@ a.b {
       <div class="row"><label for="activeText">Активный текст</label><div class="ctl"><select id="activeText" class="grow"></select></div></div>
       <div class="btns"><button class="b" id="btnAddText">+ Добавить</button><button class="b" id="btnEditText">Изменить текст</button><button class="b" id="btnDelText">Удалить</button></div>
       <div class="row"><label for="exSize">Размер текста</label><div class="ctl"><select id="exSize"></select><button class="b sq" id="exMinus">−</button><button class="b sq" id="exPlus">+</button></div></div>
-      <div class="row"><label for="exRot">Поворот текста</label><div class="ctl"><select id="exRot"></select></div></div>
+      <div class="row"><span class="lbl">Поворот текста <span class="num" id="exRotVal">0°</span></span><div class="ctl"><button class="b" id="exRotCCW" title="Против часовой на 45°">⟲ 45°</button><button class="b" id="exRot0">0°</button><button class="b" id="exRotCW" title="По часовой на 45°">⟳ 45°</button><select id="exRot" hidden></select></div></div>
       <p class="hint">Выбранный текст (и основной) двигается пальцем или мышью прямо на холсте.</p>
     </div></details>
 
@@ -1763,7 +1763,7 @@ a.b {
 <ul>
 <li><strong>Основной текст</strong> — до трёх строк в центре: разрешение, название экрана, размер в метрах. Каждая строка включается галочкой «показ»; метраж по умолчанию выключен. Размер — «Авто» или из списка, кнопки − / + меняют на 10 px. Поворот — «⟲ 45°» / «⟳ 45°» шагом 45°, «0°» возвращает прямо.</li>
 <li><strong>Информация о маске</strong> — галочка выводит в левый нижний угол маски сводку: кабинет (размер в мм и разрешение), разрешение экрана, физический размер и сколько всего кабинетов светится (чёрные не считаются). Галочка — в разделе «Нумерация и предпросмотр». У проекции — проектор, ориентация, количество, перекрытие, разрешение и размер.</li>
-<li><strong>Дополнительный текст</strong> — «+ Добавить», затем выберите его в списке «Активный текст» и двигайте прямо на холсте. Так же двигается и основной текст.</li>
+<li><strong>Дополнительный текст</strong> — «+ Добавить», затем выберите его в списке «Активный текст» и двигайте прямо на холсте. Так же двигается и основной текст. Поворот — те же кнопки «⟲ 45°» / «0°» / «⟳ 45°», что у основного текста.</li>
 </ul>
 <h3>Нумерация и направляющие</h3>
 <p>Формат номера (1,1 · 1-1 · 1 / 1 · C1-R1 · сквозной), угол, с которого начинается нумерация, и место номера в кабинете выбираются списками. Направляющие «Круг» и «Линии через центр» включаются по отдельности.</p>
@@ -4271,6 +4271,8 @@ function syncExtraControls() {
     $("exSize").value = sizeIndexFor(it.size);
     $("exRot").value = rotIndexFor(it.rotation);
   }
+  $("exRotVal").textContent = (it ? normDeg(+it.rotation || 0) : 0) + "°";
+  for (const id of ["exRotCCW", "exRot0", "exRotCW"]) $(id).disabled = !it;
 }
 function ask(title, text, value, okText = "OK", withInput = true) {
   return new Promise((res) => {
@@ -8165,6 +8167,19 @@ function setTitleRot(d) {
 $("rotCCW").onclick = () => setTitleRot(titleRot(S()) + 45);
 $("rotCW").onclick = () => setTitleRot(titleRot(S()) - 45);
 $("rot0").onclick = () => setTitleRot(0);
+const setExRot = (f) => {
+  const it = S().extraLabels[ui.selLabel];
+  if (!it) {
+    status("Сначала добавьте или выберите текст", true);
+    return;
+  }
+  it.rotation = normDeg(f(+it.rotation || 0));
+  syncExtraControls();
+  changed();
+};
+$("exRotCCW").onclick = () => setExRot((d) => d + 45);
+$("exRotCW").onclick = () => setExRot((d) => d - 45);
+$("exRot0").onclick = () => setExRot(() => 0);
 $("showInfo").addEventListener("change", (e) => {
   S().showInfo = e.target.checked;
   changed();
