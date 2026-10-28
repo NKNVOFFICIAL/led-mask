@@ -419,6 +419,9 @@ button.x:hover {
 .info span {
   display: block;
 }
+.info span:empty {
+  display: none;
+}
 .status {
   font-size: 12px;
   color: var(--muted);
@@ -2401,7 +2404,7 @@ function drawProj(ctx, st, s, guides) {
     ctx.restore();
   }
   if (P.bar) {
-    const bw = W * 0.5, bh = Math.max(12, H * 0.05), bx = st.showInfo ? W * 0.47 : (W - bw) / 2, by = H * 0.78, cols = ["#FFFFFF", "#FFFF00", "#00FFFF", "#00FF00", "#FF00FF", "#FF0000", "#0000FF", "#000000"];
+    const bw = W * 0.5, bh = Math.max(12, H * 0.05), bx = (W - bw) / 2, by = barY(ctx, st, W, H, bx, bh), cols = ["#FFFFFF", "#FFFF00", "#00FFFF", "#00FF00", "#FF00FF", "#FF0000", "#0000FF", "#000000"];
     cols.forEach((c, i) => {
       ctx.fillStyle = c;
       ctx.fillRect(X(bx + bw * i / cols.length), X(by), X(bw / cols.length) + 1, X(bh));
@@ -2726,6 +2729,22 @@ function drawMask(ctx, st, s, guides) {
   drawInfo(ctx, st, s);
   ctx.restore();
 }
+function barY(ctx, st, W, H, bx, bh) {
+  const y = H * 0.78;
+  if (!st.showInfo) return y;
+  const r = infoRect(ctx, st, 1, W, H);
+  if (r.x + r.w <= bx || y >= r.y + r.h || y + bh * 1.5 <= r.y) return y;
+  return Math.max(H * 0.05, r.y - bh * 1.5 - Math.max(8, H * 0.015));
+}
+function infoRect(ctx, st, s, W, H) {
+  const lines = infoLines(st), fs = Math.max(10, Math.min(72, Math.min(W, H) * 0.026)) * s, pad = fs * 0.6, lh = fs * 1.3;
+  ctx.save();
+  ctx.font = "".concat(fs, "px ").concat(FONT);
+  const w = Math.max(...lines.map((l) => ctx.measureText(l).width)) + pad * 2;
+  ctx.restore();
+  const h = lines.length * lh + pad * 2 - (lh - fs);
+  return { x: fs * 0.8, y: H * s - fs * 0.8 - h, w, h, fs, pad, lh, lines };
+}
 function infoLines(st) {
   const [W, H] = dims(st), [pw, ph, known] = physM(st), m = (v) => compactM(v);
   if (st.kind === "proj") {
@@ -2756,13 +2775,10 @@ function infoLines(st) {
 }
 function drawInfo(ctx, st, s) {
   if (!st.showInfo) return;
-  const [W, H] = dims(st), lines = infoLines(st);
-  const fs = Math.max(10, Math.min(72, Math.min(W, H) * 0.026)) * s, pad = fs * 0.6, lh = fs * 1.3;
+  const [W, H] = dims(st), { x, y, w, h, fs, pad, lh, lines } = infoRect(ctx, st, s, W, H);
   ctx.save();
   ctx.font = "".concat(fs, "px ").concat(FONT);
   ctx.textBaseline = "top";
-  const w = Math.max(...lines.map((l) => ctx.measureText(l).width)) + pad * 2, h = lines.length * lh + pad * 2 - (lh - fs);
-  const x = fs * 0.8, y = H * s - fs * 0.8 - h;
   ctx.fillStyle = "rgba(0,0,0,0.72)";
   ctx.fillRect(x, y, w, h);
   ctx.fillStyle = "#fff";
@@ -2925,17 +2941,17 @@ function updateInfo(forcePhys) {
   if (forcePhys || document.activeElement !== $("physH")) $("physH").value = compactM(ph);
   $("pixRGB").textContent = "RGB " + to255(st.pixelColor).join(",");
   $("numRGB").textContent = "RGB " + to255(st.numberColor).join(",");
-  $("infoRes").textContent = "Разрешение: ".concat(W, "×").concat(H, " px");
-  $("infoPhys").textContent = "".concat(known ? "Физический размер" : "Размер (условно 50 см)", ": ").concat(compactM(pw), "х").concat(compactM(ph), " м");
+  $("infoRes").innerHTML = infoLines(st).map((l) => "<span>".concat(xmlEsc(l), "</span>")).join("");
+  $("infoPhys").textContent = "";
   if (st.kind === "proj") {
     const g = projGeom(st);
-    $("infoCab").textContent = "Проекторов: ".concat(g.nx, "×").concat(g.ny, " по ").concat(g.pw, "×").concat(g.ph).concat(g.ovx || g.ovy ? " • перекрытие ".concat(g.ovx, "/").concat(g.ovy, " px") : "");
+    $("infoCab").textContent = "";
     $("pjInfo").textContent = "Итог: ".concat(W, "×").concat(H, " px").concat(g.ovx ? " · перекрытие по горизонтали ".concat(g.ovx, " px") : "").concat(g.ovy ? " · по вертикали ".concat(g.ovy, " px") : "");
     $("zLabel").textContent = Math.round(ui.zoom * 100) + "%";
     return;
   }
   const total = st.cabCols * st.cabRows, nb = st.blackCabinets.length, nc = cornerList(st, new Set(st.blackCabinets)).length, ns = shapedCount(st);
-  $("infoCab").textContent = "Кабинеты: ".concat(total, " • Чёрные: ").concat(nb).concat(nc ? " • Угловые: ".concat(nc) : "").concat(ns ? " • Фигурных столбцов: ".concat(ns) : "", " • Выделено: ").concat(ui.selected.size);
+  $("infoCab").textContent = "Чёрные: ".concat(nb).concat(nc ? " • Угловые: ".concat(nc) : "").concat(ns ? " • Фигурных столбцов: ".concat(ns) : "", " • Выделено: ").concat(ui.selected.size);
   $("zLabel").textContent = Math.round(ui.zoom * 100) + "%";
   if (typeof shapedLabels === "function") shapedLabels();
 }
