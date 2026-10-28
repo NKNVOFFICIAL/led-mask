@@ -1582,15 +1582,16 @@ a.b {
     </div></details>
 
     <details class="sec led-only" open><summary>КАШЕ — ФИГУРЫ</summary><div class="sec-body">
-      <p class="hint">Выберите форму (круг, квадрат, суперэллипс) и нажмите «Добавить фигуру» — она ляжет по центру выделенных модулей (или экрана). Модули, которых фигура касается хоть краем, светятся целиком, остальные гаснут без номеров; «Инверсия» — наоборот; «Только рамка» — модули не гаснут, фигура рисуется одной линией. Выбранная фигура двигается на холсте и растягивается за жёлтые квадратики или стрелками.</p>
+      <p class="hint">Выберите форму (круг, квадрат, скруглённый прямоугольник) и нажмите «Добавить фигуру» — она ляжет по центру выделенных модулей (или экрана). Модули, которых фигура касается хоть краем, светятся целиком, остальные гаснут без номеров; «Инверсия» — наоборот; «Только рамка» — модули не гаснут, фигура рисуется одной линией. Выбранная фигура двигается за жёлтый кружок в центре и растягивается за жёлтые квадратики или стрелками.</p>
       <div class="seg shapeType" role="group" aria-label="Форма новой фигуры" style="align-self:flex-start">
-        <button data-t="circle" title="Круг / овал">Круг</button><button data-t="rect" title="Квадрат / прямоугольник">Квадрат</button><button data-t="super" title="Суперэллипс — квадрат со скруглёнными боками">Суперэллипс</button>
+        <button data-t="circle" title="Круг / овал">Круг</button><button data-t="rect" title="Квадрат / прямоугольник">Квадрат</button><button data-t="round" title="Прямоугольник со скруглёнными углами — радиус задаётся">Скруглённый</button>
       </div>
       <div class="btns"><button class="b" id="shapeAdd">+ Добавить фигуру</button><button class="b" id="shapeDel">Удалить</button></div>
       <div class="row"><label for="shapeSel">Фигура</label><div class="ctl"><select id="shapeSel" class="grow"></select></div></div>
       <div class="row"><label for="shapeW">Ширина × высота</label><div class="ctl"><input type="number" id="shapeW" min="4" class="w-md" inputmode="numeric"><span class="unit">×</span><input type="number" id="shapeH" min="4" class="w-md" inputmode="numeric"><span class="unit">px</span></div></div>
-      <div class="row" id="shapeNRow"><label for="shapeN">Скругление суперэллипса</label><div class="ctl"><input type="number" id="shapeN" min="2.5" max="12" step="0.5" class="w-sm" inputmode="decimal"><span class="unit">степень (4 — классика)</span></div></div>
+      <div class="row" id="shapeNRow"><label for="shapeN">Радиус углов</label><div class="ctl"><input type="number" id="shapeN" min="0" class="w-md" inputmode="numeric"><span class="unit">px</span></div></div>
       <label class="chk"><input type="checkbox" id="shapeLock"> Пропорции 1:1 (снимите — растягивается в овал / прямоугольник)</label>
+      <div class="row"><label for="shapeFA">Заливка: цвет и прозрачность</label><div class="ctl"><input type="color" id="shapeFC" title="Цвет заливки"><input type="range" id="shapeFA" min="0" max="100" class="grow"><span class="unit num" id="shapeFAV">0%</span></div></div>
       <label class="chk"><input type="checkbox" id="shapeFrame"> Только рамка — не гасить модули</label>
       <label class="chk"><input type="checkbox" id="shapeInv"> Инверсия — модули под фигурой гаснут, снаружи светятся</label>
       <label class="chk"><input type="checkbox" id="shapeLine"> Линия по краю фигур</label>
@@ -1776,7 +1777,7 @@ a.b {
 <li><strong>Покрасить выделенные</strong> — выделенные кабинеты заливаются цветом из квадратика слева.</li>
 <li><strong>Угловые модули</strong> — выделите кабинеты и нажмите форму: треугольник (◣ ◤ ◥ ◢ — какая половина светится) или четверть круга от одного из углов. Применяется сразу, остальная часть кабинета станет чёрной. «Убрать угловые» возвращает выделенные (или все, если ничего не выделено).</li>
 <li><strong>Фигурные модули</strong> — узкие модули для углов: «1/4 · 90°» и «1/2 · 60°» — четверть и половина ширины выбранного модуля (для 192×192 это 48×192 и 96×192, пересчитывается само при смене модуля), или «Свой» — впишите ширину в пикселях (например 128); поле «Свой» сразу показывает текущую ширину выделенного столбца, чтобы стартовать от неё. Выделите любой модуль и нажмите тип — весь его столбец сразу станет узким, без чёрных полей. Разрешение экрана и общего поля пересчитывается само. «Убрать фигурные» возвращает выделенные столбцы (или все).</li>
-<li><strong>Каше — фигуры</strong> — выберите форму (круг, квадрат или суперэллипс — квадрат со скруглёнными боками, «Скругление» 4 — классика, больше — ближе к квадрату) и нажмите «+ Добавить фигуру»: она ляжет по центру выделенных модулей (или экрана). Модули, которых фигура касается хоть краем, светятся целиком, с номерами; остальные гаснут и теряют нумерацию. «Инверсия» — наоборот: модули под фигурой гаснут. «Только рамка» (по умолчанию выключена) — модули не гаснут вообще, фигура рисуется одной линией поверх маски. Выбранная фигура двигается на холсте и растягивается за жёлтые квадратики (справа — ширина, снизу — высота, в углу — обе) или стрелками «Ширина × высота»; снимите «Пропорции 1:1» — получится овал или прямоугольник. «Линия по краю фигур» — контур, толщина (по умолчанию 6 px) и цвет задаются рядом.</li>
+<li><strong>Каше — фигуры</strong> — выберите форму (круг, квадрат или «Скруглённый» — прямоугольник со скруглёнными углами, как в Photoshop: «Радиус углов» в px) и нажмите «+ Добавить фигуру»: она ляжет по центру выделенных модулей (или экрана). Модули, которых фигура касается хоть краем, светятся целиком, с номерами; остальные гаснут и теряют нумерацию. «Инверсия» — наоборот: модули под фигурой гаснут. «Только рамка» (по умолчанию выключена) — модули не гаснут вообще, фигура рисуется одной линией поверх маски. Выбранная фигура двигается за жёлтый кружок в центре и растягивается за жёлтые квадратики (справа — ширина, снизу — высота, в углу — обе) или стрелками «Ширина × высота»; снимите «Пропорции 1:1» — получится овал или прямоугольник. «Заливка» — цвет и прозрачность внутри фигуры (0 % — без заливки; номера и сетка видны сквозь неё). «Линия по краю фигур» — контур, толщина (по умолчанию 6 px) и цвет задаются рядом.</li>
 <li><strong>Границы ячеек</strong> — как в Keynote: выделите кабинеты и нажмите, какие границы нарисовать (левая, внутренние вертикальные, правая; верхняя, внутренние горизонтальные, нижняя; внешний контур; все внутренние; все). Белая линия 2 px (по внешнему краю маски — 1 px) появляется сразу, повторное нажатие убирает. «Убрать границы» — в выделении (или все), «Показать / скрыть» — не удаляя. Галочка <strong>«Автоконтур»</strong> рисует линию только там, где убраны модули: выключили модуль «Гашением» — вокруг него сразу появляется граница (по краю экрана ничего не добавляется, там своя рамка 1 px).</li>
 </ul>
 <h3>Проекция</h3>
@@ -3764,26 +3765,36 @@ function drawProj(ctx, st, s, guides) {
   drawInfo(ctx, st, s);
   ctx.restore();
 }
-const shapeN = (c) => c.t === "rect" ? Infinity : c.t === "super" ? Math.max(2.5, +c.n || 4) : 2;
-const shapeNorm = (c, dx, dy) => {
-  const n = shapeN(c), ax = Math.abs(dx), ay = Math.abs(dy);
-  return n === Infinity ? Math.max(ax, ay) : Math.pow(Math.pow(ax, n) + Math.pow(ay, n), 1 / n);
-};
+const shapeR = (c) => c.t === "rect" ? 0 : c.t === "round" ? Math.max(0, Math.min(+c.r || 0, c.w / 2, c.h / 2)) : null;
+function shapeHas(c, dx, dy) {
+  const hw = c.w / 2, hh = c.h / 2, ax = Math.abs(dx), ay = Math.abs(dy), r = shapeR(c);
+  if (r === null) {
+    const u = dx / hw, v = dy / hh;
+    return u * u + v * v < 1;
+  }
+  if (ax >= hw || ay >= hh) return false;
+  const qx = ax - (hw - r), qy = ay - (hh - r);
+  return qx <= 0 || qy <= 0 || qx * qx + qy * qy < r * r;
+}
 function shapePath(ctx, c, cx, cy, rx, ry) {
-  const n = shapeN(c);
   ctx.beginPath();
-  if (n === 2) {
-    ctx.ellipse(cx, cy, Math.max(0, rx), Math.max(0, ry), 0, 0, Math.PI * 2);
+  rx = Math.max(0, rx);
+  ry = Math.max(0, ry);
+  const r0 = shapeR(c);
+  if (r0 === null) {
+    ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
     return;
   }
-  if (n === Infinity) {
-    ctx.rect(cx - rx, cy - ry, rx * 2, ry * 2);
-    return;
-  }
-  for (let i = 0; i <= 240; i++) {
-    const a = i / 240 * Math.PI * 2, co = Math.cos(a), si = Math.sin(a), x = cx + rx * Math.sign(co) * Math.pow(Math.abs(co), 2 / n), y = cy + ry * Math.sign(si) * Math.pow(Math.abs(si), 2 / n);
-    i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
-  }
+  const r = Math.max(0, Math.min(rx, ry, r0 * (rx / Math.max(1e-9, c.w / 2)))), x0 = cx - rx, y0 = cy - ry, x1 = cx + rx, y1 = cy + ry;
+  ctx.moveTo(x0 + r, y0);
+  ctx.lineTo(x1 - r, y0);
+  ctx.arcTo(x1, y0, x1, y0 + r, r);
+  ctx.lineTo(x1, y1 - r);
+  ctx.arcTo(x1, y1, x1 - r, y1, r);
+  ctx.lineTo(x0 + r, y1);
+  ctx.arcTo(x0, y1, x0, y1 - r, r);
+  ctx.lineTo(x0, y0 + r);
+  ctx.arcTo(x0, y0, x0 + r, y0, r);
   ctx.closePath();
 }
 function shapeOff(st) {
@@ -3793,8 +3804,8 @@ function shapeOff(st) {
   for (let r = 0; r < st.cabRows; r++) for (let c = 0; c < st.cabCols; c++) {
     const x0 = xs[c], x1 = xs[c + 1], y0 = H - ys[r + 1], y1 = H - ys[r];
     const touch = (e) => {
-      const px = Math.max(x0, Math.min(e.x, x1)), py = Math.max(y0, Math.min(e.y, y1)), dx = (px - e.x) / (e.w / 2), dy = (py - e.y) / (e.h / 2);
-      return shapeNorm(e, dx, dy) < 1;
+      const px = Math.max(x0, Math.min(e.x, x1)), py = Math.max(y0, Math.min(e.y, y1));
+      return shapeHas(e, px - e.x, py - e.y);
     };
     if (lit.length && !lit.some(touch) || dark.some(touch)) out.push(key(c, r));
   }
@@ -3973,6 +3984,14 @@ function drawMask(ctx, st, s, guides) {
     ctx.strokeStyle = "rgb(64,64,64)";
     ctx.lineWidth = Math.max(1, 2 * s);
     ctx.stroke();
+    ctx.restore();
+  }
+  for (const c of st.cacheShapes || []) if (+c.fa > 0) {
+    ctx.save();
+    ctx.globalAlpha = Math.min(1, +c.fa / 100);
+    ctx.fillStyle = c.fc || "#FF0000";
+    shapePath(ctx, c, c.x * s, c.y * s, c.w / 2 * s, c.h / 2 * s);
+    ctx.fill();
     ctx.restore();
   }
   ctx.fillStyle = "rgb(64,64,64)";
@@ -4212,7 +4231,7 @@ function normalizeScreen(d) {
   st.borders = (Array.isArray(d.borders) ? d.borders : []).map(String).filter((k) => /^[vh]:\d+,\d+$/.test(k));
   st.showInfo = !!d.showInfo;
   st.autoContour = !!d.autoContour;
-  st.cacheShapes = (Array.isArray(d.cacheShapes) ? d.cacheShapes : []).filter((x) => x && isFinite(+x.x) && isFinite(+x.y) && (+x.d > 0 || +x.w > 0 && +x.h > 0)).map((x) => ({ x: +x.x, y: +x.y, w: +x.w > 0 ? +x.w : +x.d, h: +x.h > 0 ? +x.h : +x.d, lock: x.lock == null ? true : !!x.lock, inv: !!x.inv, frame: !!x.frame, t: ["circle", "rect", "super"].includes(x.t) ? x.t : "circle", n: Math.max(2.5, Math.min(12, +x.n || 4)) }));
+  st.cacheShapes = (Array.isArray(d.cacheShapes) ? d.cacheShapes : []).filter((x) => x && isFinite(+x.x) && isFinite(+x.y) && (+x.d > 0 || +x.w > 0 && +x.h > 0)).map((x) => ({ x: +x.x, y: +x.y, w: +x.w > 0 ? +x.w : +x.d, h: +x.h > 0 ? +x.h : +x.d, lock: x.lock == null ? true : !!x.lock, inv: !!x.inv, frame: !!x.frame, fa: Math.max(0, Math.min(100, +x.fa || 0)), fc: typeof x.fc === "string" && /^#[0-9a-f]{6}$/i.test(x.fc) ? x.fc.toUpperCase() : "#FF0000", t: ["circle", "rect", "round"].includes(x.t) ? x.t : x.t === "super" ? "round" : "circle", r: +x.r >= 0 && x.r !== "" && x.r != null ? +x.r : Math.round(Math.min(+x.w || +x.d || 0, +x.h || +x.d || 0) * 0.2) }));
   st.cacheLine = d.cacheLine == null ? true : !!d.cacheLine;
   st.cacheLineW = Math.max(1, Math.min(200, pint(d.cacheLineW, 6)));
   st.cacheLineColor = typeof d.cacheLineColor === "string" && /^#[0-9a-f]{6}$/i.test(d.cacheLineColor) ? d.cacheLineColor.toUpperCase() : "#FFFFFF";
@@ -4521,8 +4540,7 @@ pv.addEventListener("pointerdown", (e) => {
       act = { kind: "shapeSize", i: ui.selShape, m, x, y };
       return;
     }
-    const nx = (x - cx) / Math.max(18, rx), ny = (y - cy) / Math.max(18, ry);
-    if (nx * nx + ny * ny <= 1) {
+    if (Math.hypot(x - cx, y - cy) <= 18) {
       act = { kind: "shape", i: ui.selShape, x, y };
       return;
     }
@@ -5265,7 +5283,7 @@ $("screens").addEventListener("change", (e) => {
 });
 $("btnAddScreen").onclick = () => {
   const base = JSON.parse(JSON.stringify(S()));
-  Object.assign(base, { borders: [], name: base.kind === "proj" ? "projection ".concat(project.screens.filter((x) => x.kind === "proj").length + 1) : "screen ".concat(project.screens.length + 1), blackCabinets: [], cabinetColors: {}, persistentContours: [], showPersistentContour: true, extraLabels: [], cornerCabinets: {}, shapedCols: {}, shapedRows: {} });
+  Object.assign(base, { borders: [], name: base.kind === "proj" ? "projection ".concat(project.screens.filter((x) => x.kind === "proj").length + 1) : "screen ".concat(project.screens.length + 1), blackCabinets: [], cabinetColors: {}, persistentContours: [], showPersistentContour: true, extraLabels: [], cacheShapes: [], cornerCabinets: {}, shapedCols: {}, shapedRows: {} });
   delete base.field;
   base.uid = newUid();
   project.screens.push(base);
@@ -8409,7 +8427,7 @@ const stepInput = (id, step) => stepper(id, (d) => {
   ["shapeW", 8],
   ["shapeH", 8],
   ["shapeLW", 1],
-  ["shapeN", 0.5]
+  ["shapeN", 8]
 ].forEach(([id, st]) => {
   if ($(id)) stepInput(id, st);
 });
@@ -8485,10 +8503,21 @@ function drawCachePreview(st, s) {
       pctx.fillRect(hx - 6, hy - 6, 12, 12);
       pctx.strokeRect(hx - 6, hy - 6, 12, 12);
     }
+    pctx.beginPath();
+    pctx.arc(cx, cy, 11, 0, Math.PI * 2);
+    pctx.fill();
+    pctx.stroke();
+    pctx.beginPath();
+    pctx.moveTo(cx - 6, cy);
+    pctx.lineTo(cx + 6, cy);
+    pctx.moveTo(cx, cy - 6);
+    pctx.lineTo(cx, cy + 6);
+    pctx.lineWidth = 2;
+    pctx.stroke();
     pctx.restore();
   }
 }
-const shapeName = (c) => c.t === "rect" ? c.lock ? "Квадрат" : "Прямоугольник" : c.t === "super" ? "Суперэллипс" : c.lock ? "Круг" : "Овал";
+const shapeName = (c) => c.t === "rect" ? c.lock ? "Квадрат" : "Прямоугольник" : c.t === "round" ? "Скруглённый" : c.lock ? "Круг" : "Овал";
 ui.shapeType = "circle";
 function syncShapes() {
   const st = S(), list = st.cacheShapes || (st.cacheShapes = []), sel = $("shapeSel");
@@ -8507,10 +8536,14 @@ function syncShapes() {
   $("shapeDel").disabled = !c;
   $("shapeFrame").checked = !!(c && c.frame);
   $("shapeFrame").disabled = !c;
+  $("shapeFA").value = c ? +c.fa || 0 : 0;
+  $("shapeFAV").textContent = (c ? +c.fa || 0 : 0) + "%";
+  $("shapeFC").value = (c && c.fc || "#FF0000").toLowerCase();
+  $("shapeFA").disabled = $("shapeFC").disabled = !c;
   const t = ui.shapeType;
   document.querySelectorAll(".seg.shapeType button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.t === t)));
-  $("shapeNRow").hidden = !(c && c.t === "super");
-  if (document.activeElement !== $("shapeN")) $("shapeN").value = c ? +c.n || 4 : 4;
+  $("shapeNRow").hidden = !(c && c.t === "round");
+  if (document.activeElement !== $("shapeN")) $("shapeN").value = c ? Math.round(shapeR(c) || 0) : "";
   $("shapeLine").checked = st.cacheLine !== false;
   if (document.activeElement !== $("shapeLW")) $("shapeLW").value = st.cacheLineW || 6;
   $("shapeLC").value = (st.cacheLineColor || "#FFFFFF").toLowerCase();
@@ -8527,7 +8560,7 @@ $("shapeAdd").onclick = () => {
     y1 = Math.max(y1, H - ys[p[1]]);
   }
   const c = isFinite(x0) ? { x: (x0 + x1) / 2, y: (y0 + y1) / 2, w: Math.min(x1 - x0, y1 - y0), h: Math.min(x1 - x0, y1 - y0), lock: true, inv: false } : { x: W / 2, y: H / 2, w: Math.round(Math.min(W, H) / 3), h: Math.round(Math.min(W, H) / 3), lock: true, inv: false };
-  Object.assign(c, { t: ui.shapeType, n: 4, frame: false });
+  Object.assign(c, { fa: 0, fc: "#FF0000", t: ui.shapeType, r: Math.round(Math.min(c.w, c.h) * 0.2), frame: false });
   (st.cacheShapes || (st.cacheShapes = [])).push(c);
   ui.selShape = st.cacheShapes.length - 1;
   ui.selected.clear();
@@ -8562,6 +8595,23 @@ document.querySelectorAll(".seg.shapeType button").forEach((b) => b.onclick = ()
   syncShapes();
   status("Форма новой фигуры: ".concat(b.textContent, " — нажмите «Добавить фигуру»"), true);
 });
+$("shapeFA").addEventListener("input", (e) => {
+  const c = S().cacheShapes[ui.selShape];
+  if (!c) return;
+  c.fa = +e.target.value;
+  $("shapeFAV").textContent = c.fa + "%";
+  changed();
+});
+$("shapeFC").addEventListener("input", (e) => {
+  const c = S().cacheShapes[ui.selShape];
+  if (!c) return;
+  c.fc = e.target.value.toUpperCase();
+  if (!(+c.fa > 0)) {
+    c.fa = 30;
+    syncShapes();
+  }
+  changed();
+});
 $("shapeFrame").addEventListener("change", (e) => {
   const c = S().cacheShapes[ui.selShape];
   if (!c) return;
@@ -8570,9 +8620,9 @@ $("shapeFrame").addEventListener("change", (e) => {
   changed();
 });
 $("shapeN").addEventListener("input", (e) => {
-  const c = S().cacheShapes[ui.selShape], v = parseFloat(String(e.target.value).replace(",", "."));
-  if (c && v >= 2.5 && v <= 12) {
-    c.n = v;
+  const c = S().cacheShapes[ui.selShape], v = pint(e.target.value, -1);
+  if (c && v >= 0) {
+    c.r = Math.min(v, Math.floor(Math.min(c.w, c.h) / 2));
     changed();
   }
 });
