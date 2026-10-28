@@ -1266,9 +1266,6 @@ html.nogap .imglist > * {
       #222 4px,
       #222 8px);
 }
-html:not(.has-cache) .cache-on {
-  display: none;
-}
 a.b {
   text-decoration: none;
   display: inline-flex;
@@ -1584,30 +1581,13 @@ a.b {
       <div class="btns"><button class="b" id="btnShapedDel">Убрать фигурные</button></div>
     </div></details>
 
-    <details class="sec led-only" open><summary>КАШЕ</summary><div class="sec-body">
-      <div class="tgroup">ПО КАРТИНКЕ</div>
-      <p class="hint">Загрузите схему или рендер сцены. Нажмите «Пипетка» и коснитесь экрана на картинке (видимой, светящейся части) — программа найдёт рамку экрана и отметит красным кабинеты, которые закрыты или которых нет. «Применить» гасит их; закрытую зону можно ещё и затемнить по точной форме.</p>
-      <div class="btns"><button class="b" id="cacheLoad">Загрузить картинку</button><button class="b" id="cachePick">Пипетка</button><button class="b" id="cacheDrop">Убрать</button></div>
-      <input type="file" id="cacheFile" accept="image/*" hidden>
-      <div class="pjd-none cache-on">
-        <div class="row"><span class="lbl">Цвет экрана</span><div class="ctl"><span class="swatch" id="cacheSw"></span><span class="unit num" id="cacheRGB">—</span></div></div>
-        <div class="row"><label for="cacheTol">Допуск цвета</label><div class="ctl"><input type="range" id="cacheTol" min="10" max="160" class="grow"><span class="unit num" id="cacheTolV"></span></div></div>
-        <div class="row"><label for="cacheThr">Гасить, если закрыт больше</label><div class="ctl"><input type="number" id="cacheThr" min="5" max="100" class="w-sm" inputmode="numeric"><span class="unit">%</span></div></div>
-        <div class="row"><label for="cacheOp">Картинка поверх</label><div class="ctl"><input type="range" id="cacheOp" min="0" max="100" class="grow"><span class="unit num" id="cacheOpV"></span></div></div>
-        <label class="chk"><input type="checkbox" id="cacheClosed"> Гасить кабинеты, закрытые декорацией (не того цвета)</label>
-        <label class="chk"><input type="checkbox" id="cacheShade"> Затемнить закрытую зону по точной форме</label>
-        <div class="row"><span class="lbl">Рамка экрана на картинке</span><div class="ctl"><span class="unit">X</span><input type="number" id="cacheX" class="w-sm" inputmode="numeric"><span class="unit">Y</span><input type="number" id="cacheY" class="w-sm" inputmode="numeric"></div></div>
-        <div class="row"><span class="lbl">Ширина × высота</span><div class="ctl"><input type="number" id="cacheW" min="4" class="w-md" inputmode="numeric"><span class="unit">×</span><input type="number" id="cacheH" min="4" class="w-md" inputmode="numeric"><span class="unit">px</span></div></div>
-        <div class="btns"><button class="b" id="cacheGrid">Кабинеты — как на картинке</button><button class="x" id="cacheApply">Применить</button></div>
-        <p class="hint num" id="cacheInfo"></p>
-      </div>
-      <div class="tgroup">КРУГИ И ОВАЛЫ</div>
-      <p class="hint">Выделите убранные модули и нажмите «+ Круг» — круг ляжет по центру выделения. Выбранный круг двигается пальцем или мышью на холсте; растягивается за квадратики справа, снизу и в углу — или стрелками ширины и высоты. Снимите «Круг» — получится овал.</p>
+    <details class="sec led-only" open><summary>КАШЕ — КРУГИ И ОВАЛЫ</summary><div class="sec-body">
+      <p class="hint">«+ Круг» — по центру выделенных модулей (или экрана). Модули, которых круг касается хоть краем, светятся целиком, остальные гаснут без номеров; «Инверсия» — наоборот. Выбранный круг двигается на холсте и растягивается за жёлтые квадратики или стрелками.</p>
       <div class="row"><label for="shapeSel">Круг</label><div class="ctl"><select id="shapeSel" class="grow"></select></div></div>
       <div class="btns"><button class="b" id="shapeAdd">+ Круг</button><button class="b" id="shapeDel">Удалить</button></div>
       <div class="row"><label for="shapeW">Ширина × высота</label><div class="ctl"><input type="number" id="shapeW" min="4" class="w-md" inputmode="numeric"><span class="unit">×</span><input type="number" id="shapeH" min="4" class="w-md" inputmode="numeric"><span class="unit">px</span></div></div>
       <label class="chk"><input type="checkbox" id="shapeLock"> Круг (ширина = высоте); снимите — получится овал</label>
-      <label class="chk"><input type="checkbox" id="shapeInv"> Инверсия — светятся только модули под кругом</label>
+      <label class="chk"><input type="checkbox" id="shapeInv"> Инверсия — модули под кругом гаснут, снаружи светятся</label>
       <label class="chk"><input type="checkbox" id="shapeLine"> Линия по краю кругов</label>
       <div class="row"><label for="shapeLW">Толщина и цвет линии</label><div class="ctl"><input type="number" id="shapeLW" min="1" max="200" class="w-sm" inputmode="numeric"><span class="unit">px</span><input type="color" id="shapeLC" title="Цвет линии"></div></div>
     </div></details>
@@ -1791,8 +1771,7 @@ a.b {
 <li><strong>Покрасить выделенные</strong> — выделенные кабинеты заливаются цветом из квадратика слева.</li>
 <li><strong>Угловые модули</strong> — выделите кабинеты и нажмите форму: треугольник (◣ ◤ ◥ ◢ — какая половина светится) или четверть круга от одного из углов. Применяется сразу, остальная часть кабинета станет чёрной. «Убрать угловые» возвращает выделенные (или все, если ничего не выделено).</li>
 <li><strong>Фигурные модули</strong> — узкие модули для углов: «1/4 · 90°» и «1/2 · 60°» — четверть и половина ширины выбранного модуля (для 192×192 это 48×192 и 96×192, пересчитывается само при смене модуля), или «Свой» — впишите ширину в пикселях (например 128); поле «Свой» сразу показывает текущую ширину выделенного столбца, чтобы стартовать от неё. Выделите любой модуль и нажмите тип — весь его столбец сразу станет узким, без чёрных полей. Разрешение экрана и общего поля пересчитывается само. «Убрать фигурные» возвращает выделенные столбцы (или все).</li>
-<li><strong>Каше по картинке</strong> — «Загрузить картинку» (схема или рендер сцены), затем «Пипетка» и касание светящейся части экрана на картинке. Программа сама находит рамку экрана (её можно поправить: X, Y, ширина, высота) и отмечает красным кабинеты, которых нет (серое, белое) или которые закрыты декорацией больше заданного процента. «Кабинеты — как на картинке» считает сетку по линиям. «Допуск цвета» — насколько цвет может отличаться от пипетки, «Картинка поверх» — прозрачность подложки. «Применить» гасит красные кабинеты; галочка «Затемнить закрытую зону по точной форме» переносит в маску и дугу/форму каше, даже если она режет кабинет. Для схем, где закрытые кабинеты всё равно существуют (тёмно-синие над дугой), снимите «Гасить кабинеты, закрытые декорацией» и включите затемнение. Сама картинка в проект не сохраняется — только результат.</li>
-<li><strong>Каше-круги и овалы</strong> — выделите убранные модули и нажмите «+ Круг»: чёрный круг ляжет по центру выделения, размером с него. Выбранный круг двигается на холсте и растягивается за жёлтые квадратики (справа — ширина, снизу — высота, в углу — обе) или стрелками «Ширина × высота». Снимите галочку «Круг» — получится овал. Галочка «Инверсия» (включена по умолчанию) делает наоборот: светятся только модули, которых круг касается (даже краем — модуль светится целиком, с номером), остальные гаснут и теряют нумерацию. Если инвертированных несколько — светятся модули под любым из них. Линия по краю кругов (галочка) рисуется у всех кругов — толщина в px (по умолчанию 6) и цвет задаются рядом. </li>
+<li><strong>Каше — круги и овалы</strong> — «+ Круг» ставит круг по центру выделенных модулей (или экрана). Модули, которых круг касается хоть краем, светятся целиком, с номерами; остальные гаснут и теряют нумерацию. Галочка «Инверсия» (по умолчанию выключена) — наоборот: модули под кругом гаснут, снаружи светятся. Выбранный круг двигается на холсте и растягивается за жёлтые квадратики (справа — ширина, снизу — высота, в углу — обе) или стрелками «Ширина × высота»; снимите «Круг» — получится овал. «Линия по краю кругов» — контур, толщина (по умолчанию 6 px) и цвет задаются рядом.</li>
 <li><strong>Границы ячеек</strong> — как в Keynote: выделите кабинеты и нажмите, какие границы нарисовать (левая, внутренние вертикальные, правая; верхняя, внутренние горизонтальные, нижняя; внешний контур; все внутренние; все). Белая линия 2 px (по внешнему краю маски — 1 px) появляется сразу, повторное нажатие убирает. «Убрать границы» — в выделении (или все), «Показать / скрыть» — не удаляя. Галочка <strong>«Автоконтур»</strong> рисует линию только там, где убраны модули: выключили модуль «Гашением» — вокруг него сразу появляется граница (по краю экрана ничего не добавляется, там своя рамка 1 px).</li>
 </ul>
 <h3>Проекция</h3>
@@ -3781,16 +3760,16 @@ function drawProj(ctx, st, s, guides) {
   ctx.restore();
 }
 function shapeOff(st) {
-  const inv = (st.cacheShapes || []).filter((c) => c.inv), out = [];
-  if (!inv.length || st.kind === "proj") return out;
+  const all = st.kind === "proj" ? [] : st.cacheShapes || [], lit = all.filter((c) => !c.inv), dark = all.filter((c) => c.inv), out = [];
+  if (!all.length) return out;
   const { xs, ys } = grid(st), [, H] = dims(st);
   for (let r = 0; r < st.cabRows; r++) for (let c = 0; c < st.cabCols; c++) {
     const x0 = xs[c], x1 = xs[c + 1], y0 = H - ys[r + 1], y1 = H - ys[r];
-    const hit = inv.some((e) => {
+    const touch = (e) => {
       const px = Math.max(x0, Math.min(e.x, x1)), py = Math.max(y0, Math.min(e.y, y1)), dx = (px - e.x) / (e.w / 2), dy = (py - e.y) / (e.h / 2);
       return dx * dx + dy * dy < 1;
-    });
-    if (!hit) out.push(key(c, r));
+    };
+    if (lit.length && !lit.some(touch) || dark.some(touch)) out.push(key(c, r));
   }
   return out;
 }
@@ -3968,22 +3947,6 @@ function drawMask(ctx, st, s, guides) {
     ctx.lineWidth = Math.max(1, 2 * s);
     ctx.stroke();
     ctx.restore();
-  }
-  if (st.cacheShade) {
-    const im = shadeImg(st.cacheShade.png);
-    if (im && im.complete && im.naturalWidth) {
-      ctx.save();
-      ctx.globalAlpha = st.cacheShade.alpha;
-      ctx.imageSmoothingEnabled = true;
-      ctx.drawImage(im, 0, 0, Wp, Hp);
-      ctx.restore();
-    }
-  }
-  for (const c of st.cacheShapes || []) if (!c.inv) {
-    ctx.beginPath();
-    ctx.ellipse(c.x * s, c.y * s, c.w / 2 * s, c.h / 2 * s, 0, 0, Math.PI * 2);
-    ctx.fillStyle = "#000";
-    ctx.fill();
   }
   ctx.fillStyle = "rgb(64,64,64)";
   const bw = Math.max(1, Math.round(2 * s));
@@ -4185,7 +4148,7 @@ function cornerList(st, black) {
 }
 let project = { name: "Проект", screens: [defaultScreen()], cur: 0, guides: { circle: true, diag: true }, ...freshFieldState() };
 const S = () => project.screens[project.cur];
-const ui = { selShape: -1, cachePick: false, cache: null, corner: 0, selected: /* @__PURE__ */ new Set(), anchor: null, textMode: -1, selLabel: -1, zoom: 1, panX: 0, panY: 0, tool: "select", mod: false, hover: null, paint: { ...DEF_PAINT } };
+const ui = { selShape: -1, corner: 0, selected: /* @__PURE__ */ new Set(), anchor: null, textMode: -1, selLabel: -1, zoom: 1, panX: 0, panY: 0, tool: "select", mod: false, hover: null, paint: { ...DEF_PAINT } };
 let downloads = null;
 function normalizeScreen(d) {
   var _a;
@@ -4227,7 +4190,6 @@ function normalizeScreen(d) {
   st.cacheLine = d.cacheLine == null ? true : !!d.cacheLine;
   st.cacheLineW = Math.max(1, Math.min(200, pint(d.cacheLineW, 6)));
   st.cacheLineColor = typeof d.cacheLineColor === "string" && /^#[0-9a-f]{6}$/i.test(d.cacheLineColor) ? d.cacheLineColor.toUpperCase() : "#FFFFFF";
-  st.cacheShade = d.cacheShade && typeof d.cacheShade.png === "string" && /^data:image\/png;base64,/.test(d.cacheShade.png) ? { png: d.cacheShade.png, alpha: Math.max(0, Math.min(1, +d.cacheShade.alpha || 0.55)) } : null;
   st.rotDeg = d.rotDeg != null && isFinite(+d.rotDeg) ? normDeg(+d.rotDeg) : ROT_DEG[clampI(d.rotationIndex, 4)];
   st.uid = typeof d.uid === "string" && d.uid ? d.uid : newUid();
   st.cornerCabinets = {};
@@ -4287,7 +4249,6 @@ function status(msg, toast = false) {
 function syncUI() {
   const st = S();
   syncShapes();
-  syncCacheUI();
   $("projName").value = project.name;
   fillSelect($("screens"), project.screens.map((s, i) => "".concat(i + 1, ". ").concat(s.name || "screen " + (i + 1))));
   $("screens").value = project.cur;
@@ -4528,10 +4489,6 @@ pv.addEventListener("pointerdown", (e) => {
   if (pointers.size > 2) return;
   if (!L) return;
   const [x, y] = local(e), st = S();
-  if (ui.cachePick && cacheOn(st) && x >= L.ox && y >= L.oy && x < L.ox + L.gw && y < L.oy + L.gh) {
-    cachePickAt((x - L.ox) / L.gw, (y - L.oy) / L.gh);
-    return;
-  }
   if (ui.selShape >= 0 && st.cacheShapes && st.cacheShapes[ui.selShape]) {
     const c = st.cacheShapes[ui.selShape], s0 = L.scale, cx = L.ox + c.x * s0, cy = L.oy + c.y * s0, rx = c.w / 2 * s0, ry = c.h / 2 * s0;
     for (const [hx, hy, m] of [[cx + rx, cy + ry, "wh"], [cx + rx, cy, "w"], [cx, cy + ry, "h"]]) if (Math.hypot(x - hx, y - hy) <= 16) {
@@ -5573,7 +5530,6 @@ function pngChunk(type, data) {
   return out;
 }
 async function renderPNG(st, onBand) {
-  await shadesReady();
   const [W, H] = dims(st);
   return renderBands(W, H, (ctx) => drawMask(ctx, st, 1, project.guides), onBand);
 }
@@ -6628,7 +6584,6 @@ function paintField(ctx, f, s) {
   }
 }
 async function renderFieldPNG(f, onBand) {
-  await shadesReady();
   const b = fieldBBox(fieldRects(f));
   return renderBands(b.w, b.h, (ctx) => paintField(ctx, f, 1), onBand);
 }
@@ -8425,11 +8380,6 @@ const stepInput = (id, step) => stepper(id, (d) => {
   ["pjEl", 1],
   ["fX", 1],
   ["fY", 1],
-  ["cacheThr", 5],
-  ["cacheX", 1],
-  ["cacheY", 1],
-  ["cacheW", 1],
-  ["cacheH", 1],
   ["shapeW", 8],
   ["shapeH", 8],
   ["shapeLW", 1]
@@ -8489,198 +8439,6 @@ if (QS.get("diag")) {
   }, false));
   window.addEventListener("error", (e) => lg("ERR " + e.message));
 }
-const shadeCache = /* @__PURE__ */ new Map();
-function shadeImg(src) {
-  let im = shadeCache.get(src);
-  if (!im) {
-    im = new Image();
-    im.onload = () => requestDraw();
-    im.src = src;
-    shadeCache.set(src, im);
-  }
-  return im;
-}
-async function shadesReady() {
-  for (const st of project.screens) if (st.cacheShade) {
-    const im = shadeImg(st.cacheShade.png);
-    if (!im.complete) await new Promise((r) => {
-      im.addEventListener("load", r, { once: true });
-      im.addEventListener("error", r, { once: true });
-    });
-  }
-}
-function cacheOn(st) {
-  return !!(ui.cache && ui.cache.uid === st.uid);
-}
-const rgb2hsv = (r, g, b) => {
-  r /= 255;
-  g /= 255;
-  b /= 255;
-  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
-  let h = 0;
-  if (d) h = mx === r ? (g - b) / d % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
-  return [(h * 60 + 360) % 360, mx ? d / mx : 0, mx];
-};
-function cacheMasks() {
-  const C = ui.cache;
-  if (!C.rgb) return null;
-  const key_ = C.rgb.join() + "|" + C.tol;
-  if (C.mk === key_) return C;
-  const d = C.data.data, n = C.w * C.h, tone = new Uint8Array(n), vis = new Uint8Array(n), [pr, pg, pb] = C.rgb, [ph, ps] = rgb2hsv(pr, pg, pb), t2 = C.tol * C.tol;
-  for (let i = 0, j = 0; i < n; i++, j += 4) {
-    const r = d[j], g = d[j + 1], b = d[j + 2], dr = r - pr, dg = g - pg, db = b - pb;
-    if (dr * dr + dg * dg + db * db <= t2) {
-      vis[i] = 1;
-      tone[i] = 1;
-      continue;
-    }
-    const [h, sa, v] = rgb2hsv(r, g, b), dh = Math.min(Math.abs(h - ph), 360 - Math.abs(h - ph));
-    if (dh < 28 && sa > Math.max(0.12, ps * 0.2) && v > 0.12) tone[i] = 1;
-  }
-  C.tone = tone;
-  C.vis = vis;
-  C.mk = key_;
-  return C;
-}
-function cachePickAt(u, v) {
-  const C = ui.cache, R = C.rect, ix = Math.max(0, Math.min(C.w - 1, Math.round(R.x + u * R.w))), iy = Math.max(0, Math.min(C.h - 1, Math.round(R.y + v * R.h)));
-  const d = C.data.data, R_ = [], G_ = [], B_ = [];
-  for (let y = Math.max(0, iy - 3); y <= Math.min(C.h - 1, iy + 3); y++) for (let x = Math.max(0, ix - 3); x <= Math.min(C.w - 1, ix + 3); x++) {
-    const j = (y * C.w + x) * 4;
-    R_.push(d[j]);
-    G_.push(d[j + 1]);
-    B_.push(d[j + 2]);
-  }
-  const med = (a) => a.sort((p, q2) => p - q2)[a.length >> 1];
-  C.rgb = [med(R_), med(G_), med(B_)];
-  C.mk = null;
-  ui.cachePick = false;
-  $("cachePick").setAttribute("aria-pressed", "false");
-  cacheMasks();
-  const { tone, w, h } = C, seen = new Uint8Array(w * h), q = [iy * w + ix];
-  let x0 = ix, x1 = ix, y0 = iy, y1 = iy, cnt = 0;
-  seen[q[0]] = 1;
-  while (q.length) {
-    const i = q.pop(), x = i % w, y = i / w | 0;
-    if (tone[i]) {
-      cnt++;
-      if (x < x0) x0 = x;
-      if (x > x1) x1 = x;
-      if (y < y0) y0 = y;
-      if (y > y1) y1 = y;
-    }
-    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) for (let st_ = 1; st_ <= 3; st_++) {
-      const nx = x + dx * st_, ny = y + dy * st_;
-      if (nx < 0 || ny < 0 || nx >= w || ny >= h) break;
-      const ni = ny * w + nx;
-      if (tone[ni]) {
-        if (!seen[ni]) {
-          seen[ni] = 1;
-          q.push(ni);
-        }
-        break;
-      }
-    }
-  }
-  const rowF = (y) => {
-    let t = 0;
-    for (let x = x0; x <= x1; x++) t += tone[y * w + x];
-    return t / (x1 - x0 + 1);
-  };
-  const colF = (x) => {
-    let t = 0;
-    for (let y = y0; y <= y1; y++) t += tone[y * w + x];
-    return t / (y1 - y0 + 1);
-  };
-  for (let k = 0; k < 4; k++) {
-    while (y1 - y0 > 4 && rowF(y0) < 0.2) y0++;
-    while (y1 - y0 > 4 && rowF(y1) < 0.2) y1--;
-    while (x1 - x0 > 4 && colF(x0) < 0.2) x0++;
-    while (x1 - x0 > 4 && colF(x1) < 0.2) x1--;
-  }
-  if (cnt > 50) C.rect = { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 };
-  cacheCompute();
-  syncCacheUI();
-  requestDraw();
-  status("Цвет экрана RGB ".concat(C.rgb.join(","), " · рамка ").concat(C.rect.w, "×").concat(C.rect.h, " px на картинке"), true);
-}
-function cacheCompute() {
-  const C = ui.cache, st = S();
-  if (!C || !C.rgb) return;
-  cacheMasks();
-  const { xs, ys } = grid(st), [W, H] = dims(st), R = C.rect, black = /* @__PURE__ */ new Set(), thr = C.thr / 100;
-  for (let r = 0; r < st.cabRows; r++) for (let c = 0; c < st.cabCols; c++) {
-    const ax = R.x + xs[c] / W * R.w, bx = R.x + xs[c + 1] / W * R.w, ay = R.y + (H - ys[r + 1]) / H * R.h, by = R.y + (H - ys[r]) / H * R.h;
-    const mx = (bx - ax) * 0.12, my = (by - ay) * 0.12;
-    let n = 0, tn = 0, vn = 0;
-    for (let y = Math.max(0, Math.floor(ay + my)); y < Math.min(C.h, Math.ceil(by - my)); y++) for (let x = Math.max(0, Math.floor(ax + mx)); x < Math.min(C.w, Math.ceil(bx - mx)); x++) {
-      const i = y * C.w + x;
-      n++;
-      tn += C.tone[i];
-      vn += C.vis[i];
-    }
-    if (!n) continue;
-    if (tn / n < 0.5 || C.closed && 1 - vn / n > thr) black.add(key(c, r));
-  }
-  C.black = black;
-  $("cacheInfo").textContent = "Будет погашено: ".concat(black.size, " из ").concat(st.cabCols * st.cabRows, " кабинетов").concat(C.shade ? " · закрытая зона — затемнение" : "");
-}
-function cacheShadePNG() {
-  const C = ui.cache, R = C.rect, k = Math.min(1, 1600 / Math.max(R.w, R.h)), w = Math.max(1, Math.round(R.w * k)), h = Math.max(1, Math.round(R.h * k));
-  const cv = document.createElement("canvas");
-  cv.width = w;
-  cv.height = h;
-  const cx = cv.getContext("2d"), out = cx.createImageData(w, h), o = out.data;
-  const at = (x, y) => {
-    const sx = Math.min(C.w - 1, Math.max(0, Math.round(R.x + x / k))), sy = Math.min(C.h - 1, Math.max(0, Math.round(R.y + y / k)));
-    return sy * C.w + sx;
-  };
-  const dd = C.data.data, lum = (i) => dd[i * 4] * 0.3 + dd[i * 4 + 1] * 0.59 + dd[i * 4 + 2] * 0.11;
-  let ref = 0, rn = 0;
-  for (let i = 0; i < C.vis.length; i += 7) if (C.vis[i]) {
-    ref += lum(i);
-    rn++;
-  }
-  ref = rn ? ref / rn : 128;
-  const S0 = new Uint8Array(w * h), V0 = new Uint8Array(w * h);
-  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-    const i = at(x, y);
-    if (C.vis[i]) V0[y * w + x] = 1;
-    else if (C.tone[i] && lum(i) >= ref * 0.45) S0[y * w + x] = 1;
-  }
-  const r = Math.max(2, Math.round(Math.min(w, h) / 120));
-  const integ = (A) => {
-    const I = new Uint32Array((w + 1) * (h + 1));
-    for (let y = 0; y < h; y++) {
-      let row = 0;
-      for (let x = 0; x < w; x++) {
-        row += A[y * w + x];
-        I[(y + 1) * (w + 1) + x + 1] = I[y * (w + 1) + x + 1] + row;
-      }
-    }
-    return I;
-  };
-  {
-    const D = new Uint8Array(w * h);
-    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-      const i = at(x, y);
-      if (!C.vis[i] && lum(i) < ref * 0.45) D[y * w + x] = 1;
-    }
-    const ID = integ(D), q = 2;
-    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (S0[y * w + x]) {
-      const xa = Math.max(0, x - q), xb = Math.min(w, x + q + 1), ya = Math.max(0, y - q), yb = Math.min(h, y + q + 1);
-      if (ID[yb * (w + 1) + xb] - ID[ya * (w + 1) + xb] - ID[yb * (w + 1) + xa] + ID[ya * (w + 1) + xa]) S0[y * w + x] = 0;
-    }
-  }
-  const IS = integ(S0), IV = integ(V0), box = (I, xa, xb, ya, yb) => I[yb * (w + 1) + xb] - I[ya * (w + 1) + xb] - I[yb * (w + 1) + xa] + I[ya * (w + 1) + xa];
-  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-    const xa = Math.max(0, x - r), xb = Math.min(w, x + r + 1), ya = Math.max(0, y - r), yb = Math.min(h, y + r + 1);
-    const sn = box(IS, xa, xb, ya, yb), vn = box(IV, xa, xb, ya, yb);
-    if (sn > vn && (sn + vn) * 6 > (xb - xa) * (yb - ya)) o[(y * w + x) * 4 + 3] = 255;
-  }
-  cx.putImageData(out, 0, 0);
-  return cv.toDataURL("image/png");
-}
 function drawCachePreview(st, s) {
   const sc = (st.cacheShapes || [])[ui.selShape];
   if (sc) {
@@ -8702,200 +8460,7 @@ function drawCachePreview(st, s) {
     }
     pctx.restore();
   }
-  if (!cacheOn(st)) return;
-  const C = ui.cache, R = C.rect;
-  if (C.opacity > 0) {
-    pctx.save();
-    pctx.globalAlpha = C.opacity / 100;
-    pctx.drawImage(C.canvas, R.x, R.y, R.w, R.h, L.ox, L.oy, L.gw, L.gh);
-    pctx.restore();
-  }
-  if (C.black) {
-    pctx.save();
-    pctx.fillStyle = "rgba(255,40,40,0.35)";
-    pctx.strokeStyle = "#ff3b30";
-    pctx.lineWidth = 1.5;
-    for (const k of C.black) {
-      const p = parseKey(k);
-      if (!p || p[0] >= st.cabCols || p[1] >= st.cabRows) continue;
-      const [x, y, w, h] = cellRect(p[0], p[1]);
-      pctx.fillRect(x, y, w, h);
-      pctx.strokeRect(x + 1, y + 1, w - 2, h - 2);
-    }
-    pctx.restore();
-  }
 }
-function syncCacheUI() {
-  const C = cacheOn(S()) ? ui.cache : null;
-  document.documentElement.classList.toggle("has-cache", !!C);
-  if (!C) return;
-  $("cacheSw").style.background = C.rgb ? "rgb(".concat(C.rgb.join(","), ")") : "";
-  $("cacheRGB").textContent = C.rgb ? "RGB ".concat(C.rgb.join(",")) : "нажмите «Пипетка»";
-  $("cacheTol").value = C.tol;
-  $("cacheTolV").textContent = C.tol;
-  $("cacheOp").value = C.opacity;
-  $("cacheOpV").textContent = C.opacity + "%";
-  $("cacheThr").value = C.thr;
-  $("cacheClosed").checked = C.closed;
-  $("cacheShade").checked = C.shade;
-  for (const [id, k] of [["cacheX", "x"], ["cacheY", "y"], ["cacheW", "w"], ["cacheH", "h"]]) if (document.activeElement !== $(id)) $(id).value = C.rect[k];
-  if (!C.rgb) $("cacheInfo").textContent = "Картинка ".concat(C.w, "×").concat(C.h, " px. Нажмите «Пипетка» и коснитесь светящейся части экрана.");
-}
-$("cacheLoad").onclick = () => $("cacheFile").click();
-$("cacheFile").addEventListener("change", (e) => {
-  const f = e.target.files[0];
-  e.target.value = "";
-  if (!f) return;
-  const url = URL.createObjectURL(f), im = new Image();
-  im.onload = () => {
-    const k = Math.min(1, 2400 / Math.max(im.naturalWidth, im.naturalHeight)), w = Math.round(im.naturalWidth * k), h = Math.round(im.naturalHeight * k);
-    const cv = document.createElement("canvas");
-    cv.width = w;
-    cv.height = h;
-    const cx = cv.getContext("2d");
-    cx.drawImage(im, 0, 0, w, h);
-    URL.revokeObjectURL(url);
-    ui.cache = { uid: S().uid, canvas: cv, data: cx.getImageData(0, 0, w, h), w, h, rect: { x: 0, y: 0, w, h }, rgb: null, tol: 70, thr: 70, opacity: 50, closed: true, shade: false, black: null };
-    ui.cachePick = true;
-    $("cachePick").setAttribute("aria-pressed", "true");
-    syncCacheUI();
-    requestDraw();
-    status("Картинка загружена — коснитесь светящейся части экрана на ней (пипетка)", true);
-  };
-  im.onerror = () => status("Не удалось открыть картинку", true);
-  im.src = url;
-});
-$("cachePick").onclick = () => {
-  if (!cacheOn(S())) {
-    status("Сначала загрузите картинку", true);
-    return;
-  }
-  ui.cachePick = !ui.cachePick;
-  $("cachePick").setAttribute("aria-pressed", String(ui.cachePick));
-  status(ui.cachePick ? "Пипетка: коснитесь светящейся части экрана на картинке" : "Пипетка выключена", true);
-};
-$("cacheDrop").onclick = () => {
-  const st = S(), had = !!st.cacheShade;
-  ui.cache = null;
-  ui.cachePick = false;
-  if (had) {
-    st.cacheShade = null;
-    changed();
-  }
-  syncCacheUI();
-  requestDraw();
-  status(had ? "Картинка и затемнение каше убраны" : "Картинка убрана", true);
-};
-const cacheSet = (fn, recalc = true) => {
-  if (!ui.cache) return;
-  fn(ui.cache);
-  if (recalc) cacheCompute();
-  syncCacheUI();
-  requestDraw();
-};
-$("cacheTol").addEventListener("input", (e) => cacheSet((C) => {
-  C.tol = +e.target.value;
-  C.mk = null;
-}));
-$("cacheOp").addEventListener("input", (e) => cacheSet((C) => {
-  C.opacity = +e.target.value;
-}, false));
-$("cacheThr").addEventListener("input", (e) => {
-  const v = pint(e.target.value, 0);
-  if (v >= 5 && v <= 100) cacheSet((C) => {
-    C.thr = v;
-  });
-});
-$("cacheClosed").addEventListener("change", (e) => cacheSet((C) => {
-  C.closed = e.target.checked;
-}));
-$("cacheShade").addEventListener("change", (e) => cacheSet((C) => {
-  C.shade = e.target.checked;
-}));
-for (const [id, k] of [["cacheX", "x"], ["cacheY", "y"], ["cacheW", "w"], ["cacheH", "h"]]) $(id).addEventListener("input", (e) => {
-  const v = pint(e.target.value, NaN);
-  if (isFinite(v) && (k === "x" || k === "y" || v >= 4)) cacheSet((C) => {
-    C.rect[k] = v;
-  });
-});
-$("cacheGrid").onclick = () => {
-  const C = ui.cache;
-  if (!C || !C.rgb) {
-    status("Сначала пипетка по экрану на картинке", true);
-    return;
-  }
-  const R = C.rect, d = C.data.data, lum = (i) => d[i * 4] * 0.3 + d[i * 4 + 1] * 0.59 + d[i * 4 + 2] * 0.11;
-  let ref = 0, rn = 0;
-  for (let y = R.y; y < R.y + R.h; y += 3) for (let x = R.x; x < R.x + R.w; x += 3) {
-    const i = y * C.w + x;
-    if (C.vis[i]) {
-      ref += lum(i);
-      rn++;
-    }
-  }
-  ref = rn ? ref / rn : 128;
-  const prof = (len, other, at) => {
-    const out = [];
-    for (let a = 0; a < len; a++) {
-      let dark = 0;
-      for (let b = 0; b < other; b += 2) if (lum(at(a, b)) < ref * 0.62) dark++;
-      out.push(dark / Math.ceil(other / 2));
-    }
-    return out;
-  };
-  const pitch = (pr) => {
-    const pk = [];
-    let i = 0;
-    while (i < pr.length) {
-      if (pr[i] > 0.35) {
-        let j = i;
-        while (j < pr.length && pr[j] > 0.35) j++;
-        pk.push((i + j - 1) / 2);
-        i = j;
-      } else i++;
-    }
-    const ds = pk.slice(1).map((v, k) => v - pk[k]).filter((v) => v > 3).sort((a, b) => a - b);
-    if (ds.length < 2) return 0;
-    const med = ds[ds.length >> 1];
-    let sd = 0, sn = 0;
-    for (let k = 1; k < pk.length; k++) {
-      const dd = pk[k] - pk[k - 1], m = Math.round(dd / med);
-      if (m >= 1 && m <= 3 && Math.abs(dd / med - m) < 0.15) {
-        sd += dd;
-        sn += m;
-      }
-    }
-    return sn ? sd / sn : med;
-  };
-  const px = pitch(prof(R.w, R.h, (a, b) => (R.y + b) * C.w + R.x + a)), py = pitch(prof(R.h, R.w, (a, b) => (R.y + a) * C.w + R.x + b));
-  if (!px || !py) {
-    status("Сетку на картинке найти не удалось — задайте кабинеты вручную", true);
-    return;
-  }
-  const st = S();
-  st.cabCols = Math.max(1, Math.round(R.w / px));
-  st.cabRows = Math.max(1, Math.round(R.h / py));
-  $("cols").value = st.cabCols;
-  $("rows").value = st.cabRows;
-  changed({ forcePhys: true });
-  cacheCompute();
-  syncCacheUI();
-  status("По картинке: ".concat(st.cabCols, "×").concat(st.cabRows, " кабинетов"), true);
-};
-$("cacheApply").onclick = () => {
-  const C = ui.cache, st = S();
-  if (!C || !C.black) {
-    status("Сначала пипетка по экрану на картинке", true);
-    return;
-  }
-  st.blackCabinets = [...C.black];
-  st.cacheShade = C.shade ? { png: cacheShadePNG(), alpha: 0.55 } : null;
-  C.opacity = 0;
-  changed();
-  syncCacheUI();
-  requestDraw();
-  status("Каше применено: погашено ".concat(C.black.size, " кабинетов").concat(st.cacheShade ? ", закрытая зона затемнена" : "", ". Картинку можно убрать"), true);
-};
 function syncShapes() {
   const st = S(), list = st.cacheShapes || (st.cacheShapes = []), sel = $("shapeSel");
   if (ui.selShape >= list.length) ui.selShape = list.length - 1;
@@ -8926,7 +8491,7 @@ $("shapeAdd").onclick = () => {
     y0 = Math.min(y0, H - ys[p[1] + 1]);
     y1 = Math.max(y1, H - ys[p[1]]);
   }
-  const c = isFinite(x0) ? { x: (x0 + x1) / 2, y: (y0 + y1) / 2, w: Math.min(x1 - x0, y1 - y0), h: Math.min(x1 - x0, y1 - y0), lock: true, inv: true } : { x: W / 2, y: H / 2, w: Math.round(Math.min(W, H) / 3), h: Math.round(Math.min(W, H) / 3), lock: true, inv: true };
+  const c = isFinite(x0) ? { x: (x0 + x1) / 2, y: (y0 + y1) / 2, w: Math.min(x1 - x0, y1 - y0), h: Math.min(x1 - x0, y1 - y0), lock: true, inv: false } : { x: W / 2, y: H / 2, w: Math.round(Math.min(W, H) / 3), h: Math.round(Math.min(W, H) / 3), lock: true, inv: false };
   (st.cacheShapes || (st.cacheShapes = [])).push(c);
   ui.selShape = st.cacheShapes.length - 1;
   ui.selected.clear();
@@ -8987,7 +8552,6 @@ $("shapeLC").addEventListener("input", (e) => {
   changed();
 });
 syncShapes();
-syncCacheUI();
 window.__appReady = true;
 if (!STANDALONE) (async () => {
   try {
