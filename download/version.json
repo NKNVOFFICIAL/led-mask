@@ -1,13 +1,13 @@
 {
- "version": "2.0.12",
- "notes": "Обновлена справка «Как пользоваться»: проекция, фигурные модули, свой текст в ТЗ. Mac: исправлены прыжки левой панели.",
+ "version": "2.0.13",
+ "notes": "Каше-фигуры: круг и скруглённый прямоугольник (радиус углов точкой), размер в px или реальных см, «Гасить / Затемнить / Рамка», линия с цветом и прозрачностью. Автоконтур вокруг убранных модулей. Проекция: купол (domemaster). Стрелки ▲▼ у всех числовых полей, поворот доп. текста, сохранение проекта вместе с ТЗ. Исправлены сохранение и ввод текста на iPad.",
  "mac": {
   "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Mac.zip",
-  "sha256": "668b1a27e74596d43ba998839f0cfd1fbb75a15570d9ab812886c96fc36156b3"
+  "sha256": "c06c925b5fa00c18a0aee4a8b640281c249775be898303b8752aeaadb305b2a6"
  },
  "windows": {
   "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Windows.exe",
-  "sha256": "33ff470aff25b3eec6ff526360f61af1d026431af64e492a827619612ff10a50"
+  "sha256": "4cc32123f2503e5e54336e2484ef2f67e4b8a63af70454db213cf544c73da24b"
  },
  "android": {
   "url": "https://github.com/NKNVOFFICIAL/led-mask/releases/download/android-latest/LED-Mask-Android.apk"
