@@ -456,7 +456,8 @@ button.x:hover {
   padding: 3px;
   gap: 2px;
 }
-.seg.kind {
+.seg.kind,
+.seg.tubeLen {
   flex-wrap: wrap;
 }
 .seg button {
@@ -653,6 +654,14 @@ html:not([data-kind=tv]) .tv-only {
   display: none !important;
 }
 html:not([data-kind=pix]) .pix-only {
+  display: none !important;
+}
+html:not([data-kind=tube]) .tube-only {
+  display: none !important;
+}
+html[data-kind=tv] .no-strip,
+html[data-kind=pix] .no-strip,
+html[data-kind=tube] .no-strip {
   display: none !important;
 }
 html[data-pjmode=dome] .pjg {
@@ -1509,7 +1518,7 @@ a.b {
     <details class="sec" open><summary>ЭКРАН И КАБИНЕТЫ</summary><div class="sec-body">
       <div class="ctl"><select id="screens" class="grow"></select><button class="b" id="btnAddScreen">+ Экран</button><button class="b sq" id="btnDelScreen" aria-label="Удалить экран">−</button></div>
       <div class="seg kind" role="group" aria-label="Вид экрана" style="align-self:flex-start">
-        <button data-kind="led" aria-pressed="true">LED</button><button data-kind="proj" aria-pressed="false">Проекция</button><button data-kind="tv" aria-pressed="false" title="ТВ-панели: настроечная картинка">ТВ-панели</button><button data-kind="pix" aria-pressed="false" title="Pixel drop: Fantaled, палки, бочки">Pixel drop</button>
+        <button data-kind="led" aria-pressed="true">LED</button><button data-kind="proj" aria-pressed="false">Проекция</button><button data-kind="tv" aria-pressed="false" title="ТВ-панели: настроечная картинка">ТВ-панели</button><button data-kind="pix" aria-pressed="false" title="Pixel drop: Fantaled, палки, бочки">Pixel drop</button><button data-kind="tube" aria-pressed="false" title="LED tube: трубки 1 м (24 px) и 2 м (48 px)">LED tube</button>
       </div>
       <div class="row led-only"><label for="cabType">Тип кабинета</label><div class="ctl"><select id="cabType" class="grow"></select></div></div>
       <div class="row led-only"><label for="wpx">Пиксели кабинета</label><div class="ctl"><input type="number" id="wpx" min="1" class="w-md" inputmode="numeric" aria-label="Ширина кабинета, px"><span class="unit">×</span><input type="number" id="hpx" min="1" class="w-md" inputmode="numeric" aria-label="Высота кабинета, px"><span class="unit">px</span></div></div>
@@ -1536,11 +1545,11 @@ a.b {
         <button data-rot="0">Обычный</button><button data-rot="90" title="Портрет: проектор повёрнут на 90°, кадр вертикальный">Портрет</button>
       </div></div></div>
       <div class="row pjg"><label for="pjNx">Проекторы</label><div class="ctl"><input type="number" id="pjNx" min="1" max="32" class="w-md" inputmode="numeric"><span class="unit">×</span><input type="number" id="pjNy" min="1" max="32" class="w-md" inputmode="numeric"><span class="unit">шт.</span></div></div>
-      <div class="row pjg"><label for="pjWm">Размер</label><div class="ctl"><input type="number" id="pjWm" min="0" step="0.01" class="w-md" inputmode="decimal" aria-label="Ширина изображения, м"><span class="unit">×</span><input type="number" id="pjHm" min="0" step="0.01" class="w-md" inputmode="decimal" aria-label="Высота изображения, м"><span class="unit">м</span></div></div>
+      <div class="row pjg"><label for="pjWm">Размер полотна</label><div class="ctl"><input type="number" id="pjWm" min="0" step="0.01" class="w-md" inputmode="decimal" aria-label="Ширина изображения, м"><span class="unit">×</span><input type="number" id="pjHm" min="0" step="0.01" class="w-md" inputmode="decimal" aria-label="Высота изображения, м"><span class="unit">м</span></div></div>
       <div class="row pjg"><label for="pjCanW">Полотно (итог)</label><div class="ctl"><input type="number" id="pjCanW" min="16" class="w-md" inputmode="numeric" aria-label="Ширина полотна, px"><span class="unit">×</span><input type="number" id="pjCanH" min="16" class="w-md" inputmode="numeric" aria-label="Высота полотна, px"><span class="unit">px</span></div></div>
       <div class="row pjg"><label for="pjOx">Перекрытие по горизонтали</label><div class="ctl"><input type="number" id="pjOx" min="0" max="50" step="0.5" class="w-sm" inputmode="decimal"><span class="unit">%</span><input type="number" id="pjOxPx" min="0" class="w-md" inputmode="numeric"><span class="unit">px</span></div></div>
       <div class="row pjg"><label for="pjOy">Перекрытие по вертикали</label><div class="ctl"><input type="number" id="pjOy" min="0" max="50" step="0.5" class="w-sm" inputmode="decimal"><span class="unit">%</span><input type="number" id="pjOyPx" min="0" class="w-md" inputmode="numeric"><span class="unit">px</span></div></div>
-      <p class="hint pjg">Задайте проектор и их количество, затем — нужное полотно в пикселях: перекрытие посчитается само (в % и px). Можно и наоборот — задать перекрытие.</p>
+      <p class="hint pjg">Порядок: проектор → количество → <b>размер полотна в метрах</b> (например 3 × 5). Разрешение посчитается само: у одного проектора большая сторона кадра ложится на большую сторону полотна; у нескольких — перекрытие по второй стороне подбирается само, а по первой вы его меняете в % или px. Без размера в метрах можно задать полотно в пикселях.</p>
       <div class="row pjg"><label for="pjGrid">Шаг сетки</label><div class="ctl"><input type="number" id="pjGrid" min="8" inputmode="numeric"><span class="unit">px</span></div></div>
       <div class="row"><label for="pjBg">Фон / линии / текст</label><div class="ctl"><input type="color" id="pjBg" title="Фон"><input type="color" id="pjLine" title="Линии"><input type="color" id="pjText" title="Текст"></div></div>
       <div class="ctl" style="row-gap:6px">
@@ -1587,6 +1596,17 @@ a.b {
         <label class="chk"><input type="checkbox" id="pxRowsShade"> Ряды чуть разной яркости</label>
       </div>
       <p class="hint num" id="pxInfo"></p>
+    </div></details>
+
+    <details class="sec tube-only" open><summary>LED TUBE</summary><div class="sec-body">
+      <p class="hint">Вертикальные трубки: 1 м — 24 или 12 пикселей вниз, 2 м — 48 или 24 пикселя. Задайте размер в метрах и шаг между трубками — количество трубок и разрешение посчитаются сами. Каждая трубка — свой цвет, без рамок.</p>
+      <div class="row"><span class="lbl">Трубка</span><div class="ctl"><div class="seg tubeLen" role="group" aria-label="Длина трубки">
+        <button data-len="1" data-px="24">1 м · 24 px</button><button data-len="2" data-px="48">2 м · 48 px</button><button data-len="1" data-px="12">1 м · 12 px</button><button data-len="2" data-px="24">2 м · 24 px</button>
+      </div></div></div>
+      <div class="row"><label for="tbW">Размер</label><div class="ctl"><input type="number" id="tbW" min="0" step="0.1" class="w-md" inputmode="decimal" aria-label="Ширина, м"><span class="unit">×</span><input type="number" id="tbH" min="0" step="0.1" class="w-md" inputmode="decimal" aria-label="Высота, м"><span class="unit">м</span></div></div>
+      <div class="row"><label for="tbStep">Шаг между трубками</label><div class="ctl"><input type="number" id="tbStep" min="1" step="1" class="w-md" inputmode="decimal"><span class="unit">см</span></div></div>
+      <label class="chk"><input type="checkbox" id="tbShade"> Ряды чуть разной яркости</label>
+      <p class="hint num" id="tbInfo"></p>
     </div></details>
 
     <details class="sec led-only" open><summary>ВЫДЕЛЕНИЕ И ЦВЕТ КАБИНЕТОВ</summary><div class="sec-body">
@@ -1680,7 +1700,7 @@ a.b {
       <div class="row led-only"><label for="numOrigin">Начало нумерации</label><div class="ctl"><select id="numOrigin"></select></div></div>
       <div class="row led-only"><label for="numPos">Расположение номера</label><div class="ctl"><select id="numPos"></select></div></div>
       <div class="row"><span class="lbl">Направляющие</span><div class="ctl"><label class="chk"><input type="checkbox" id="gCircle"> Круг</label><label class="chk"><input type="checkbox" id="gDiag"> Линии через центр</label></div></div>
-      <label class="chk"><input type="checkbox" id="showInfo"> Информация о маске (в левом нижнем углу)</label>
+      <label class="chk no-strip"><input type="checkbox" id="showInfo"> Информация о маске (в левом нижнем углу)</label>
       <div class="info"><span id="infoRes"></span><span id="infoPhys"></span><span id="infoCab"></span></div>
       <div class="status" id="status" aria-live="polite"></div>
     </div></details>
@@ -1832,7 +1852,8 @@ a.b {
 <ol>
 <li><strong>Проектор</strong> — готовые разрешения (Full HD, WUXGA, 4K…) или своё. <strong>Ориентация</strong>: «Обычный» или «Портрет» — проектор повёрнут на 90°, его кадр на маске становится вертикальным (1920×1200 → 1200×1920).</li>
 <li>Три строки «ширина × высота»: <strong>«Пиксели проектора»</strong>, <strong>«Проекторы»</strong> (сколько по горизонтали и вертикали), <strong>«Размер»</strong> в метрах (можно не задавать).</li>
-<li><strong>Полотно и перекрытие.</strong> Задайте проектор и их количество, затем нужное <strong>полотно в пикселях</strong> — перекрытие посчитается само и покажется в % и в px (3 × WUXGA на полотно 5000 px → перекрытие 380 px, 19,8 %). Можно и наоборот: вписать перекрытие в % или в px — полотно пересчитается. Перекрытие — от 0 до 50 % кадра проектора.</li>
+<li><strong>Размер полотна в метрах.</strong> Порядок: проектор → количество → размер полотна (например 3 × 5 м). Разрешение считается само: у одного проектора большая сторона кадра ложится на большую сторону полотна (кадр сам разворачивается в портрет, если полотно вертикальное), 3 × 5 м на WUXGA → 1152×1920 px. У нескольких проекторов перекрытие по ширине вы задаёте в % или px, а по высоте оно подбирается само (у одного ряда — разрешение по высоте). Если полотно не закрывается проекторами при перекрытии 0–50 %, кадры просто выходят за край полотна.</li>
+<li><strong>Полотно и перекрытие в пикселях</strong> (без размера в метрах). Задайте проектор и их количество, затем нужное <strong>полотно в пикселях</strong> — перекрытие посчитается само и покажется в % и в px (3 × WUXGA на полотно 5000 px → перекрытие 380 px, 19,8 %). Можно и наоборот: вписать перекрытие в % или в px — полотно пересчитается. Перекрытие — от 0 до 50 % кадра проектора.</li>
 <li><strong>Шаг сетки</strong> в пикселях и цвета <strong>фона, линий и текста</strong> (текст отдельно от линий).</li>
 <li>У всех числовых полей есть стрелки <strong>▲▼</strong>, как у кабинетов: пиксели и проекторы — по 1, метры — по 0,1, перекрытие — по 0,5%, шаг сетки — по 10 px, купол — по 128 px и 5°. Удержание листает.</li>
 <li>Галочки: зоны перекрытия, рамки и номера проекторов (P1, P2… с разрешением и координатами), круги, подписи клеток A1, B1…, штриховка, цветовая полоса, инверсия (белый фон).</li>
@@ -1846,8 +1867,10 @@ a.b {
 <li><strong>Диагональ</strong> в дюймах (можно не задавать) — по ней считается физический размер. <strong>Подпись панелей</strong> — название + номер (TV 1, TV 2…), на плашке каждой панели — её разрешение и координаты X/Y.</li>
 <li>Галочки: цветные полосы и градации серого, сетка и круг (центр, круги по углам), зоны безопасности 5 % и 10 %. По краю каждой панели — белая рамка и стрелки к краям: сразу видно, если телевизор обрезает картинку.</li>
 </ol>
+<h3>LED tube</h3>
+<p>Переключатель «LED tube» — вертикальные трубки. Варианты: 1 м · 24 px, 2 м · 48 px, 1 м · 12 px, 2 м · 24 px (пиксели вниз по трубке). Задайте <strong>размер в метрах</strong> (ширина × высота) и <strong>шаг между трубками</strong> в см: трубок по ширине = ширина / шаг + 1, рядов по высоте = высота / длина трубки. Карта — 1 пиксель в ширину на трубку, каждая трубка своим цветом, без рамок; ряды можно сделать чуть разной яркости.</p>
 <h3>Pixel drop</h3>
-<p>Переключатель «Pixel drop» — пиксельная карта для Fantaled, палок и бочек. Рамок нет: каждая вертикаль (колонка) — свой цвет, соседние всегда хорошо различимы; номер колонки сверху.</p>
+<p>Переключатель «Pixel drop» — пиксельная карта для Fantaled, палок и бочек. Рамок нет: каждая вертикаль (колонка) — свой цвет, соседние всегда хорошо различимы; номер колонки сверху. Кругов, линий через центр и блока информации на этой карте нет — только цвета и номера (на ТВ-панелях блока информации тоже нет).</p>
 <ol>
 <li><strong>Элемент</strong> — готовые: Fantaled 16×96 px · 80×300 см, палка 1 м, палка 2 м, бочка — или свой. Пиксели и сантиметры элемента можно поменять под свою модель (у палок и бочек проверьте количество пикселей).</li>
 <li><strong>Колонки × ряды</strong> — сколько элементов. Разрешение карты (колонки × пиксели элемента) и физический размер считаются сами.</li>
@@ -3283,7 +3306,7 @@ a.b {
 const ICON_B64 = "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";
 const STANDALONE = true;
 const APP_VERSION = "2.0.13";
-const BUILD_STAMP = "29.10 15:03";
+const BUILD_STAMP = "29.10 22:36";
 const UPDATE_URL = "https://nknvofficial.github.io/led-mask/download/version.json";
 const QS = new URLSearchParams(location.search);
 let PLATFORM = window.AndroidBridge ? "android" : window.LEDMASK_PLATFORM || QS.get("platform") || (window.pywebview ? "windows" : "web");
@@ -3465,7 +3488,7 @@ const dims = (st) => {
     const g2 = tvGeom(st);
     return [g2.W, g2.H];
   }
-  if (st.kind === "pix") {
+  if (st.kind === "pix" || st.kind === "tube") {
     const g2 = pixGeom(st);
     return [g2.W, g2.H];
   }
@@ -3486,8 +3509,15 @@ function tvGeom(st) {
 const PIX_PRESETS = [["Fantaled 16×96 px · 80×300 см", 16, 96, 80, 300], ["Палка 1 м · 1×64 px", 1, 64, 3, 100], ["Палка 2 м · 1×128 px", 1, 128, 3, 200], ["Бочка · 8×8 px · 30×30 см", 8, 8, 30, 30]];
 const defPix = () => ({ ew: 16, eh: 96, cmw: 80, cmh: 300, cols: 10, rows: 1, nums: true, shade: true });
 function pixGeom(st) {
+  if (st.kind === "tube") return tubeGeom(st);
   const X = st.pix || defPix(), ew = Math.max(1, X.ew | 0), eh = Math.max(1, X.eh | 0), cols = Math.max(1, X.cols | 0), rows = Math.max(1, X.rows | 0);
   return { X, ew, eh, cols, rows, W: cols * ew, H: rows * eh };
+}
+const defTube = () => ({ len: 1, px: 24, wm: 3, hm: 2, step: 25, shade: true });
+function tubeGeom(st) {
+  const T = st.tube || defTube(), len = +T.len === 2 ? 2 : 1, step = Math.max(1, +T.step || 25), tpx = Math.max(1, +T.px || 24 * len);
+  const cols = Math.max(1, Math.floor((+T.wm || 0) * 100 / step + 1e-6) + 1), rows = Math.max(1, Math.round((+T.hm || 0) / len) || 1);
+  return { X: { nums: false, shade: T.shade !== false, cmw: step, cmh: len * 100 }, T, len, step, ew: 1, eh: tpx, cols, rows, W: cols, H: rows * tpx };
 }
 const pixColor = (c, light) => "hsl(".concat(Math.round(c * 137.508 % 360), ", 85%, ").concat(light, "%)");
 function drawPlateTitle(ctx, st, s, W, H, invert) {
@@ -3626,7 +3656,6 @@ function drawTV(ctx, st, s, guides) {
     ctx.stroke();
   }
   drawPlateTitle(ctx, st, s, g.W, g.H, false);
-  drawInfo(ctx, st, s);
   ctx.restore();
 }
 function drawPix(ctx, st, s, guides) {
@@ -3654,25 +3683,7 @@ function drawPix(ctx, st, s, guides) {
     }
     ctx.textAlign = "left";
   }
-  if (guides.circle || guides.diag) {
-    ctx.beginPath();
-    if (guides.diag) {
-      ctx.moveTo(0, 0);
-      ctx.lineTo(Wp, Hp);
-      ctx.moveTo(0, Hp);
-      ctx.lineTo(Wp, 0);
-    }
-    if (guides.circle) {
-      const d = Math.min(Wp, Hp);
-      ctx.moveTo(Wp / 2 + d / 2, Hp / 2);
-      ctx.arc(Wp / 2, Hp / 2, d / 2, 0, Math.PI * 2);
-    }
-    ctx.strokeStyle = "rgba(255,255,255,0.45)";
-    ctx.lineWidth = Math.max(1, 2 * s);
-    ctx.stroke();
-  }
   drawPlateTitle(ctx, st, s, g.W, g.H, false);
-  drawInfo(ctx, st, s);
   ctx.restore();
 }
 function projGeom(st) {
@@ -3683,10 +3694,47 @@ function projGeom(st) {
   }
   const P = P0, rot = +P.rot || 0, pw0 = Math.max(16, P.pw | 0), ph0 = Math.max(16, P.ph | 0);
   const pw = rot ? ph0 : pw0, ph = rot ? pw0 : ph0, nx = Math.max(1, P.nx | 0), ny = Math.max(1, P.ny | 0);
-  const ovx = nx > 1 ? Math.round(pw * Math.max(0, Math.min(50, +P.ox || 0)) / 100) : 0, ovy = ny > 1 ? Math.round(ph * Math.max(0, Math.min(50, +P.oy || 0)) / 100) : 0;
-  const W = nx * pw - (nx - 1) * ovx, H = ny * ph - (ny - 1) * ovy, rects = [];
-  for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) rects.push({ n: j * nx + i + 1, x: i * (pw - ovx), y: j * (ph - ovy), w: pw, h: ph });
-  return { P, rot, pw, ph, nx, ny, ovx, ovy, W, H, rects };
+  let ovx = nx > 1 ? Math.round(pw * Math.max(0, Math.min(50, +P.ox || 0)) / 100) : 0, ovy = ny > 1 ? Math.round(ph * Math.max(0, Math.min(50, +P.oy || 0)) / 100) : 0;
+  let W = nx * pw - (nx - 1) * ovx, H = ny * ph - (ny - 1) * ovy, offX = 0, offY = 0, canvas = false;
+  if (+P.cw > 0 && +P.ch > 0) {
+    canvas = true;
+    const A = +P.cw / +P.ch, cl = (v, max) => Math.max(0, Math.min(Math.floor(max / 2), Math.round(v)));
+    if (nx === 1 && ny === 1) {
+      const k = Math.min(pw / P.cw, ph / P.ch);
+      W = Math.round(P.cw * k);
+      H = Math.round(P.ch * k);
+    } else if (nx > 1) {
+      W = nx * pw - (nx - 1) * ovx;
+      H = Math.round(W / A);
+      if (ny > 1) {
+        ovy = cl((ny * ph - H) / (ny - 1), ph);
+        const Hmax = ny * ph - (ny - 1) * ovy;
+        if (H > Hmax) {
+          H = Hmax;
+          W = Math.round(H * A);
+        }
+      } else if (H > ph) {
+        H = ph;
+        W = Math.round(ph * A);
+        ovx = cl((nx * pw - W) / (nx - 1), pw);
+      }
+    } else {
+      H = ny * ph - (ny - 1) * ovy;
+      W = Math.round(H * A);
+      if (W > pw) {
+        W = pw;
+        H = Math.round(pw / A);
+        ovy = cl((ny * ph - H) / (ny - 1), ph);
+      }
+    }
+    W = Math.max(16, W);
+    H = Math.max(16, H);
+    offX = Math.round((nx * pw - (nx - 1) * ovx - W) / 2);
+    offY = Math.round((ny * ph - (ny - 1) * ovy - H) / 2);
+  }
+  const rects = [];
+  for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) rects.push({ n: j * nx + i + 1, x: i * (pw - ovx) - offX, y: j * (ph - ovy) - offY, w: pw, h: ph });
+  return { P, rot, pw, ph, nx, ny, ovx, ovy, W, H, rects, offX, offY, canvas };
 }
 function drawDome(ctx, st, s, guides, g) {
   const P = g.P, D = g.W, Dp = Math.max(1, Math.round(D * s)), c = Dp / 2;
@@ -3854,8 +3902,8 @@ function drawProj(ctx, st, s, guides) {
     ctx.save();
     ctx.fillStyle = "#FFD60A";
     ctx.globalAlpha = 0.17;
-    for (let i = 1; i < g.nx; i++) ctx.fillRect(X(i * (g.pw - g.ovx)), 0, X(g.ovx), Hp);
-    for (let j = 1; j < g.ny; j++) ctx.fillRect(0, X(j * (g.ph - g.ovy)), Wp, X(g.ovy));
+    for (let i = 1; i < g.nx; i++) ctx.fillRect(X(i * (g.pw - g.ovx) - g.offX), 0, X(g.ovx), Hp);
+    for (let j = 1; j < g.ny; j++) ctx.fillRect(0, X(j * (g.ph - g.ovy) - g.offY), Wp, X(g.ovy));
     ctx.restore();
   }
   const gs = Math.max(8, P.grid | 0), cx = W / 2, cy = H / 2;
@@ -3964,7 +4012,7 @@ function drawProj(ctx, st, s, guides) {
       ctx.font = "".concat(fs * 0.5, "px ").concat(FONT);
       ctx.textAlign = "center";
       for (let i = 1; i < g.nx; i++) {
-        const x0 = i * (g.pw - g.ovx);
+        const x0 = i * (g.pw - g.ovx) - g.offX;
         ctx.save();
         ctx.translate(X(x0 + g.ovx / 2), X(H * 0.3));
         ctx.rotate(-Math.PI / 2);
@@ -3972,7 +4020,7 @@ function drawProj(ctx, st, s, guides) {
         ctx.restore();
       }
       for (let j = 1; j < g.ny; j++) {
-        const y0 = j * (g.ph - g.ovy);
+        const y0 = j * (g.ph - g.ovy) - g.offY;
         ctx.textBaseline = "middle";
         ctx.fillText("перекрытие ".concat(g.ovy, " px"), X(W * 0.25), X(y0 + g.ovy / 2));
         ctx.textBaseline = "top";
@@ -4131,10 +4179,15 @@ function physM(st) {
     const k2 = d * 0.0254 / Math.hypot(g.pw, g.ph);
     return [g.W * k2, g.H * k2, true];
   }
+  if (st.kind === "tube") {
+    const g = tubeGeom(st);
+    return [(g.cols - 1) * g.step / 100 || +g.T.wm || 0.03, g.rows * g.len, true];
+  }
   if (st.kind === "pix") {
     const g = pixGeom(st);
     return g.X.cmw > 0 && g.X.cmh > 0 ? [g.cols * g.X.cmw / 100, g.rows * g.X.cmh / 100, true] : [0, 0, false];
   }
+  if (st.kind === "proj" && st.proj && st.proj.mode !== "dome" && +st.proj.cw > 0 && +st.proj.ch > 0) return [+st.proj.cw, +st.proj.ch, true];
   if (st.kind === "proj") {
     const [W2, H2] = dims(st), wm = st.proj && st.proj.mode !== "dome" ? +st.proj.wm || 0 : 0;
     return wm > 0 ? [wm, wm * H2 / W2, true] : [0, 0, false];
@@ -4149,7 +4202,7 @@ function compactM(v) {
 }
 const physText = (st) => {
   const [w, h, k] = physM(st);
-  if (st.kind && st.kind !== "led" && !k) return { proj: "проекция", tv: "ТВ-панели", pix: "pixel drop" }[st.kind] || "";
+  if (st.kind && st.kind !== "led" && !k) return { proj: "проекция", tv: "ТВ-панели", pix: "pixel drop", tube: "led tube" }[st.kind] || "";
   return "".concat(compactM(w), "х").concat(compactM(h), " м");
 };
 const titleText = (st) => {
@@ -4226,7 +4279,7 @@ const numberFont = (st) => Math.min(35, Math.max(12.5, Math.min(st.cabWpx, st.ca
 function drawMask(ctx, st, s, guides) {
   if (st.kind === "proj") return drawProj(ctx, st, s, guides);
   if (st.kind === "tv") return drawTV(ctx, st, s, guides);
-  if (st.kind === "pix") return drawPix(ctx, st, s, guides);
+  if (st.kind === "pix" || st.kind === "tube") return drawPix(ctx, st, s, guides);
   const [W, H] = dims(st), cols = st.cabCols, rows = st.cabRows, { xs, ys } = grid(st);
   const Wp = Math.max(1, Math.round(W * s)), Hp = Math.max(1, Math.round(H * s));
   const fx = (x) => Math.round(x * s), fy = (y) => Math.round((H - y) * s);
@@ -4463,6 +4516,10 @@ function infoLines(st) {
     if (known) out.push("Физический размер: ".concat(m(pw), "×").concat(m(ph), " м"));
     return out;
   }
+  if (st.kind === "tube") {
+    const g = tubeGeom(st);
+    return ["Трубка: ".concat(g.len, " м · 1×").concat(g.eh, " px"), "Трубок: ".concat(g.cols, " × ").concat(g.rows, " (шаг ").concat(g.step, " см)"), "Разрешение: ".concat(W, "×").concat(H, " px"), "Физический размер: ".concat(m(pw), "×").concat(m(ph), " м")];
+  }
   if (st.kind === "pix") {
     const g = pixGeom(st), out = ["Элемент: ".concat(g.ew, "×").concat(g.eh, " px").concat(g.X.cmw > 0 ? " · ".concat(g.X.cmw, "×").concat(g.X.cmh, " см") : ""), "Элементов: ".concat(g.cols, "×").concat(g.rows, " (всего ").concat(g.cols * g.rows, ")"), "Разрешение: ".concat(W, "×").concat(H, " px")];
     if (known) out.push("Физический размер: ".concat(m(pw), "×").concat(m(ph), " м"));
@@ -4581,7 +4638,16 @@ function normalizeScreen(d) {
     const o = pint(v, -1);
     if (parseKey(k) && o >= 0 && o <= 7) st.cornerCabinets[k] = o;
   }
-  st.kind = ["proj", "tv", "pix"].includes(d.kind) ? d.kind : "led";
+  st.kind = ["proj", "tv", "pix", "tube"].includes(d.kind) ? d.kind : "led";
+  {
+    const T = defTube(), q = d.tube && typeof d.tube === "object" ? d.tube : {};
+    T.len = +q.len === 2 ? 2 : 1;
+    T.px = [12, 24, 48].includes(+q.px) ? +q.px : 24 * T.len;
+    for (const k of ["wm", "hm", "step"]) if (q[k] != null && isFinite(+q[k])) T[k] = Math.max(0, +q[k]);
+    if (!(T.step > 0)) T.step = 25;
+    if (q.shade != null) T.shade = !!q.shade;
+    st.tube = T;
+  }
   {
     const T = defTV(), q = d.tv && typeof d.tv === "object" ? d.tv : {};
     for (const k of ["pw", "ph", "nx", "ny"]) if (q[k] != null) T[k] = Math.max(1, pint(q[k], T[k]));
@@ -4601,10 +4667,10 @@ function normalizeScreen(d) {
   {
     const P = defProj(), q = d.proj && typeof d.proj === "object" ? d.proj : {};
     for (const k of ["pw", "ph", "nx", "ny", "grid"]) if (q[k] != null) P[k] = Math.max(1, pint(q[k], P[k]));
-    for (const k of ["ox", "oy", "wm"]) if (q[k] != null && isFinite(+q[k])) P[k] = Math.max(0, +q[k]);
+    for (const k of ["ox", "oy", "wm", "cw", "ch"]) if (q[k] != null && isFinite(+q[k])) P[k] = Math.max(0, +q[k]);
     P.rot = [-90, 0, 90].includes(+q.rot) ? +q.rot : 0;
     for (const k of ["bg", "line", "text"]) if (typeof q[k] === "string" && /^#[0-9a-f]{6}$/i.test(q[k])) P[k] = q[k].toUpperCase();
-    for (const k of ["zones", "frames", "circles", "cells", "hatch", "bar", "invert", "used", "dminor", "dlabels", "dsides"]) if (q[k] != null) P[k] = !!q[k];
+    for (const k of ["zones", "frames", "circles", "cells", "hatch", "bar", "invert", "used", "dminor", "dlabels", "dsides", "autoRot"]) if (q[k] != null) P[k] = !!q[k];
     P.mode = q.mode === "dome" ? "dome" : "grid";
     for (const [k, lo, hi] of [["dome", 256, 16384], ["fov", 60, 360], ["az", 1, 90], ["el", 1, 45]]) if (q[k] != null && isFinite(+q[k])) P[k] = Math.max(lo, Math.min(hi, Math.round(+q[k])));
     if (d.kind === "proj") P.used = true;
@@ -4691,6 +4757,13 @@ function updateInfo(forcePhys) {
   $("numRGB").textContent = "RGB " + to255(st.numberColor).join(",");
   $("infoRes").innerHTML = infoLines(st).map((l) => "<span>".concat(xmlEsc(l), "</span>")).join("");
   $("infoPhys").textContent = "";
+  if (st.kind === "tube") {
+    const g = tubeGeom(st);
+    $("infoCab").textContent = "";
+    $("tbInfo").textContent = "Трубок: ".concat(g.cols, " по ширине × ").concat(g.rows, " по высоте = ").concat(g.cols * g.rows, " шт. · итог ").concat(W, "×").concat(H, " px · ").concat(physText(st));
+    $("zLabel").textContent = Math.round(ui.zoom * 100) + "%";
+    return;
+  }
   if (st.kind === "tv" || st.kind === "pix") {
     $("infoCab").textContent = "";
     $(st.kind === "tv" ? "tvInfo" : "pxInfo").textContent = "Итог: ".concat(W, "×").concat(H, " px").concat(physM(st)[2] ? " · " + physText(st) : "");
@@ -4700,7 +4773,7 @@ function updateInfo(forcePhys) {
   if (st.kind === "proj") {
     const g = projGeom(st);
     $("infoCab").textContent = "";
-    $("pjInfo").textContent = g.dome ? "Итог: ".concat(W, "×").concat(H, " px · купол ").concat(+g.P.fov || 180, "°") : "Итог: ".concat(W, "×").concat(H, " px").concat(g.ovx ? " · перекрытие по горизонтали ".concat(g.ovx, " px") : "").concat(g.ovy ? " · по вертикали ".concat(g.ovy, " px") : "");
+    $("pjInfo").textContent = g.dome ? "Итог: ".concat(W, "×").concat(H, " px · купол ").concat(+g.P.fov || 180, "°") : g.canvas ? "Полотно ".concat(+g.P.cw, "×").concat(+g.P.ch, " м → ").concat(W, "×").concat(H, " px (").concat(Math.round(W / g.P.cw), " px/м)").concat(g.ovx ? " · перекрытие по горизонтали ".concat(g.ovx, " px (").concat(+(g.ovx / g.pw * 100).toFixed(1), "%)") : "").concat(g.ovy ? " · по вертикали ".concat(g.ovy, " px (").concat(+(g.ovy / g.ph * 100).toFixed(1), "%)") : "") : "Итог: ".concat(W, "×").concat(H, " px").concat(g.ovx ? " · перекрытие по горизонтали ".concat(g.ovx, " px") : "").concat(g.ovy ? " · по вертикали ".concat(g.ovy, " px") : "");
     $("zLabel").textContent = Math.round(ui.zoom * 100) + "%";
     return;
   }
@@ -5120,7 +5193,7 @@ function clearSelection() {
   status("Выделение снято");
 }
 function syncProjUI() {
-  const st = S(), P = st.proj || (st.proj = defProj()), kind = ["proj", "tv", "pix"].includes(st.kind) ? st.kind : "led";
+  const st = S(), P = st.proj || (st.proj = defProj()), kind = ["proj", "tv", "pix", "tube"].includes(st.kind) ? st.kind : "led";
   document.documentElement.setAttribute("data-kind", kind);
   document.documentElement.setAttribute("data-pjmode", P.mode === "dome" ? "dome" : "grid");
   document.querySelectorAll(".seg.pjmode button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === (P.mode === "dome" ? "dome" : "grid"))));
@@ -5138,7 +5211,9 @@ function syncProjUI() {
   document.querySelectorAll(".seg.pjrot button").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.rot === (+P.rot ? 90 : 0))));
   {
     const [W, H] = dims(st), wm = +P.wm || 0;
-    set("pjHm", wm > 0 ? +(wm * H / W).toFixed(3) : 0);
+    if (+P.cw > 0 || +P.ch > 0) {
+      set("pjHm", +P.ch || 0);
+    } else set("pjHm", wm > 0 ? +(wm * H / W).toFixed(3) : 0);
   }
   set("pjW", P.pw);
   set("pjH", P.ph);
@@ -5147,7 +5222,7 @@ function syncProjUI() {
   set("pjOx", P.ox);
   set("pjOy", P.oy);
   set("pjGrid", P.grid);
-  set("pjWm", P.wm || 0);
+  set("pjWm", +P.cw > 0 || +P.ch > 0 ? +P.cw || 0 : P.wm || 0);
   set("pjDome", P.dome || 4096);
   set("pjFov", P.fov || 180);
   set("pjAz", P.az || 10);
@@ -5163,10 +5238,13 @@ function syncProjUI() {
     set("pjCanH", g.H);
     set("pjOxPx", g.ovx);
     set("pjOyPx", g.ovy);
-    $("pjOx").disabled = $("pjOxPx").disabled = g.nx < 2;
-    $("pjOy").disabled = $("pjOyPx").disabled = g.ny < 2;
-    $("pjCanW").disabled = g.nx < 2;
-    $("pjCanH").disabled = g.ny < 2;
+    set("pjOx", g.nx > 1 ? +(g.ovx / g.pw * 100).toFixed(2) : P.ox);
+    set("pjOy", g.ny > 1 ? +(g.ovy / g.ph * 100).toFixed(2) : P.oy);
+    const freeX = g.nx > 1, freeY = g.ny > 1 && !(g.canvas && g.nx > 1);
+    $("pjOx").disabled = $("pjOxPx").disabled = !freeX;
+    $("pjOy").disabled = $("pjOyPx").disabled = !freeY;
+    $("pjCanW").disabled = g.canvas || g.nx < 2;
+    $("pjCanH").disabled = g.canvas || g.ny < 2;
   }
   syncTVPixUI();
 }
@@ -5202,6 +5280,12 @@ function syncTVPixUI() {
   set("pxRows", X.rows);
   $("pxNums").checked = X.nums !== false;
   $("pxRowsShade").checked = X.shade !== false;
+  const U = st.tube || (st.tube = defTube());
+  document.querySelectorAll(".seg.tubeLen button").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.len === (+U.len === 2 ? 2 : 1) && +b.dataset.px === (+U.px || 24 * (+U.len === 2 ? 2 : 1)))));
+  set("tbW", U.wm);
+  set("tbH", U.hm);
+  set("tbStep", U.step);
+  $("tbShade").checked = U.shade !== false;
 }
 document.querySelectorAll(".seg.kind button").forEach((b) => b.onclick = () => {
   const st = S(), was = st.kind || "led";
@@ -5210,8 +5294,8 @@ document.querySelectorAll(".seg.kind button").forEach((b) => b.onclick = () => {
   if (st.kind === "proj") st.proj.used = true;
   if (st.kind !== was) {
     const nm = String(st.name || "").trim();
-    const DEF = { led: "screen", proj: "projection", tv: "tv", pix: "pixel drop" };
-    if (!nm || /^(screen|projection|projector|tv|pixel drop) \d+$/i.test(nm)) st.name = st.kind === "led" ? "screen ".concat(project.cur + 1) : "".concat(DEF[st.kind], " ").concat(project.screens.filter((x) => x.kind === st.kind).length);
+    const DEF = { led: "screen", proj: "projection", tv: "tv", pix: "pixel drop", tube: "led tube" };
+    if (!nm || /^(screen|projection|projector|tv|pixel drop|led tube) \d+$/i.test(nm)) st.name = st.kind === "led" ? "screen ".concat(project.cur + 1) : "".concat(DEF[st.kind], " ").concat(project.screens.filter((x) => x.kind === st.kind).length);
     $("scrName").value = st.name;
     $("screens").options[project.cur].textContent = "".concat(project.cur + 1, ". ").concat(st.name);
   }
@@ -5219,7 +5303,7 @@ document.querySelectorAll(".seg.kind button").forEach((b) => b.onclick = () => {
   syncProjUI();
   changed({ forcePhys: true });
   fitAuto && fitAuto();
-  status({ proj: "Экран — проекция: задайте проекторы и полотно", tv: "Экран — ТВ-панели: настроечная картинка", pix: "Экран — pixel drop: элементы, колонки и ряды" }[st.kind] || "Экран — LED", true);
+  status({ proj: "Экран — проекция: задайте проекторы и полотно", tv: "Экран — ТВ-панели: настроечная картинка", pix: "Экран — pixel drop: элементы, колонки и ряды", tube: "Экран — LED tube: размер в метрах и шаг трубок" }[st.kind] || "Экран — LED", true);
 });
 var fitAuto = null;
 const projNum = (id, k, float, min = 0) => $(id).addEventListener("input", () => {
@@ -5234,11 +5318,11 @@ projNum("pjW", "pw", false, 16);
 projNum("pjH", "ph", false, 16);
 projNum("pjNx", "nx", false, 1);
 projNum("pjNy", "ny", false, 1);
-$("pjHm").addEventListener("input", () => {
-  const v = parseFloat(String($("pjHm").value).replace(",", "."));
-  if (isFinite(v) && v >= 0) {
-    const [W, H] = dims(S());
-    S().proj.wm = +(v * W / H).toFixed(4);
+for (const id of ["pjNx", "pjNy"]) $(id).addEventListener("input", () => {
+  const P = S().proj;
+  if (P.autoRot && ((P.nx | 0) > 1 || (P.ny | 0) > 1)) {
+    P.rot = 0;
+    P.autoRot = false;
     syncProjUI();
     changed({ forcePhys: true });
   }
@@ -5337,8 +5421,43 @@ $("pxRowsShade").addEventListener("change", (e) => {
   S().pix.shade = e.target.checked;
   changed();
 });
+document.querySelectorAll(".seg.tubeLen button").forEach((b) => b.onclick = () => {
+  S().tube.len = +b.dataset.len;
+  S().tube.px = +b.dataset.px;
+  syncTVPixUI();
+  changed({ forcePhys: true });
+});
+for (const [id, k, min] of [["tbW", "wm", 0], ["tbH", "hm", 0], ["tbStep", "step", 1]]) $(id).addEventListener("input", () => {
+  const v = parseFloat(String($(id).value).replace(",", "."));
+  if (isFinite(v) && v >= min && v <= 1e4) {
+    S().tube[k] = v;
+    syncTVPixUI();
+    changed({ forcePhys: true });
+  }
+});
+$("tbShade").addEventListener("change", (e) => {
+  S().tube.shade = e.target.checked;
+  changed();
+});
 projNum("pjGrid", "grid", false, 8);
-projNum("pjWm", "wm", true);
+for (const [id, k] of [["pjWm", "cw"], ["pjHm", "ch"]]) $(id).addEventListener("input", () => {
+  const v = parseFloat(String($(id).value).replace(",", "."));
+  if (!(isFinite(v) && v >= 0)) return;
+  const st = S(), P = st.proj;
+  P[k] = v;
+  if (k === "cw") P.wm = v;
+  if (+P.cw > 0 && +P.ch > 0 && (P.nx | 0) <= 1 && (P.ny | 0) <= 1) {
+    const land = Math.max(16, P.pw | 0) >= Math.max(16, P.ph | 0);
+    P.rot = P.cw >= P.ch === land ? 0 : 90;
+    P.autoRot = !!P.rot;
+  }
+  syncProjUI();
+  changed({ forcePhys: true });
+  if (+P.cw > 0 && +P.ch > 0) {
+    const g = projGeom(st);
+    status("Полотно ".concat(+P.cw, "×").concat(+P.ch, " м → ").concat(g.W, "×").concat(g.H, " px").concat(g.nx * g.ny > 1 ? " · перекрытие ".concat(g.ovx, " / ").concat(g.ovy, " px") : ""), true);
+  }
+});
 $("pjPreset").addEventListener("change", (e) => {
   const t = PJ_PRESETS[+e.target.value];
   if (!t || e.target.value === "") return;
@@ -5348,6 +5467,7 @@ $("pjPreset").addEventListener("change", (e) => {
 });
 document.querySelectorAll(".seg.pjrot button").forEach((b) => b.onclick = () => {
   S().proj.rot = +b.dataset.rot;
+  S().proj.autoRot = false;
   syncProjUI();
   changed({ forcePhys: true });
 });
@@ -5796,7 +5916,7 @@ $("screens").addEventListener("change", (e) => {
 });
 $("btnAddScreen").onclick = () => {
   const base = JSON.parse(JSON.stringify(S()));
-  Object.assign(base, { borders: [], name: base.kind && base.kind !== "led" ? "".concat({ proj: "projection", tv: "tv", pix: "pixel drop" }[base.kind], " ").concat(project.screens.filter((x) => x.kind === base.kind).length + 1) : "screen ".concat(project.screens.length + 1), blackCabinets: [], cabinetColors: {}, persistentContours: [], showPersistentContour: true, extraLabels: [], cacheShapes: [], cornerCabinets: {}, shapedCols: {}, shapedRows: {} });
+  Object.assign(base, { borders: [], name: base.kind && base.kind !== "led" ? "".concat({ proj: "projection", tv: "tv", pix: "pixel drop", tube: "led tube" }[base.kind], " ").concat(project.screens.filter((x) => x.kind === base.kind).length + 1) : "screen ".concat(project.screens.length + 1), blackCabinets: [], cabinetColors: {}, persistentContours: [], showPersistentContour: true, extraLabels: [], cacheShapes: [], cornerCabinets: {}, shapedCols: {}, shapedRows: {} });
   delete base.field;
   base.uid = newUid();
   project.screens.push(base);
@@ -8947,6 +9067,9 @@ const stepInput = (id, step) => stepper(id, (d) => {
   ["pxCmH", 0.5],
   ["pxCols", 1],
   ["pxRows", 1],
+  ["tbW", 0.1],
+  ["tbH", 0.1],
+  ["tbStep", 1],
   ["pjFov", 5],
   ["pjAz", 1],
   ["pjEl", 1],
