@@ -1,13 +1,13 @@
 {
- "version": "2.0.13",
- "notes": "Каше-фигуры: круг и скруглённый прямоугольник (радиус углов точкой), размер в px или реальных см, «Гасить / Затемнить / Рамка», линия с цветом и прозрачностью. Автоконтур вокруг убранных модулей. Проекция: купол (domemaster). Стрелки ▲▼ у всех числовых полей, поворот доп. текста, сохранение проекта вместе с ТЗ. Исправлены сохранение и ввод текста на iPad.",
+ "version": "2.0.14",
+ "notes": "Новые виды экрана: ТВ-панели (настроечная картинка, видеостены) и Pixel drop (Fantaled, LED tube 1 м и 2 м, бочки; маска по пикселям или по размеру в метрах). Проекция: сначала размер полотна в метрах — разрешение и перекрытие считаются сами. Каше: двойной круг в инверсии, затемнение с инверсией. Числа в полях выделяются сразу.",
  "mac": {
   "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Mac.zip",
-  "sha256": "c06c925b5fa00c18a0aee4a8b640281c249775be898303b8752aeaadb305b2a6"
+  "sha256": "a4f3f44b4ce5f052ad67b83bdd0278df097343538a5fee783cfbb856a740d164"
  },
  "windows": {
   "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Windows.exe",
-  "sha256": "4cc32123f2503e5e54336e2484ef2f67e4b8a63af70454db213cf544c73da24b"
+  "sha256": "954578bd0c863260fb7c99fe158ee311b7c7504e02b68f7f5f53ea775d023bbe"
  },
  "android": {
   "url": "https://github.com/NKNVOFFICIAL/led-mask/releases/download/android-latest/LED-Mask-Android.apk"
