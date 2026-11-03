@@ -1,0 +1,15 @@
+{
+ "version": "2.0.15",
+ "notes": "Проекция: пропорции полотна (16:9, 8:5…) и галочка «Соблюдать пропорции», размер по умолчанию 100 пикселей на метр, разрешение и перекрытие округляются до чётных. Pixel drop: «Колонки × ряды» сразу после пикселей элемента.",
+ "mac": {
+  "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Mac.zip",
+  "sha256": "a60811050ae82a56d7580a7e95672c6380992a5fcfe02c513abe76d329afaa17"
+ },
+ "windows": {
+  "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Windows.exe",
+  "sha256": "5e663ca55d70abb7e07f8dc243d630402ccc8d97098535f7e4f725a2e8b57922"
+ },
+ "android": {
+  "url": "https://github.com/NKNVOFFICIAL/led-mask/releases/download/android-latest/LED-Mask-Android.apk"
+ }
+}

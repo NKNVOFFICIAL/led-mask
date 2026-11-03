@@ -1,13 +1,13 @@
 {
- "version": "2.0.15",
- "notes": "Проекция: пропорции полотна (16:9, 8:5…) и галочка «Соблюдать пропорции», размер по умолчанию 100 пикселей на метр, разрешение и перекрытие округляются до чётных. Pixel drop: «Колонки × ряды» сразу после пикселей элемента.",
+ "version": "2.0.33",
+ "notes": "Версия Славы: каше — трапеция, пентагон, своя фигура из точек, поворот фигур, подложка-картинка; номера экранов на картинке общего плана; копия экрана; магнит общего поля по серединам краёв и «Положение маски»; Pixel drop — расстояние от края до края и масштаб маски; Mac — панель не уезжает при нажатии.",
  "mac": {
   "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Mac.zip",
-  "sha256": "a60811050ae82a56d7580a7e95672c6380992a5fcfe02c513abe76d329afaa17"
+  "sha256": "22bf1a09adc81313f383e0bfbaa55a6e6dfb33ea1ede85173382c9fc25ec0f56"
  },
  "windows": {
   "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Windows.exe",
-  "sha256": "5e663ca55d70abb7e07f8dc243d630402ccc8d97098535f7e4f725a2e8b57922"
+  "sha256": "0418583eb8b92a1570e7343ff5ebd85774da5a0f21e4aa16b9705e9728ce9809"
  },
  "android": {
   "url": "https://github.com/NKNVOFFICIAL/led-mask/releases/download/android-latest/LED-Mask-Android.apk"
