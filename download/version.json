@@ -1,13 +1,13 @@
 {
- "version": "2.0.33",
- "notes": "Версия Славы: каше — трапеция, пентагон, своя фигура из точек, поворот фигур, подложка-картинка; номера экранов на картинке общего плана; копия экрана; магнит общего поля по серединам краёв и «Положение маски»; Pixel drop — расстояние от края до края и масштаб маски; Mac — панель не уезжает при нажатии.",
+ "version": "2.0.36",
+ "notes": "Pixel drop: «По пикселям» — чистая карта пикселей, «По размеру» — маска в пропорциях реальных размеров в см. Mac: левая панель больше не уезжает при движении мыши и перетаскивании.",
  "mac": {
   "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Mac.zip",
-  "sha256": "22bf1a09adc81313f383e0bfbaa55a6e6dfb33ea1ede85173382c9fc25ec0f56"
+  "sha256": "ed9b8794d1c64dc8044b90a994cae3c427f7b82eafc74b800425516d360a2e4d"
  },
  "windows": {
   "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Windows.exe",
-  "sha256": "0418583eb8b92a1570e7343ff5ebd85774da5a0f21e4aa16b9705e9728ce9809"
+  "sha256": "bc79ac00df5df985a79e62697eeb521d3cb3cfd97e4ca686c29d637b3fa9a0d3"
  },
  "android": {
   "url": "https://github.com/NKNVOFFICIAL/led-mask/releases/download/android-latest/LED-Mask-Android.apk"
