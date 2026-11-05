@@ -1,0 +1,15 @@
+{
+ "version": "2.0.74",
+ "notes": "Волюметрик: кабинет на 1-м листе ТЗ по фото (2/3/4 м, 3 м — 6×6), коммутация с переходом ряда по краю, номера и IP на виде снизу, «Информация» текстом в ТЗ, кнопки ▲▼; раздел «Проект»: Новый / Последние / Открыть / Сохранить / Сохранить как, вопрос при несохранённых изменениях",
+ "mac": {
+  "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Mac.zip",
+  "sha256": "c17fec1ce9c27c422a8be9f50133463e6bbfe78e1e2d2bd5acfdd1d028ebf1e4"
+ },
+ "windows": {
+  "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Windows.exe",
+  "sha256": "97bd209bafc2f8d8038f70aba52e5049690d08f1c59a58b9836c00244e4424d6"
+ },
+ "android": {
+  "url": "https://github.com/NKNVOFFICIAL/led-mask/releases/download/android-latest/LED-Mask-Android.apk"
+ }
+}
