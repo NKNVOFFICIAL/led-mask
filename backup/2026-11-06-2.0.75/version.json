@@ -1,0 +1,15 @@
+{
+ "version": "2.0.75",
+ "notes": "«Новый» — новый проект и полный сброс; шаблон ТЗ по разделу (Resolume / Волюметрик с нитью модели). Волюметрик: кабинет на 1-м листе ТЗ по фото (2/3/4 м, 3 м — 6×6), коммутация с переходом ряда по краю, номера и IP на виде снизу, «Информация» текстом в ТЗ; раздел «Проект»: Новый / Последние / Открыть / Сохранить / Сохранить как",
+ "mac": {
+  "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Mac.zip",
+  "sha256": "bd71bdc6e68efb8263a1533442a7be70c5380d7c831a8c0b296f9e5dc9023a0f"
+ },
+ "windows": {
+  "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Windows.exe",
+  "sha256": "bce502a119c131d1478dbc44358fb66678e7960c9b61dfe09ec4e93a28342f81"
+ },
+ "android": {
+  "url": "https://github.com/NKNVOFFICIAL/led-mask/releases/download/android-latest/LED-Mask-Android.apk"
+ }
+}
