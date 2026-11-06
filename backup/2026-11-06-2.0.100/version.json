@@ -1,0 +1,15 @@
+{
+ "version": "2.0.100",
+ "notes": "«Накладывать маски на маски» на общем поле и порядок слоёв; карточки в ленте масок и полей перетаскиваются мышью; картинки общего плана с номерами сохраняются в проекте; щелчок по тексту выбирает его; доп. тексты тем же цветом и тенью, что основной; «Своё разрешение» в списке кабинетов; стандартные имена экранов идут по порядку.",
+ "mac": {
+  "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Mac.zip",
+  "sha256": "1b36c1e85e43301631b41326318f3560238dfa198d28dc70b93a98e538ec936d"
+ },
+ "windows": {
+  "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Windows.exe",
+  "sha256": "5e6146a4f446bf1d596aaf93361d9226f088b44e1acfb13a15978b2457d0bb84"
+ },
+ "android": {
+  "url": "https://github.com/NKNVOFFICIAL/led-mask/releases/download/android-latest/LED-Mask-Android.apk"
+ }
+}
