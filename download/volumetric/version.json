@@ -1,8 +1,8 @@
 {
- "version": "1.9",
- "notes": "Фантомные модули, вкладка «Эффекты» с 3D-превью и выводом на экран, обновление изнутри программы.",
+ "version": "1.9.1",
+ "notes": "Быстрое 3D-превью на вкладке «Эффекты» (без лагов на больших экранах), огонь и облака в ~10 раз быстрее.",
  "windows": {
   "url": "https://nknvofficial.github.io/led-mask/download/volumetric/VolumetricMapper.exe",
-  "sha256": "4fe6e1d3618394dad25573b526581ca516c8da6c3eae1c84e198a038e4df0b8c"
+  "sha256": "25a1a0eb3839795c098b3786866fd18c636774fb2261ba5a465d50e2484994b1"
  }
 }
