@@ -1,8 +1,8 @@
 {
- "version": "1.10.4",
- "notes": "Положение и поворот можно регулировать у всех эффектов, у каждого своё.",
+ "version": "1.10.5",
+ "notes": "Интерфейс под масштаб Windows, настройка экрана отдельной полосой сверху, кнопки прописки и теста наверху страниц.",
  "windows": {
   "url": "https://nknvofficial.github.io/led-mask/download/volumetric/VolumetricMapper.exe",
-  "sha256": "a536d2960711984f6f971bce19a3a02f85065ca7011515a779b90736cc42c894"
+  "sha256": "457670576ba7a4bb55822a31c440b1e875ef570a5aadbb100dc131e3b9ac64b9"
  }
 }
