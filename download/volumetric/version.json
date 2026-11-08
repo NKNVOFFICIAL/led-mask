@@ -1,8 +1,8 @@
 {
- "version": "1.9.2",
- "notes": "Эффекты «Логотип (PNG)» и «3D-модель (FBX/OBJ/STL)» на вкладке «Эффекты».",
+ "version": "1.10",
+ "notes": "Новый интерфейс «Графит», слои эффектов, эффекты как в MADRIX, пресеты (клавиши 1–9), кью-лист, запуск по таймкоду и управление по OSC.",
  "windows": {
   "url": "https://nknvofficial.github.io/led-mask/download/volumetric/VolumetricMapper.exe",
-  "sha256": "28055c65f1814409fb001ccb1569489922d009d4ad65442c5698f5950f37561d"
+  "sha256": "9ee3594913f0839eba3e3e0f8fb8e49dba811db761c4a90c56d663bde496606a"
  }
 }
