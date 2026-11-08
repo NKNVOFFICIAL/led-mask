@@ -1,8 +1,8 @@
 {
- "version": "1.10.2",
- "notes": "Логотип и 3D-модель можно двигать влево/вправо, выше/ниже, ближе/дальше и поворачивать. Колесо мыши больше не крутит всё сразу.",
+ "version": "1.10.3",
+ "notes": "У каждого эффекта свои скорость, масштаб, плотность и палитра. Масштаб работает у всех эффектов.",
  "windows": {
   "url": "https://nknvofficial.github.io/led-mask/download/volumetric/VolumetricMapper.exe",
-  "sha256": "2688fab973b36dfef8c0e681b3e6416a63f885eccc8ebab698847a1f89f0dfd7"
+  "sha256": "bbeee2709c5c9cc297328c59ed61eca9a28199de0313480fee09f4f9063be21d"
  }
 }
