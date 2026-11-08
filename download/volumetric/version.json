@@ -1,8 +1,8 @@
 {
- "version": "1.11",
- "notes": "Новый эффект «Текст»: бегущая строка, надпись по центру, вращение и текст по кругу вокруг объёма.",
+ "version": "1.12",
+ "notes": "Таймлайн как в d3 / Premiere: дорожки-слои, клипы с эффектами, плейхед, запуск по таймкоду.",
  "windows": {
   "url": "https://nknvofficial.github.io/led-mask/download/volumetric/VolumetricMapper.exe",
-  "sha256": "de2f0d1f12c434c4a14950142b8473fc881fbb8c13dbc4fd0a2934901c37b98a"
+  "sha256": "502c6e1d643c80c3ce602943f30f8754ba71d186169218059b2cb945fb58f956"
  }
 }
