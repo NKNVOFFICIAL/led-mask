@@ -1,8 +1,8 @@
 {
- "version": "1.10.1",
- "notes": "Вкладки и окно отрисовываются в разы быстрее.",
+ "version": "1.10.2",
+ "notes": "Логотип и 3D-модель можно двигать влево/вправо, выше/ниже, ближе/дальше и поворачивать. Колесо мыши больше не крутит всё сразу.",
  "windows": {
   "url": "https://nknvofficial.github.io/led-mask/download/volumetric/VolumetricMapper.exe",
-  "sha256": "7edb817d4607ad6cfcef92aff79216cc33afacbbc78ddd7437162fb134e8a5fc"
+  "sha256": "2688fab973b36dfef8c0e681b3e6416a63f885eccc8ebab698847a1f89f0dfd7"
  }
 }
