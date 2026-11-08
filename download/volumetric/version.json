@@ -1,0 +1,8 @@
+{
+ "version": "1.9",
+ "notes": "Фантомные модули, вкладка «Эффекты» с 3D-превью и выводом на экран, обновление изнутри программы.",
+ "windows": {
+  "url": "https://nknvofficial.github.io/led-mask/download/volumetric/VolumetricMapper.exe",
+  "sha256": "4fe6e1d3618394dad25573b526581ca516c8da6c3eae1c84e198a038e4df0b8c"
+ }
+}
