@@ -1,8 +1,8 @@
 {
- "version": "1.10.5",
- "notes": "Интерфейс под масштаб Windows, настройка экрана отдельной полосой сверху, кнопки прописки и теста наверху страниц.",
+ "version": "1.11",
+ "notes": "Новый эффект «Текст»: бегущая строка, надпись по центру, вращение и текст по кругу вокруг объёма.",
  "windows": {
   "url": "https://nknvofficial.github.io/led-mask/download/volumetric/VolumetricMapper.exe",
-  "sha256": "457670576ba7a4bb55822a31c440b1e875ef570a5aadbb100dc131e3b9ac64b9"
+  "sha256": "de2f0d1f12c434c4a14950142b8473fc881fbb8c13dbc4fd0a2934901c37b98a"
  }
 }
