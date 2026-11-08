@@ -1,8 +1,8 @@
 {
- "version": "1.10.3",
- "notes": "У каждого эффекта свои скорость, масштаб, плотность и палитра. Масштаб работает у всех эффектов.",
+ "version": "1.10.4",
+ "notes": "Положение и поворот можно регулировать у всех эффектов, у каждого своё.",
  "windows": {
   "url": "https://nknvofficial.github.io/led-mask/download/volumetric/VolumetricMapper.exe",
-  "sha256": "bbeee2709c5c9cc297328c59ed61eca9a28199de0313480fee09f4f9063be21d"
+  "sha256": "a536d2960711984f6f971bce19a3a02f85065ca7011515a779b90736cc42c894"
  }
 }
