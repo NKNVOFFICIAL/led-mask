@@ -1,0 +1,15 @@
+{
+ "version": "2.0.109",
+ "notes": "Порядок листов ТЗ меняется перетаскиванием в списке ТЗ; своё имя файла у масок и общих полей (размер в начале имени — всегда автоматически), строка «Имя файла» в конце «Экран и кабинеты».",
+ "mac": {
+  "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Mac.zip",
+  "sha256": "fd6653608cf8968c1f7a34c320e632ca1c4cb60e70afd9deead1ddff46fa0aa9"
+ },
+ "windows": {
+  "url": "https://nknvofficial.github.io/led-mask/download/LED-Pixel-Mask-Generator-Windows.exe",
+  "sha256": "47c137afb8529b17bc6216d9157782c77bc5d5c33e6be6b363b41e0fae26c6c1"
+ },
+ "android": {
+  "url": "https://github.com/NKNVOFFICIAL/led-mask/releases/download/android-latest/LED-Mask-Android.apk"
+ }
+}
