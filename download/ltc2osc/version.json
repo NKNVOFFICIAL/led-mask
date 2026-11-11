@@ -1,8 +1,8 @@
 {
- "version": "2.0.3",
- "notes": "Новый проект (Ctrl+N), удаление получателей прямо из панели, интерфейс легче при приёме таймкода.",
+ "version": "2.0.4",
+ "notes": "Можно удалить и основного получателя. Новый проект (Ctrl+N), удаление получателей из панели, интерфейс легче при приёме таймкода.",
  "windows": {
   "url": "https://nknvofficial.github.io/led-mask/download/ltc2osc/LTC2OSC.exe",
-  "sha256": "a2e3f345866477feb90131d4f3a463534f6ee0807fab0ef6b3c1d423d250e3c1"
+  "sha256": "daad2a15c8a1b137fdc5a4ce16baf534615a6ea36d1223b7808293359f8cfabd"
  }
 }
