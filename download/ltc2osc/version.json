@@ -1,8 +1,8 @@
 {
- "version": "2.0.2",
- "notes": "Окно команды: несколько адресов, у каждого свой получатель или IP:порт. Надёжнее открывается звуковой вход.",
+ "version": "2.0.3",
+ "notes": "Новый проект (Ctrl+N), удаление получателей прямо из панели, интерфейс легче при приёме таймкода.",
  "windows": {
   "url": "https://nknvofficial.github.io/led-mask/download/ltc2osc/LTC2OSC.exe",
-  "sha256": "c50b6e6dfb0078b3909aa8448a4dc7af3e167d94eb1ed230d11ad421ee156f5d"
+  "sha256": "a2e3f345866477feb90131d4f3a463534f6ee0807fab0ef6b3c1d423d250e3c1"
  }
 }
