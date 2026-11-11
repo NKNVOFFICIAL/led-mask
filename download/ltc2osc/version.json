@@ -1,8 +1,8 @@
 {
- "version": "2.0.1",
- "notes": "VU-метр входа: два канала с удержанием пика, источник и уровень в dBFS рядом с кнопками.",
+ "version": "2.0.2",
+ "notes": "Окно команды: несколько адресов, у каждого свой получатель или IP:порт. Надёжнее открывается звуковой вход.",
  "windows": {
   "url": "https://nknvofficial.github.io/led-mask/download/ltc2osc/LTC2OSC.exe",
-  "sha256": "40e0a0fae53ec648d3a6ed4ce9286e7cad552902c8ac804080855176a924621f"
+  "sha256": "c50b6e6dfb0078b3909aa8448a4dc7af3e167d94eb1ed230d11ad421ee156f5d"
  }
 }
