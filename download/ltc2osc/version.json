@@ -1,8 +1,8 @@
 {
- "version": "2.0.0",
- "notes": "Новый интерфейс: три темы (Графит, Broadcast, Студия), своя шапка окна, таймлайн команд. Установка и автообновление.",
+ "version": "2.0.1",
+ "notes": "VU-метр входа: два канала с удержанием пика, источник и уровень в dBFS рядом с кнопками.",
  "windows": {
   "url": "https://nknvofficial.github.io/led-mask/download/ltc2osc/LTC2OSC.exe",
-  "sha256": "e2da929632f3cbd88bd1087b9a14e89bac7397146a8b15ef9c63e95604424feb"
+  "sha256": "40e0a0fae53ec648d3a6ed4ce9286e7cad552902c8ac804080855176a924621f"
  }
 }
