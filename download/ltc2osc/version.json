@@ -1,0 +1,8 @@
+{
+ "version": "2.0.0",
+ "notes": "Новый интерфейс: три темы (Графит, Broadcast, Студия), своя шапка окна, таймлайн команд. Установка и автообновление.",
+ "windows": {
+  "url": "https://nknvofficial.github.io/led-mask/download/ltc2osc/LTC2OSC.exe",
+  "sha256": "e2da929632f3cbd88bd1087b9a14e89bac7397146a8b15ef9c63e95604424feb"
+ }
+}
