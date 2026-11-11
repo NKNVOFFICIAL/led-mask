@@ -1,8 +1,8 @@
 {
- "version": "2.0.6",
- "notes": "Исправления зависаний: звуковой вход открывается в фоне, журнал hang.log для диагностики. Выбор сетевых адаптеров.",
+ "version": "2.0.7",
+ "notes": "Окно больше не замирает при перетаскивании и после остановки таймкода.",
  "windows": {
   "url": "https://nknvofficial.github.io/led-mask/download/ltc2osc/LTC2OSC.exe",
-  "sha256": "88882ef3685e6d7e8f8992a316759f8a44b11370a04de8867aa0abf8acd9db9c"
+  "sha256": "1c84fe21e0bccc39001ca40f1276b3552233b7a779e9ceae7c2dc0313008d70d"
  }
 }
