@@ -1,14 +1,14 @@
 {
  "version": "2.1.2",
- "notes": "Аккуратнее раскладка в небольшом окне, новые значки кнопок окна.",
+ "notes": "Убраны квадратики по краям окна; аккуратнее раскладка в небольшом окне.",
  "windows": {
   "url": "https://nknvofficial.github.io/led-mask/download/ltc2osc/LTC2OSC.exe",
   "sha256": "81cd15524b3c1f21ee5fa53e7c038d1abb77ba9d9e03b2d4d1c92885e04282ed"
  },
  "code": {
-  "version": "2.1.3",
-  "url": "https://nknvofficial.github.io/led-mask/download/ltc2osc/code-2.1.3.zip",
-  "sha256": "6db3fed142a11d85c6452a46c4052d3cccc3df90a6019d170821e2500dbc0451",
+  "version": "2.1.4",
+  "url": "https://nknvofficial.github.io/led-mask/download/ltc2osc/code-2.1.4.zip",
+  "sha256": "1882a4012835a01fa020a33c2d13fbb1f239fa9fabd2855f52d0bce821443e41",
   "min_exe": "2.1.0"
  }
 }
