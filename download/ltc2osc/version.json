@@ -1,14 +1,14 @@
 {
  "version": "2.1.2",
- "notes": "Новая сборка: дальше исправления приходят без скачивания всей программы. Окно не дрожит при перетаскивании, размер меняется рамкой, выбор сетевых адаптеров.",
+ "notes": "Аккуратнее раскладка в небольшом окне, новые значки кнопок окна.",
  "windows": {
   "url": "https://nknvofficial.github.io/led-mask/download/ltc2osc/LTC2OSC.exe",
   "sha256": "81cd15524b3c1f21ee5fa53e7c038d1abb77ba9d9e03b2d4d1c92885e04282ed"
  },
  "code": {
-  "version": "2.1.2",
-  "url": "https://nknvofficial.github.io/led-mask/download/ltc2osc/code-2.1.2.zip",
-  "sha256": "c8d3b9f1971c464dcf773056d51d520b7e3c85f728b67b4ec0c7535211cf8e85",
+  "version": "2.1.3",
+  "url": "https://nknvofficial.github.io/led-mask/download/ltc2osc/code-2.1.3.zip",
+  "sha256": "6db3fed142a11d85c6452a46c4052d3cccc3df90a6019d170821e2500dbc0451",
   "min_exe": "2.1.0"
  }
 }
