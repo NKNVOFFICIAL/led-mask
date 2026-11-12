@@ -2063,8 +2063,11 @@ html[data-kind=ring] .cache-sec .refFit [data-f="cab"] { display: none !importan
       <div class="flist" id="oScrList"></div>
       <div class="ctl"><button class="b" id="oScrAdd">+ Выход</button><button class="b" id="oScrDel">− Выход</button><button class="b" id="oScrRename">Переименовать</button></div>
       <div class="row"><span class="lbl">Разрешение</span><div class="ctl"><input type="text" inputmode="decimal" spellcheck="false" autocomplete="off" id="oScrW" class="num calc" title="Можно формулой: 192*6, 3840/2, (192+8)*4" style="width:84px" aria-label="Ширина выхода"><span class="unit">×</span><input type="text" inputmode="decimal" spellcheck="false" autocomplete="off" id="oScrH" class="num calc" title="Можно формулой: 192*6, 3840/2, (192+8)*4" style="width:84px" aria-label="Высота выхода"><select id="oScrPreset" aria-label="Готовые разрешения"><option value="">…</option><option value="3840x2160">3840×2160</option><option value="3840x2400">3840×2400</option><option value="1920x1080">1920×1080</option><option value="2560x1440">2560×1440</option><option value="4096x2160">4096×2160</option><option value="1920x1200">1920×1200</option></select></div></div>
-      <div class="btns"><button class="b" id="oRingCab" title="Кольцо: свой слайс на каждый кабинет, повёрнутый под его угол; на выходе разложить рядами">Разметить кольцо: кабинеты</button><button class="b" id="oRingBlk" title="Кольцо: свой слайс на каждый блок кабинетов; на выходе разложить рядами">по блокам</button></div>
-      <p class="hint">Для маски-кольца кабинеты стоят под углом — эти кнопки сами нарежут слайсы по кабинетам или по блокам, выпрямят каждый и разложат на выходах ровными рядами.</p>
+      <div class="btns"><button class="b" id="oGroup" title="Объединить выбранные слайсы в группу — двигаются вместе. Добавить слайс к выбору: Ctrl/⌘ + клик по нему в Input">Сгруппировать слайсы</button><button class="b" id="oUngroup" title="Разбить группу выбранного слайса">Разгруппировать</button></div>
+      <div class="row wide"><span class="lbl">Авторазметка</span></div>
+      <div class="btns"><button class="b" id="oMapCab" title="Свой слайс на каждый кабинет">По кабинетам</button><button class="b" id="oMapRows" title="Слайс на каждый ряд кабинетов">По рядам</button><button class="b" id="oMapCols" title="Слайс на каждый столбец кабинетов">По столбцам</button></div>
+      <div class="btns"><button class="b" id="oMapGroup" title="Слайс на каждый блок кабинетов кольца или на каждый экран поля">По блокам</button><button class="b" id="oMapScreen" title="Слайс на каждый экран целиком">По экранам</button></div>
+      <p class="hint">Работает с любой маской: обычной, кольцом с блоками и экранами в общем поле, повёрнутыми на любой угол. Участок берётся под углом кабинета, выпрямляется и раскладывается по выходам ровными рядами.</p>
       <div class="btns"><button class="b" id="oPack" title="Разложить все слайсы по выходам слева направо и сверху вниз; не помещается — следующий выход">Разложить по выходам</button></div>
       <div class="tgroup">ИТОГ</div>
       <div class="info" id="oInfo"></div>
@@ -2233,6 +2236,7 @@ html[data-kind=ring] .cache-sec .refFit [data-f="cab"] { display: none !importan
       <div class="row"><label for="rgRot">Поворот</label><div class="ctl"><input type="number" id="rgRot" step="1" class="w-md" inputmode="decimal"><span class="unit">°</span></div></div>
       <div class="btns"><button class="b" id="rgRotM15">⟲ 15°</button><button class="b" id="rgRotM1">⟲ 1°</button><button class="b" id="rgRotP1">⟳ 1°</button><button class="b" id="rgRotP15">⟳ 15°</button></div>
       <div class="row"><label for="rgSelColor">Цвет кабинета</label><div class="ctl"><input type="color" id="rgSelColor"><button class="b" id="rgSelColorReset" title="Вернуть цвет кольца">Как у кольца</button></div></div>
+      <div class="btns"><button class="b" id="rgGroup" title="Объединить выбранные кабинеты в группу — дальше выбираются, двигаются и крутятся вместе">Сгруппировать</button><button class="b" id="rgUngroup" title="Разбить группы выбранных кабинетов">Разгруппировать</button></div>
       <div class="btns"><button class="b" id="rgSelRing">Выбрать всё кольцо</button><button class="b" id="rgOff">Погасить / включить</button><button class="b" id="rgReset">Вернуть на кольцо</button></div>
       <p class="hint num" id="rgSelInfo"></p>
       <div class="tgroup">ХОЛСТ И НОМЕРА</div>
@@ -4152,8 +4156,8 @@ if (typeof String !== "undefined" && !String.prototype.matchAll) {
 }
 const ICON_B64 = "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";
 const STANDALONE = true;
-const APP_VERSION = "2.0.167";
-const BUILD_STAMP = "12.11 09:25";
+const APP_VERSION = "2.0.168";
+const BUILD_STAMP = "12.11 19:53";
 const UPDATE_URL = "https://slavahoh1976-ops.github.io/-tz/download/version.json";
 const QS = new URLSearchParams(location.search);
 let PLATFORM = window.AndroidBridge ? "android" : window.LEDMASK_PLATFORM || QS.get("platform") || (window.pywebview ? "windows" : "web");
@@ -6436,6 +6440,7 @@ function ringNorm(q) {
   for (const k of ["W", "H"]) if (+q[k] >= 16) R[k] = Math.min(32768, Math.round(+q[k]));
   R.nums = q.nums !== false;
   R.outline = q.outline !== false;
+  R.groups = (Array.isArray(q.groups) ? q.groups : []).map((a) => Array.isArray(a) ? [...new Set(a.map(String).filter((k) => /^\d+,\d+(,\d+)?$/.test(k)))] : []).filter((a) => a.length > 1);
   R.numFmt = ["cr", "ring", "seq"].includes(q.numFmt) ? q.numFmt : q.numFmt === "rm" ? "ring" : "cr";
   if (Array.isArray(q.rings) && q.rings.length) {
     const out = [];
@@ -6510,6 +6515,17 @@ function ringGeom(st) {
 }
 // 2.0.163: номер кабинета в кольце — по тем же правилам, что в LED-масках:
 // колонка считается вдоль кольца (сквозь блоки), ряд — внутри блока; формат и точка отсчёта общие
+// 2.0.168: группы кабинетов кольца — выбор одного выбирает всю группу, двигаются и крутятся вместе
+const ringGroupOf = (R, k) => (R.groups || []).find((a) => a.includes(k)) || null;
+const ringExpandSel = (R, keys) => {
+  const out = /* @__PURE__ */ new Set();
+  for (const k of keys) {
+    const g = ringGroupOf(R, k);
+    if (g) for (const q of g) out.add(q);
+    else out.add(k);
+  }
+  return out;
+};
 const ringLabel = (R, m, st) => {
   if (R.numFmt === "seq") return String(m.n);
   const lab = fmtCabLabel(st, m.i * m.bw + m.bx, m.by, m.nCols, m.bh);
@@ -13181,7 +13197,7 @@ function normOut(o, k) {
     src: typeof s.src === "string" ? s.src : "",
     ix: Math.round(+s.ix || 0), iy: Math.round(+s.iy || 0), iw: Math.max(1, Math.round(+s.iw || 1)), ih: Math.max(1, Math.round(+s.ih || 1)),
     ox: Math.round(+s.ox || 0), oy: Math.round(+s.oy || 0), ow: Math.max(0, Math.min(65536, Math.round(+s.ow || 0))), oh: Math.max(0, Math.min(65536, Math.round(+s.oh || 0))),
-    keep: s.keep !== false, rot: [0, 90, 180, 270].includes(+s.rot) ? +s.rot : 0, ra: isFinite(+s.ra) ? Math.max(-180, Math.min(180, Math.round(+s.ra * 100) / 100)) : 0, fh: !!s.fh, fv: !!s.fv, on: s.on !== false
+    keep: s.keep !== false, grp: s.grp ? String(s.grp) : "", rot: [0, 90, 180, 270].includes(+s.rot) ? +s.rot : 0, ra: isFinite(+s.ra) ? Math.max(-180, Math.min(180, Math.round(+s.ra * 100) / 100)) : 0, fh: !!s.fh, fv: !!s.fv, on: s.on !== false
   }, s));
   return keepRest({ id: typeof q.id === "string" && q.id ? q.id : d.id, name: typeof q.name === "string" && q.name ? q.name.slice(0, 60) : d.name, src: typeof q.src === "string" ? q.src : "", screens, scr: ids.has(q.scr) ? q.scr : screens[0].id, slices, labels: q.labels !== false, view: ["in", "out", "both"].includes(q.view) ? q.view : "both" }, q);
 }
@@ -13326,6 +13342,61 @@ function outCellsK(srcKey) {
   return cells;
 }
 const outCells = (o) => outCellsK(o.src);
+// 2.0.168: разбор любого источника на ГРУППЫ кабинетов с общим углом — LED-маска, блок кольца,
+// отдельный кабинет кольца, экран в общем поле под любым углом (в т.ч. не кратным 90°).
+// У группы: угол a, центр (cx,cy) в координатах источника и ячейки со смещением от центра (до поворота).
+function outGroups(srcKey) {
+  const out = [], id = srcKey.slice(2), rad = (d) => d * Math.PI / 180;
+  const addScreen = (st, ox, oy, rot, gi, gname) => {
+    const [w0, h0] = dims(st), [bw0, bh0] = rotDims(w0, h0, rot);
+    const ccx = ox + bw0 / 2, ccy = oy + bh0 / 2, a = rad(rot);
+    const toSrc = (lx, ly) => {
+      const dx = lx - w0 / 2, dy = ly - h0 / 2;
+      return [ccx + dx * Math.cos(a) - dy * Math.sin(a), ccy + dx * Math.sin(a) + dy * Math.cos(a)];
+    };
+    const pre = gname ? gname + " · " : "";
+    if (st.kind === "ring") {
+      const G = ringGeom(st), by = /* @__PURE__ */ new Map();
+      for (const m of G.list) {
+        const k = m.ri + "," + m.i;
+        if (!by.has(k)) by.set(k, []);
+        by.get(k).push(m);
+      }
+      for (const arr of by.values()) {
+        const live = arr.filter((m) => !m.off);
+        if (!live.length) continue;
+        const f = arr[0];
+        const bcx = arr.reduce((t, m) => t + m.x, 0) / arr.length, bcy = arr.reduce((t, m) => t + m.y, 0) / arr.length;
+        const [sx, sy] = toSrc(bcx, bcy);
+        out.push({ a: rot + f.rot, cx: sx, cy: sy, g: gi, scr: st, name: pre + ringLabel(G.R, f, st), cells: live.map((m) => ({
+          dx: (m.bx - (f.bw - 1) / 2) * m.w, dy: (m.by - (f.bh - 1) / 2) * m.h,
+          w: m.w, h: m.h, col: m.i * f.bw + m.bx, row: m.by, name: pre + ringLabel(G.R, m, st)
+        })) });
+      }
+      return;
+    }
+    if (st.kind === "led") {
+      const { xs, ys } = grid(st), cells = [];
+      const off = /* @__PURE__ */ new Set([...st.blackCabinets || [], ...shapeOff(st)]);
+      for (let r = 0; r < ys.length - 1; r++) for (let c = 0; c < xs.length - 1; c++) {
+        const cw = xs[c + 1] - xs[c], ch = ys[r + 1] - ys[r];
+        if (off.has(key(c, r))) continue;
+        cells.push({ dx: xs[c] + cw / 2 - w0 / 2, dy: ys[r] + ch / 2 - h0 / 2, w: cw, h: ch, col: c, row: r, name: pre + cabLabel(st, c, r) });
+      }
+      if (cells.length) out.push({ a: rot, cx: ccx, cy: ccy, g: gi, scr: st, name: gname || st.name, cells });
+      return;
+    }
+    out.push({ a: rot, cx: ccx, cy: ccy, g: gi, scr: st, name: gname || st.name, cells: [{ dx: 0, dy: 0, w: w0, h: h0, col: 0, row: 0, name: gname || st.name }] });
+  };
+  if (srcKey[0] === "m") {
+    const st = project.screens.find((q) => q.uid === id);
+    if (st) addScreen(st, 0, 0, 0, 0, "");
+  } else if (srcKey[0] === "f") {
+    const f = project.fields.find((q) => q.id === id), rs = f ? fieldRects(f) : [], b = fieldBBox(rs);
+    if (b) for (const r of rs) addScreen(r.st, r.x - b.x, r.y - b.y, r.rot || 0, r.i, r.st.name || "Экран " + (r.i + 1));
+  }
+  return out;
+}
 // прямоугольник по кабинетам: все кабинеты, центр которых внутри выделения
 function snapToCells(o, x0, y0, x1, y1) {
   const L = Math.min(x0, x1), R = Math.max(x0, x1), T = Math.min(y0, y1), B = Math.max(y0, y1);
@@ -13402,6 +13473,78 @@ async function renderOutPNG(o, scr, onBand) {
   return renderBands(scr.w, scr.h, (ctx) => paintOutScreen(ctx, o, scr, 1, srcOf, o.labels), onBand);
 }
 // ---- автоматика
+// 2.0.168: авторазметка для любых масок, включая повёрнутые и нестандартные.
+// Режимы: cab — по кабинетам, rows — по рядам, cols — по столбцам, group — по блокам/экранам, screen — экран целиком.
+function outAutoMap(o, mode) {
+  if (!o || !o.screens.length) return;
+  const gs = outGroups(o.src);
+  if (!gs.length) return status("В источнике нет кабинетов для разметки", true);
+  const rad = (d) => d * Math.PI / 180, parts = [];
+  const push = (g, cells, name) => {
+    if (!cells.length) return;
+    const x0 = Math.min(...cells.map((q) => q.dx - q.w / 2)), x1 = Math.max(...cells.map((q) => q.dx + q.w / 2));
+    const y0 = Math.min(...cells.map((q) => q.dy - q.h / 2)), y1 = Math.max(...cells.map((q) => q.dy + q.h / 2));
+    const mx = (x0 + x1) / 2, my = (y0 + y1) / 2, a = rad(g.a);
+    parts.push({ cx: g.cx + mx * Math.cos(a) - my * Math.sin(a), cy: g.cy + mx * Math.sin(a) + my * Math.cos(a),
+      w: x1 - x0, h: y1 - y0, a: g.a, name, key: g.g + "|" + (g.scr && g.scr.uid || "") });
+  };
+  for (const g of gs) {
+    if (mode === "cab") for (const q of g.cells) push(g, [q], q.name);
+    else if (mode === "rows" || mode === "cols") {
+      const by = /* @__PURE__ */ new Map();
+      for (const q of g.cells) {
+        const k = mode === "rows" ? q.row : q.col;
+        if (!by.has(k)) by.set(k, []);
+        by.get(k).push(q);
+      }
+      for (const k of [...by.keys()].sort((a, b) => a - b)) {
+        const arr = by.get(k).sort((a, b) => mode === "rows" ? a.col - b.col : a.row - b.row);
+        // разрываем полосу там, где кабинеты не соседние
+        let run = [arr[0]];
+        for (let i = 1; i < arr.length; i++) {
+          const prev = run[run.length - 1], cur = arr[i];
+          const near = mode === "rows" ? cur.col === prev.col + 1 : cur.row === prev.row + 1;
+          if (near) run.push(cur);
+          else {
+            push(g, run, g.name + " · " + (mode === "rows" ? "ряд " : "стб ") + (k + 1));
+            run = [cur];
+          }
+        }
+        push(g, run, g.name + " · " + (mode === "rows" ? "ряд " : "стб ") + (k + 1));
+      }
+    } else push(g, g.cells, g.name);
+  }
+  if (mode === "screen") {
+    // объединяем группы одного экрана в один слайс по габаритам (угол берём у первой группы)
+    const by = /* @__PURE__ */ new Map();
+    for (const p of parts) {
+      if (!by.has(p.key)) by.set(p.key, []);
+      by.get(p.key).push(p);
+    }
+    const merged = [];
+    for (const arr of by.values()) {
+      if (arr.length === 1) {
+        merged.push(arr[0]);
+        continue;
+      }
+      const same = arr.every((q) => Math.abs(q.a - arr[0].a) < 1e-6);
+      const a = same ? arr[0].a : 0, ar = rad(-a);
+      const pts = arr.map((q) => ({ x: q.cx * Math.cos(ar) - q.cy * Math.sin(ar), y: q.cx * Math.sin(ar) + q.cy * Math.cos(ar), w: q.w, h: q.h }));
+      const x0 = Math.min(...pts.map((q) => q.x - q.w / 2)), x1 = Math.max(...pts.map((q) => q.x + q.w / 2));
+      const y0 = Math.min(...pts.map((q) => q.y - q.h / 2)), y1 = Math.max(...pts.map((q) => q.y + q.h / 2));
+      const mx = (x0 + x1) / 2, my = (y0 + y1) / 2, b = rad(a);
+      merged.push({ cx: mx * Math.cos(b) - my * Math.sin(b), cy: mx * Math.sin(b) + my * Math.cos(b), w: x1 - x0, h: y1 - y0, a, name: arr[0].name.split(" · ")[0] });
+    }
+    parts.length = 0;
+    parts.push(...merged);
+  }
+  if (!parts.length) return status("Нечего размечать", true);
+  o.slices = parts.map((r, i) => ({ id: newUid(), name: r.name || "Slice " + (i + 1), scr: o.screens[0].id, src: o.src,
+    ix: Math.round(r.cx - r.w / 2), iy: Math.round(r.cy - r.h / 2), iw: Math.max(1, Math.round(r.w)), ih: Math.max(1, Math.round(r.h)),
+    ox: 0, oy: 0, ow: 0, oh: 0, keep: true, rot: 0, ra: +(+r.a || 0).toFixed(2), fh: false, fv: false, on: true }));
+  outPack(o, true);
+  status("Размечено слайсов: " + o.slices.length, true);
+}
 function outAutoSlices(o, mode) {
   const S0 = outSrc(o);
   if (!S0) return status("Сначала выберите источник", true);
@@ -13834,8 +13977,28 @@ $("oPack").onclick = () => {
   outPack(OC());
   outChanged(true);
 };
-for (const [id, mode] of [["oRingCab", "ringCab"], ["oRingBlk", "ringBlk"]]) $(id).onclick = () => {
-  outAutoSlices(OC(), mode);
+$("oGroup").onclick = () => {
+  const o = OC(), cur = curSlice();
+  if (!o || !cur) return;
+  const ids = /* @__PURE__ */ new Set([cur.id, ...(ui_out.more || [])]);
+  const list = o.slices.filter((q) => ids.has(q.id));
+  if (list.length < 2) return status("Выберите ещё слайсы: Ctrl + клик по слайсу в Input", true);
+  const gid = newUid();
+  for (const q of list) q.grp = gid;
+  ui_out.more = /* @__PURE__ */ new Set();
+  outChanged(true);
+  status("Слайсов в группе: " + list.length, true);
+};
+$("oUngroup").onclick = () => {
+  const o = OC(), cur = curSlice();
+  if (!o || !cur || !cur.grp) return status("Этот слайс не в группе", true);
+  const g = cur.grp, n = o.slices.filter((q) => q.grp === g).length;
+  for (const q of o.slices) if (q.grp === g) q.grp = "";
+  outChanged(true);
+  status("Группа снята, слайсов: " + n, true);
+};
+for (const [id, mode] of [["oMapCab", "cab"], ["oMapRows", "rows"], ["oMapCols", "cols"], ["oMapGroup", "group"], ["oMapScreen", "screen"]]) $(id).onclick = () => {
+  outAutoMap(OC(), mode);
   outChanged(true);
 };
 $("oScrAdd").onclick = () => {
@@ -14124,7 +14287,9 @@ function drawOutPane(c, o, P, srcOf) {
     if (srcC) c.drawImage(srcC.cv, 0, 0, P.W * P.k, P.H * P.k);
     // слайсы на входе — только те, что с активного источника (у остальных координаты в другой маске)
     o.slices.filter((s) => sliceSrc(o, s) === o.src).forEach((s) => {
-      const sel = s.id === ui_out.sel, scrI = o.screens.findIndex((q) => q.id === s.scr);
+      const cur = o.slices.find((q) => q.id === ui_out.sel);
+      const sel = s.id === ui_out.sel || !!(ui_out.more && ui_out.more.has(s.id)) || !!(cur && cur.grp && s.grp === cur.grp);
+      const scrI = o.screens.findIndex((q) => q.id === s.scr);
       // 2.0.167: слайс с точным углом показываем повёрнутой рамкой — так видно, что участок берётся под углом
       const ra = +s.ra || 0;
       c.save();
@@ -14139,6 +14304,22 @@ function drawOutPane(c, o, P, srcOf) {
       c.lineWidth = sel ? 2.5 : 1.2;
       c.strokeRect(s.ix * P.k + 0.5, s.iy * P.k + 0.5, s.iw * P.k - 1, s.ih * P.k - 1);
       c.restore();
+      // ручка поворота у выбранного слайса
+      if (sel) {
+        const [hx, hy] = sliceRotHandle(s, P.k), cx = (s.ix + s.iw / 2) * P.k, cy = (s.iy + s.ih / 2) * P.k;
+        const ex = hx * P.k, ey = hy * P.k, a = (+s.ra || 0) * Math.PI / 180;
+        const bx = cx + Math.sin(a) * (s.ih / 2) * P.k, by = cy - Math.cos(a) * (s.ih / 2) * P.k;
+        c.strokeStyle = "#19C56B";
+        c.lineWidth = 2;
+        c.beginPath();
+        c.moveTo(bx, by);
+        c.lineTo(ex, ey);
+        c.stroke();
+        c.fillStyle = "#19C56B";
+        c.beginPath();
+        c.arc(ex, ey, 6, 0, Math.PI * 2);
+        c.fill();
+      }
       if (s.iw * P.k > 40) pill(c, "".concat(s.name, " → ").concat(o.screens[scrI] ? o.screens[scrI].name : "?"), s.ix * P.k + 4, s.iy * P.k + 4, 11, "left", "rgba(0,0,0,0.7)", s.on ? "#fff" : "#888", s.iw * P.k - 8);
       if (sel) {
         c.fillStyle = "#19C5B5";
@@ -14218,6 +14399,8 @@ function outCornerR(r, x, y, k) {
   for (const cx of [0, 1]) for (const cy of [0, 1]) if (Math.abs(x - (r[0] + cx * r[2])) * k < 9 && Math.abs(y - (r[1] + cy * r[3])) * k < 9) return [cx, cy];
   return null;
 }
+// 2.0.168: группы слайсов — слайсы одной группы выбираются и двигаются вместе
+const sliceGroup = (o, s) => !s ? [] : s.grp ? o.slices.filter((q) => q.grp === s.grp) : [s];
 const sliceRect = (s, v) => v === "in" ? [s.ix, s.iy, s.iw, s.ih] : [s.ox, s.oy, ...sliceOutWH(s)];
 function outCorner(s, x, y, k, v, o) {
   if (!s) return null;
@@ -14258,6 +14441,11 @@ const snapNear = (v, arr, thr) => {
   }
   return b;
 };
+// 2.0.168: зелёная ручка поворота выбранного слайса на входе — как у кабинетов кольца
+const sliceRotHandle = (s, k) => {
+  const cx = s.ix + s.iw / 2, cy = s.iy + s.ih / 2, a = (+s.ra || 0) * Math.PI / 180, d = s.ih / 2 + 18 / k;
+  return [cx + Math.sin(a) * d, cy - Math.cos(a) * d];
+};
 function outPointer(e, type) {
   const o = OC();
   if (!o || !ui_out.L) return;
@@ -14269,7 +14457,15 @@ function outPointer(e, type) {
       ui_out.drag = { kind: "pan", P, px, py, x0: ui_out.V.x, y0: ui_out.V.y };
       return;
     }
-    const s = curSlice(), cn = outCorner(s, x, y, P.k, v, o);
+    const s = curSlice();
+    if (s && v === "in" && s.on !== false) {
+      const [hx, hy] = sliceRotHandle(s, P.k);
+      if (Math.hypot(x - hx, y - hy) <= 11 / P.k) {
+        ui_out.drag = { kind: "srot", P, s, cx: s.ix + s.iw / 2, cy: s.iy + s.ih / 2 };
+        return;
+      }
+    }
+    const cn = outCorner(s, x, y, P.k, v, o);
     if (cn) {
       // тянем угол: противоположный угол остаётся на месте
       const r = sliceRect(s, v);
@@ -14277,10 +14473,23 @@ function outPointer(e, type) {
       return;
     }
     const h = outHit(o, x, y, v);
+    if (h && (e.ctrlKey || e.metaKey)) {
+      // Ctrl/⌘ + клик — добавить слайс к выбору (для группировки)
+      ui_out.more = ui_out.more || /* @__PURE__ */ new Set();
+      if (h.id === ui_out.sel) return;
+      if (ui_out.more.has(h.id)) ui_out.more.delete(h.id);
+      else ui_out.more.add(h.id);
+      refreshOutPanel();
+      requestDraw();
+      return;
+    }
     if (h) {
+      if (!(ui_out.more && ui_out.more.has(h.id))) ui_out.more = /* @__PURE__ */ new Set();
       ui_out.sel = h.id;
       if (sliceSrc(o, h) !== o.src) { o.src = sliceSrc(o, h); requestDraw(); }
-      ui_out.drag = { kind: "move", P, s: h, px: x, py: y, a: v === "in" ? [h.ix, h.iy] : [h.ox, h.oy], moved: false };
+      const grp = sliceGroup(o, h);
+      ui_out.drag = { kind: "move", P, s: h, px: x, py: y, a: v === "in" ? [h.ix, h.iy] : [h.ox, h.oy], moved: false,
+        grp: grp.map((q) => ({ q, ax: v === "in" ? q.ix : q.ox, ay: v === "in" ? q.iy : q.oy })) };
       refreshOutPanel();
     } else if (v === "in") {
       ui_out.drag = { kind: "new", P, x0: x, y0: y, snap: null };
@@ -14297,6 +14506,13 @@ function outPointer(e, type) {
     if (!d) {
       const h = outHit(o, x, y, v), cn = outCorner(curSlice(), x, y, P.k, v, o);
       pv.style.cursor = cn ? cn[0] === cn[1] ? "nwse-resize" : "nesw-resize" : h ? "move" : v === "in" ? "crosshair" : "grab";
+      return;
+    }
+    if (d.kind === "srot") {
+      let deg = Math.atan2(x - d.cx, d.cy - y) * 180 / Math.PI;
+      if (e.shiftKey) deg = Math.round(deg / 15) * 15;
+      d.s.ra = Math.max(-180, Math.min(180, Math.round(deg * 100) / 100));
+      outChanged(true);
       return;
     }
     if (d.kind === "pan") {
@@ -14349,6 +14565,20 @@ function outPointer(e, type) {
         };
         d.s.ox = e.altKey ? nx : snap1(nx, w, X);
         d.s.oy = e.altKey ? ny : snap1(ny, h, Y);
+      }
+      // остальные слайсы группы едут на то же смещение
+      if (d.grp && d.grp.length > 1) {
+        const dx = (v === "in" ? d.s.ix : d.s.ox) - d.a[0], dy = (v === "in" ? d.s.iy : d.s.oy) - d.a[1];
+        for (const g of d.grp) {
+          if (g.q === d.s) continue;
+          if (v === "in") {
+            g.q.ix = Math.round(g.ax + dx);
+            g.q.iy = Math.round(g.ay + dy);
+          } else {
+            g.q.ox = Math.round(g.ax + dx);
+            g.q.oy = Math.round(g.ay + dy);
+          }
+        }
       }
       syncOutSel();
     }
@@ -18002,6 +18232,8 @@ function syncRingUI() {
   setVal($("rgFmt"), R.numFmt || "rm");
   const sm = gg.list.filter((m) => ui.ringSel.has(m.k)), pri = sm.find((m) => m.k === ui.ringPri) || sm[0];
   for (const id of ["rgRot", "rgRotM15", "rgRotM1", "rgRotP1", "rgRotP15", "rgOff", "rgReset", "rgSelColor", "rgSelColorReset"]) $(id).disabled = !sm.length;
+  $("rgGroup").disabled = ui.ringSel.size < 2;
+  $("rgUngroup").disabled = !ui.ringSel.size || !(R.groups || []).some((a) => a.some((k) => ui.ringSel.has(k)));
   if (pri) $("rgSelColor").value = ((pri.color || R.rings[pri.ri] && R.rings[pri.ri].color || "#7a0f2b") + "").toLowerCase();
   $("rgSelColorReset").disabled = !sm.some((m) => c.R.mods[m.k] && c.R.mods[m.k].color);
   if (pri) set("rgRot", +pri.rot.toFixed(2));
@@ -18061,6 +18293,11 @@ $("rgDel").onclick = () => {
     parts[0] = ri > del ? ri - 1 : ri;
     mods[parts.join(",")] = v;
   }
+  c.R.groups = (c.R.groups || []).map((a) => a.filter((k) => +k.split(",")[0] !== del).map((k) => {
+    const q = k.split(",");
+    q[0] = +q[0] > del ? +q[0] - 1 : +q[0];
+    return q.join(",");
+  })).filter((a) => a.length > 1);
   c.R.mods = mods;
   c.R.rings.splice(del, 1);
   ui.ringCur = Math.max(0, del - 1);
@@ -18246,6 +18483,24 @@ $("rgReset").onclick = () => {
   ringChanged(true);
   status("Выбранные кабинеты возвращены на кольцо", true);
 };
+$("rgGroup").onclick = () => {
+  const c = ringCtx();
+  if (!c || ui.ringSel.size < 2) return status("Выберите хотя бы два кабинета", true);
+  const keys = [...ui.ringSel];
+  c.R.groups = (c.R.groups || []).filter((a) => !a.some((k) => ui.ringSel.has(k)));
+  c.R.groups.push(keys);
+  ringChanged(true);
+  status("Сгруппировано кабинетов: " + keys.length, true);
+};
+$("rgUngroup").onclick = () => {
+  const c = ringCtx();
+  if (!c || !ui.ringSel.size) return;
+  const before = (c.R.groups || []).length;
+  c.R.groups = (c.R.groups || []).filter((a) => !a.some((k) => ui.ringSel.has(k)));
+  if (before === c.R.groups.length) return status("Выбранные кабинеты не в группе", true);
+  ringChanged(true);
+  status("Группы сняты: " + (before - c.R.groups.length), true);
+};
 $("rgSelColor").addEventListener("input", (e) => {
   const c = ringCtx();
   if (!c || !ui.ringSel.size) return;
@@ -18349,6 +18604,7 @@ function ringPointerDown(e, x, y) {
       ui.ringSel.clear();
       ui.ringSel.add(m.k);
     }
+    ui.ringSel = ringExpandSel(c.R, ui.ringSel);
     ui.ringPri = ui.ringSel.has(m.k) ? m.k : [...ui.ringSel][0] || "";
     if (ui.ringCur !== m.ri) ui.ringCur = m.ri;
     if (ui.textMode >= 0) {
@@ -18413,7 +18669,7 @@ function ringPointerMove(a, p, e) {
     a.y = p[1];
     const [x0, y0] = ringToMask(Math.min(a.x0, a.x), Math.min(a.y0, a.y)), [x1, y1] = ringToMask(Math.max(a.x0, a.x), Math.max(a.y0, a.y));
     const inside = ringGeom(st).list.filter((m) => m.x >= x0 && m.x <= x1 && m.y >= y0 && m.y <= y1).map((m) => m.k);
-    ui.ringSel = new Set([...a.add ? a.base : [], ...inside]);
+    ui.ringSel = ringExpandSel(st.ring, [...a.add ? a.base : [], ...inside]);
     if (!ui.ringSel.has(ui.ringPri)) ui.ringPri = inside[0] || [...ui.ringSel][0] || "";
     syncRingUI();
     requestDraw();
